@@ -2,6 +2,7 @@ import { Command, flags } from '@oclif/command'
 import * as fs from 'fs'
 
 import { TimeEntryModel } from '../model/timeEntryModel'
+import { FileNameBuilders } from '../fileNameBuilders';
 
 export default class Record extends Command {
 
@@ -44,6 +45,16 @@ export default class Record extends Command {
       })
 
     this.log(`${entry.username} Logged ${entry.hours} hours ${entry.date} for ${entry.project}`)
+  }
 
+  async readTimeEntryFile(): Promise<Array<TimeEntryModel>> {
+    let fileContents = "[]";
+
+    await fs.readFile(FileNameBuilders.getTimeEntryHistoryFileName(Record.username), 'utf8',
+        (err, data) => {
+          fileContents = data.toString();
+        });
+      
+    return JSON.parse(fileContents) as Array<TimeEntryModel>;
   }
 }
