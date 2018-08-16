@@ -11,6 +11,8 @@
     "@oclif/command": "^1.4.36",
     "@oclif/config": "^1.6.33",
     "@oclif/plugin-help": "^2.0.5",
+    "csv-generate": "^2.1.0",
+    "csv-parse": "^2.5.0",
     "tslib": "^1.9.3"
   },
   "devDependencies": {
@@ -52,6 +54,7 @@
   },
   "repository": "integral-io/time-tracker",
   "scripts": {
+    "start": "./bin/run",
     "postpack": "rm -f oclif.manifest.json npm-shrinkwrap.json",
     "posttest": "tsc -p test --noEmit && tslint -p test -t stylish",
     "prepack": "rm -rf lib && tsc && oclif-dev manifest && oclif-dev readme && npm shrinkwrap",

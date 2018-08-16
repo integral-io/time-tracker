@@ -2,7 +2,8 @@ import { Command, flags } from '@oclif/command'
 import * as fs from 'fs'
 
 import { FileNameBuilders } from '../fileNameBuilders'
-import { TimeEntryModel } from '../model/timeEntryModel'
+import { TimeEntryModel, TimeEntryModel_A } from '../model/timeEntryModel'
+import { TimeEntryFileService } from '../timeEntryFileService';
 
 export default class Record extends Command {
 
@@ -29,35 +30,17 @@ export default class Record extends Command {
     const now = new Date();
     // todo: validate date is coming in correctlty, accept today or yesterday, or above examples
 
-    const entry: TimeEntryModel = {
+    const entry: TimeEntryModel_A = {
       project: args.project,
       hours: args.hours,
       username: Record.username,
-      date: flags.date == 'today' ? 'today' : `on ${flags.date.trim()}`
+      date: flags.date == 'today' ? `${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()}` : `on ${flags.date.trim()}`,
+      logDate: flags.date == 'today' ? 'today' : `on ${flags.date.trim()}`
     }
+    let fileSvc = new TimeEntryFileService();
+    fileSvc.addTimeEntry(entry, Record.username);
 
-
-    // todo: separate method to save, append to array
-    fs.appendFile(
-      `${process.env.HOME || process.env.HOMEPATH || process.env.USERPROFILE}/${ Record.username }-hours.json`,
-      `${JSON.stringify(entry)},\n`,
-      ( error ) => {
-        if(error ) {
-          console.error( error ) 
-        }
-      })
-
-    this.log(`${entry.username} logged ${entry.hours} hours ${entry.date} for ${entry.project}`)
+    this.log(`${entry.username} logged ${entry.hours} hours ${entry.logDate} for ${entry.project}`)
   }
 
-  async readTimeEntryFile(): Promise<TimeEntryModel[]> {
-    let fileContents = "[]";
-
-    await fs.readFile(FileNameBuilders.getTimeEntryHistoryFileName(Record.username), 'utf8',
-        (err, data) => {
-          fileContents = data.toString();
-        });
-
-    return JSON.parse(fileContents) as TimeEntryModel[]
-  }
 }
