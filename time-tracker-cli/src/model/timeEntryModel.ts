@@ -1,6 +1,6 @@
 export type TimeEntryModel = {
-    username: String 
-    hours: Number
-    project: String,
-    date: String
+    username: string 
+    hours: number
+    project: string,
+    date: string
 }

@@ -1,7 +1,7 @@
 import { Utilities } from './utilities';
 
 export class FileNameBuilders {
-    static getTimeEntryHistoryFileName(username: String): String {
+    static getTimeEntryHistoryFileName(username: string): string {
         return `${Utilities.getHomeDirectoryPath()}${username}-hours.json`;
     }
 }

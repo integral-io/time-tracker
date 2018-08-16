@@ -1,8 +1,8 @@
 import { Command, flags } from '@oclif/command'
 import * as fs from 'fs'
 
+import { FileNameBuilders } from '../fileNameBuilders'
 import { TimeEntryModel } from '../model/timeEntryModel'
-import { FileNameBuilders } from '../fileNameBuilders';
 
 export default class Record extends Command {
 
@@ -33,28 +33,31 @@ export default class Record extends Command {
       project: args.project,
       hours: args.hours,
       username: Record.username,
-      date: flags.date == "today" ? `${now.getFullYear()}-${now.getMonth()+1}-${now.getDate()}` : flags.date
+      date: flags.date == 'today' ? 'today' : `on ${flags.date.trim()}`
     }
+
+
     // todo: separate method to save, append to array
     fs.appendFile(
       `${process.env.HOME || process.env.HOMEPATH || process.env.USERPROFILE}/${ Record.username }-hours.json`,
       `${JSON.stringify(entry)},\n`,
       ( error ) => {
-        if( error ) console.error( error )
-        console.log( 'File Updated' )
+        if(error ) {
+          console.error( error ) 
+        }
       })
 
-    this.log(`${entry.username} Logged ${entry.hours} hours ${entry.date} for ${entry.project}`)
+    this.log(`${entry.username} logged ${entry.hours} hours ${entry.date} for ${entry.project}`)
   }
 
-  async readTimeEntryFile(): Promise<Array<TimeEntryModel>> {
+  async readTimeEntryFile(): Promise<TimeEntryModel[]> {
     let fileContents = "[]";
 
     await fs.readFile(FileNameBuilders.getTimeEntryHistoryFileName(Record.username), 'utf8',
         (err, data) => {
           fileContents = data.toString();
         });
-      
-    return JSON.parse(fileContents) as Array<TimeEntryModel>;
+
+    return JSON.parse(fileContents) as TimeEntryModel[]
   }
 }
