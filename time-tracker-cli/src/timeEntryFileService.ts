@@ -9,7 +9,7 @@ export class TimeEntryFileService {
   addTimeEntry(timeEntry: TimeEntryModel, username: string): void {
     let csv = this.stringifyTimeEntryToCsv(timeEntry);
     fs.appendFile(
-      `${Utilities.getHomeDirectoryPath()}/${ username }-hours.json`,
+      FileNameBuilders.getTimeEntryHistoryFileName(username),
       `${ csv }\n`,
       ( error ) => {
         if(error ) {
