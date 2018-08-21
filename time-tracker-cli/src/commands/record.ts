@@ -34,7 +34,7 @@ export default class Record extends Command {
       project: args.project,
       hours: args.hours,
       username: Record.username,
-      date: flags.date == 'today' ? `${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()}` : `on ${flags.date.trim()}`,
+      date: flags.date == 'today' ? `${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()}` : `${flags.date.trim()}`,
       logDate: flags.date == 'today' ? 'today' : `on ${flags.date.trim()}`
     }
     let fileSvc = new TimeEntryFileService();
