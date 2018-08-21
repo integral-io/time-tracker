@@ -1,17 +1,16 @@
 import {expect, test} from '@oclif/test'
+import * as fs from 'fs';
 
 describe('report', () => {
-  test
-  .stdout()
-  .command(['report'])
-  .it('runs report', ctx => {
-    expect(ctx.stdout).to.contain('report world')
-  })
+
+  let myData;
+
+  fs.openSync('../mock-data/username-hours.csv', '')
 
   test
-  .stdout()
-  .command(['report', '--name', 'jeff'])
-  .it('runs report --name jeff', ctx => {
-    expect(ctx.stdout).to.contain('report jeff')
-  })
+    .stdout()
+    .command(['report'])
+    .it('runs report', ctx => {
+      expect(ctx.stdout).to.contain('report world')
+    })
 })

@@ -18,10 +18,14 @@ export class TimeEntryFileService {
       })
   }
 
-  async readTimeEntryFile(username: string): Promise<TimeEntryModel[]> {
+  async readTimeEntryFileForUsername(username: string): Promise<TimeEntryModel[]> {
+    return await this.readTimeEntryFileFromPath(FileNameBuilders.getTimeEntryHistoryFileName(username))
+  }
+
+  async readTimeEntryFileFromPath(path: string): Promise<TimeEntryModel[]> {
     let fileContents = "";
 
-    await fs.readFile(FileNameBuilders.getTimeEntryHistoryFileName(username), 'utf8',
+    await fs.readFile(path, 'utf8',
         (err, data) => {
           fileContents = data.toString();
         });
