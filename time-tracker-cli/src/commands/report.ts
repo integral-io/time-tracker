@@ -30,17 +30,17 @@ export default class Report extends Command {
       entry => entry.date.startsWith(args.date)
     )
 
-    let p = timeEntries
-      .map(
-        item => JSON.stringify(item)
-      ).reduce( (a, b) => a + '\n' + b )
+    // let p = timeEntries
+    //   .map(
+    //     item => JSON.stringify(item)
+    //   ).reduce( (a, b) => a + '\n' + b )
 
     let hours = timeEntries
         .map(item => item.hours)
         .reduce( (a, b) => a + b )
 
-    this.log(p)
-    this.log(`Total hours worked: ${ hours }`)
+    // this.log(p)
+    this.log(`Total hours worked for ${ args.date }: ${ hours }`)
 
     //this.error('failing!', {exit: 100})
     // throw new Error("Method not implemented.");
