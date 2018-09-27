@@ -35,7 +35,12 @@ export default class Report extends Command {
         item => JSON.stringify(item)
       ).reduce( (a, b) => a + '\n' + b )
 
+    let hours = timeEntries
+        .map(item => item.hours)
+        .reduce( (a, b) => a + b )
+
     this.log(p)
+    this.log(`Total hours worked: ${ hours }`)
 
     //this.error('failing!', {exit: 100})
     // throw new Error("Method not implemented.");
