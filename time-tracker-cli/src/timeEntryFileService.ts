@@ -19,18 +19,27 @@ export class TimeEntryFileService {
   }
 
   async readTimeEntryFileForUsername(username: string): Promise<TimeEntryModel[]> {
-    return await this.readTimeEntryFileFromPath(FileNameBuilders.getTimeEntryHistoryFileName(username))
-  }
+    return await this.readTimeEntryFileFromPath(
+      FileNameBuilders.getTimeEntryHistoryFileName(username)
+    )}
 
   async readTimeEntryFileFromPath(path: string): Promise<TimeEntryModel[]> {
-    let fileContents = "";
+    let fileContents = fs.readFileSync(path).toString()
+    
+    let timeEntries = fileContents
+      .split('\n')
+      .map(
+        line => {
+          let fields = line.split(',')
+          return {
+            date: fields[0],
+            username: fields[1],
+            project: fields[2],
+            hours: parseInt( fields[3] )
+          } as TimeEntryModel
+        })
 
-    await fs.readFile(path, 'utf8',
-        (err, data) => {
-          fileContents = data.toString();
-        });
-
-    return JSON.parse(fileContents) as TimeEntryModel[]
+      return timeEntries;
   }
 
   private stringifyTimeEntryToCsv(timeEntry: TimeEntryModel) {
