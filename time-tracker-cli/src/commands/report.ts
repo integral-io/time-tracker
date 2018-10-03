@@ -24,25 +24,22 @@ export default class Report extends Command {
 
     let timeEntryFileService = new TimeEntryFileService()    
 
-    let timeEntries: TimeEntryModel[] = await timeEntryFileService.readTimeEntryFileForUsername( 'harry-plunger' )
+    let timeEntries: TimeEntryModel[] = 
+        await timeEntryFileService.readTimeEntryFileForUsername( 'harry-plunger' )
 
     timeEntries = timeEntries.filter(
       entry => entry.date.startsWith(args.date)
     )
 
-    // let p = timeEntries
-    //   .map(
-    //     item => JSON.stringify(item)
-    //   ).reduce( (a, b) => a + '\n' + b )
+    let hours = 0
+    if(0 == timeEntries.length) { 
+    }
+    else {
+      hours = timeEntries
+      .map(item => item.hours)
+      .reduce( (a, b) => a + b )
+    }
 
-    let hours = timeEntries
-        .map(item => item.hours)
-        .reduce( (a, b) => a + b )
-
-    // this.log(p)
     this.log(`Total hours worked for ${ args.date }: ${ hours }`)
-
-    //this.error('failing!', {exit: 100})
-    // throw new Error("Method not implemented.");
   }
 }
