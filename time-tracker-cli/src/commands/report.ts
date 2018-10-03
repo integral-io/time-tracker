@@ -13,6 +13,13 @@ export default class Report extends Command {
     {name: 'date', description: 'date', required: false}
   ]
 
+  static flags = {
+    weekly: flags.boolean({
+      char: 'w',
+      description: 'Generate a weekly report',
+    })
+  }
+
   async run(): Promise<any> {
 
     const {args, flags} = this.parse(Report)
@@ -27,19 +34,47 @@ export default class Report extends Command {
     let timeEntries: TimeEntryModel[] = 
         await timeEntryFileService.readTimeEntryFileForUsername( 'harry-plunger' )
 
-    timeEntries = timeEntries.filter(
-      entry => entry.date.startsWith(args.date)
-    )
-
-    let hours = 0
-    if(0 == timeEntries.length) { 
+    let reportString = ""
+    if(flags.weekly){
+      reportString = generateWeeklyReport(args.date,timeEntries)
     }
     else {
-      hours = timeEntries
-      .map(item => item.hours)
-      .reduce( (a, b) => a + b )
-    }
-
-    this.log(`Total hours worked for ${ args.date }: ${ hours }`)
+      reportString = generateTotalHoursReport(args.date, timeEntries)
+    } 
+    this.log(reportString)   
   }
+}
+
+function generateTotalHoursReport(date,timeEntries) {
+
+  timeEntries = timeEntries.filter(
+    entry => entry.date.startsWith(date)
+  )
+
+  let hours = 0
+  if(0 == timeEntries.length) { 
+  }
+  else {
+    hours = timeEntries
+    .map(item => item.hours)
+    .reduce( (a, b) => a + b )
+  }
+  return `Total hours worked for ${ date }: ${ hours }`
+}
+
+function generateWeeklyReport(date,timeEntries) {
+
+  timeEntries = timeEntries.filter(
+    entry => entry.date.startsWith(date)
+  )
+
+  let report = "hello report"
+  if(0 == timeEntries.length) { 
+  }
+  else {
+    report = timeEntries
+      .map(item => item.date + ", " + item.project + ", " + item.hours + "\n")
+      .reduce( (a, b) => a + b )
+  }
+  return report
 }
