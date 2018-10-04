@@ -30,6 +30,16 @@ export default class Record extends Command {
     const now = new Date();
     // todo: validate date is coming in correctlty, accept today or yesterday, or above examples
 
+    const myDate = new Date(flags.date)
+    console.log("the date is " + myDate)
+    if( myDate == undefined ) {
+      console.log("DATE is undefined! exiting")
+    }
+    if( args.project == undefined ) {
+      console.log("default project is undefined! exiting")
+      return
+    }
+
     const entry: TimeEntryModel_A = {
       project: args.project,
       hours: args.hours,
