@@ -24,6 +24,7 @@ class GClient {
       code_challenge: this.codeVerifier
     });
     this.authorize_url = 'https://accounts.google.com/o/oauth2/v2/auth?' + this.querys;
+    console.log(this.codeVerifier);
   }
 
   async authenticate() {
@@ -36,7 +37,7 @@ class GClient {
               'Authentication successful! Please return to console.'
             );
             server.close();
-            resolve(qs.code);
+            resolve({codeVerifier: this.codeVerifier, authorizationCode: qs.code});
           }
         } catch(e) {
           reject(e);

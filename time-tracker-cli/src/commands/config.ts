@@ -16,12 +16,10 @@ export default class Config extends Command {
 
   async run(): Promise<any> {
     const {args, flags} = this.parse(Config);
-    let code = await this.google_client.authenticate();
+    let req_args = await this.google_client.authenticate();
     request({
-      uri: 'http://random_endpoint/auth_me',
-      qs: {
-        code
-      }
+      uri: 'http://localhost:5000/auth/google/exchange',
+      qs: req_args
     }, (err, res, body) => {
       if (err) {
         return console.log(err);

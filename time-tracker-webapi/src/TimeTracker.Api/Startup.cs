@@ -44,6 +44,7 @@ namespace TimeTracker.Api
             else
             {
                 app.UseHsts();
+         //       app.UseHttpsRedirection();
             }
             
             // global cors policy
@@ -55,7 +56,7 @@ namespace TimeTracker.Api
  
             app.UseAuthentication();
 
-            app.UseHttpsRedirection();
+
             app.UseMvc();
         }
     }
