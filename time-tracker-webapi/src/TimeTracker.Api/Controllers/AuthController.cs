@@ -23,8 +23,8 @@ namespace TimeTracker.Api.Controllers
         {
             _config = new GoogleConfigurationProperties()
             {
-                GoogleOrgClientId = configuration["GoogleConfig:ClientId"],
-                GoogleOrgClientSecret = configuration["GoogleConfig:ClientSecret"],
+                GoogleOrgClientId = configuration["Authentication:Google:ClientId"],
+                GoogleOrgClientSecret = configuration["Authentication:Google:ClientSecret"],
                 GoogleOrgRedirectUri = configuration["GoogleConfig:RedirectUri"]
             };
         }

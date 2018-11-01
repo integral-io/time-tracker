@@ -2,7 +2,7 @@
 .idea
 
 # app specific
-TimeTracker.Api/appsettings.Development.json
+secrets.json
 
 # Logs
 logs
