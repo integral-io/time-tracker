@@ -4,14 +4,12 @@ Server side portion of the Integral time tracker. For now, It's purpose is to ex
 
 ## Run Locally
 
-Create `secrets.json` in the `TimeTracker.Api` folder. It should have the following format:
+Run the following commands in a terminal in the `TimeTracker.Api` folder. 
 
-```json
+```bash
 
-{
-  "Authentication:Google:ClientId": "Your Google ClientId here",
-  "Authentication:Google:ClientSecret": "Your Google ClientSecret here"
-}
+  dotnet user-secrets set "Authentication:Google:ClientSecret" "secret"
+  dotnet user-secrets set "Authentication:Google:ClientId" "integralId"
 
 ```
 
@@ -22,4 +20,5 @@ This should be replaced with your organizations values.
 Options we're looking at:
 
 - https://www.nuget.org/packages/itext7 (Licensing makes unclear if can use with O/S project)
-- https://www.nuget.org/packages/iTextSharp.LGPLv2.Core/ (port of last free version)
+- https://www.nuget.org/packages/iTextSharp.LGPLv2.Core/ (port of last free version, but for non-Windows-based operating systems, you will need to install libgdiplus)
+- https://www.nuget.org/packages/DinkToPdf (uses free C lib wkhtmltopdf, but must be copied locally)
