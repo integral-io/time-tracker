@@ -13,7 +13,11 @@
     "@oclif/plugin-help": "^2.0.5",
     "csv-generate": "^2.1.0",
     "csv-parse": "^2.5.0",
-    "tslib": "^1.9.3"
+    "googleapis": "^34.0.0",
+    "opn": "^5.4.0",
+    "request": "^2.88.0",
+    "tslib": "^1.9.3",
+    "url": "^0.11.0"
   },
   "devDependencies": {
     "@oclif/dev-cli": "^1.13.22",
