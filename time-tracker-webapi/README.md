@@ -4,4 +4,22 @@ Server side portion of the Integral time tracker. For now, It's purpose is to ex
 
 ## Run Locally
 
-Create `appsettings.Development.json` in the `TimeTracker.Api` folder. It should have same format as the `appsettings.json` that is in source control. Just replace GoogleConfig with your organizations parameters or something to test with.
+Create `secrets.json` in the `TimeTracker.Api` folder. It should have the following format:
+
+```json
+
+{
+  "Authentication:Google:ClientId": "Your Google ClientId here",
+  "Authentication:Google:ClientSecret": "Your Google ClientSecret here"
+}
+
+```
+
+This should be replaced with your organizations values.
+
+## PDF generation
+
+Options we're looking at:
+
+- https://www.nuget.org/packages/itext7 (Licensing makes unclear if can use with O/S project)
+- https://www.nuget.org/packages/iTextSharp.LGPLv2.Core/ (port of last free version)
