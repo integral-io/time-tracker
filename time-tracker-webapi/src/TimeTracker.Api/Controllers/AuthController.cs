@@ -4,6 +4,7 @@ using System.IO;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
@@ -15,20 +16,27 @@ namespace TimeTracker.Api.Controllers
     [ApiController]
     public class AuthController : ControllerBase
     {
-        private readonly ConfigurationProperties _config;
+        private readonly GoogleConfigurationProperties _config;
         private const string GoogleTokenExchangeUrl = "https://www.googleapis.com/oauth2/v4/token";
 
         public AuthController(IConfiguration configuration)
         {
-            _config = new ConfigurationProperties()
+            _config = new GoogleConfigurationProperties()
             {
-                GoogleOrgClientId = configuration["GoogleSection:ClientId"],
-                GoogleOrgClientSecret = configuration["GoogleSection:ClientSecret"],
-                GoogleOrgRedirectUri = configuration["GoogleSection:RedirectUri"]
+                GoogleOrgClientId = configuration["GoogleConfig:ClientId"],
+                GoogleOrgClientSecret = configuration["GoogleConfig:ClientSecret"],
+                GoogleOrgRedirectUri = configuration["GoogleConfig:RedirectUri"]
             };
         }
         
-        [HttpGet("google/exchange")]
+        /// <summary>
+        /// Use at step 5 of auth flow. https://developers.google.com/identity/protocols/OAuth2InstalledApp#exchange-authorization-code
+        /// </summary>
+        /// <param name="authorizationCode">auth code returned in redirect by google in Step 4</param>
+        /// <param name="codeVerifier">The code verifier you created in Step 1.</param>
+        /// <returns></returns>
+        /// <exception cref="ExternalApiException"></exception>
+        [HttpGet("google/exchange"), AllowAnonymous]
         public async Task<IActionResult> ExchangeGoogleAuthCode(string authorizationCode, string codeVerifier)
         {
             CancellationToken cancellationToken = new CancellationToken();
@@ -52,7 +60,7 @@ namespace TimeTracker.Api.Controllers
                     return Ok(token);
                 }
 
-                String errorContent = await Utilities.StreamToStringAsync(stream);
+                string errorContent = await Utilities.StreamToStringAsync(stream);
                 throw new ExternalApiException
                 {
                     StatusCode = (int)response.StatusCode,

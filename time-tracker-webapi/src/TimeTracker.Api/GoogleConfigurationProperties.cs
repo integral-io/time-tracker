@@ -2,7 +2,10 @@ using System;
 
 namespace TimeTracker.Api
 {
-    public class ConfigurationProperties
+    /// <summary>
+    /// Config properties to tie up with your google organization. These all come from the google dev console
+    /// </summary>
+    public class GoogleConfigurationProperties
     {
         public String GoogleOrgClientId { get; set; }
         public String GoogleOrgClientSecret { get; set; }
