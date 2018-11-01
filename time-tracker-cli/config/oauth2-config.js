@@ -1,5 +1,5 @@
 module.exports = {
-  client_id: '746393280804-g6h55ss80310qla31fbe2e9hr3hl4512.apps.googleusercontent.com',
+  client_id: '778903181997-h1hrb061141p308ssiel9iq3a9ngd4ao.apps.googleusercontent.com',
   redirect_uri_path: '/oauth2callback',
   scope: 'https://www.googleapis.com/auth/plus.me'
 };

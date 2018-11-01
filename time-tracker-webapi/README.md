@@ -14,6 +14,7 @@ Run the following commands in a terminal in the `TimeTracker.Api` folder.
 ```
 
 This should be replaced with your organizations values.
+It is important to set the redirect uri in the server configuration to match the localhost cli port and path url which is: `http://localhost:8080/oauth2callback`
 
 ## PDF generation
 
