@@ -1,11 +1,21 @@
 import * as fs from 'fs';
-import { Utilities } from './utilities';
 import { FileNameBuilders } from './fileNameBuilders';
-import { GoogleTokenInfo } from './model/googleTokenInfo';
+import { ConfigEntryModel } from './model/configEntryModel';
 
 export class ConfigFileService {
+    setConfig(token: ConfigEntryModel) {
+      let json = this.stringifyConfigToJson(token);
+      fs.writeFile(
+        FileNameBuilders.getConfigFileName(),
+        `${json}`,
+        ( error ) => {
+          if(error ) {
+            console.error( error )
+          }
+        });
+    }
 
-    setLoginInfo(token: GoogleTokenInfo) {
-
+    private stringifyConfigToJson(configEntry: ConfigEntryModel) {
+      return JSON.stringify(configEntry, null, ' ');
     }
 }

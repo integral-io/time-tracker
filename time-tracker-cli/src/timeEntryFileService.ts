@@ -10,7 +10,7 @@ export class TimeEntryFileService {
     let csv = this.stringifyTimeEntryToCsv(timeEntry);
     fs.appendFile(
       FileNameBuilders.getTimeEntryHistoryFileName(username),
-      `${ csv }\n`,
+      `${ csv }\r\n`,
       ( error ) => {
         if(error ) {
           console.error( error ) 

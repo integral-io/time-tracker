@@ -1,12 +1,10 @@
 'use strict';
 
 const {google} = require('googleapis');
-// const request = require('request');
 const opn = require('opn');
 const http = require('http');
 const querystring = require('querystring');
 const url = require('url');
-// const global_config = require('../config/oauth2-config.js');
 
 class GClient {
   constructor(client_id, scope, redirect_uri_path) {
@@ -24,10 +22,10 @@ class GClient {
       code_challenge: this.codeVerifier
     });
     this.authorize_url = 'https://accounts.google.com/o/oauth2/v2/auth?' + this.querys;
-    console.log(this.codeVerifier);
+    console.log(this.authorize_url);
   }
 
-  async authenticate() {
+  async authenticate(cb) {
     return new Promise((resolve, reject) => {
       const server = http.createServer(async (req, res) =>  {
         try {
@@ -37,7 +35,7 @@ class GClient {
               'Authentication successful! Please return to console.'
             );
             server.close();
-            resolve({codeVerifier: this.codeVerifier, authorizationCode: qs.code});
+            resolve(cb({codeVerifier: this.codeVerifier, authorizationCode: qs.code}));
           }
         } catch(e) {
           reject(e);
