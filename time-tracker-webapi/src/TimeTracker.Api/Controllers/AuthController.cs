@@ -28,6 +28,15 @@ namespace TimeTracker.Api.Controllers
                 GoogleOrgRedirectUri = configuration["GoogleConfig:RedirectUri"]
             };
         }
+
+        [HttpGet("google/clientId"), AllowAnonymous]
+        public async Task<IActionResult> GetGoogleClientId()
+        {
+            return Ok(new
+            {
+                client_id = _config.GoogleOrgClientId
+            });
+        }
         
         /// <summary>
         /// Use at step 5 of auth flow. https://developers.google.com/identity/protocols/OAuth2InstalledApp#exchange-authorization-code
