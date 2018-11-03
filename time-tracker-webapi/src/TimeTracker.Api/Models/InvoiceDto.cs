@@ -7,6 +7,11 @@ namespace TimeTracker.Api.Models
 {
     public class InvoiceDto
     {
+        public InvoiceDto()
+        {
+            LineItems = new List<LineItem>();
+        }
+
         public string InvoiceNumber { get; set; }
         public DateTime CreatedOn { get; set; }
         public DateTime DueDate { get; set; }
@@ -20,7 +25,7 @@ namespace TimeTracker.Api.Models
             get
             {
                 decimal total = LineItems.Sum(x => x.Quantity * x.PricePerItem);
-                return String.Format("{0:#.00}", total);
+                return String.Format("${0:#.00}", total);
             }
         }
     }
@@ -44,7 +49,7 @@ namespace TimeTracker.Api.Models
             get
             {
                 decimal total = PricePerItem * Quantity;
-                return String.Format("{0:#.00}", total);
+                return String.Format("${0:#.00}", total);
             }
         }
     }
