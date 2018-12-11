@@ -4,7 +4,7 @@ Server side portion of the Integral time tracker. For now, It's purpose is to ex
 
 ## Run Locally
 
-Run the following commands in a terminal in the `TimeTracker.Api` folder. 
+Run the following commands in a terminal in the `TimeTracker.Api` folder.
 
 ```bash
 
@@ -18,7 +18,9 @@ It is important to set the redirect uri in the server configuration to match the
 
 ## PDF generation
 
-Options we're looking at:
+For now just have a web url that creates the pretty invoice. User can then print to pdf from here.
+
+Options we're looking at for pdf:
 
 - https://www.nuget.org/packages/itext7 (Licensing makes unclear if can use with O/S project)
 - https://www.nuget.org/packages/iTextSharp.LGPLv2.Core/ (port of last free version, but for non-Windows-based operating systems, you will need to install libgdiplus)
