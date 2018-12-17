@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using TimeTracker.Api.Models;
 
 
@@ -14,12 +15,17 @@ namespace TimeTracker.Api.Controllers
     [Route("api/timerecords")]
     public class TimeEntriesController : ControllerBase
     {
-        [HttpPost("push")]
-        public async Task<IActionResult> PushRecords(ICollection<TimeEntryDto> entries)
+        [HttpPost("push"), ProducesResponseType(typeof(IEnumerable<Guid>), 201), ProducesResponseType(typeof(ModelStateDictionary),400)]
+        public async Task<ActionResult<IEnumerable<Guid>>> PushRecords(ICollection<TimeEntryDto> entries)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
             // determine user from token
             // persist data
             
+            // returns the created Id's
             return Ok();
         }
     }

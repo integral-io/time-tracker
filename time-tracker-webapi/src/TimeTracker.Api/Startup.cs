@@ -11,6 +11,10 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using NJsonSchema;
+using NSwag.AspNetCore;
+using System.Reflection;
+using NSwag.SwaggerGeneration.Processors;
 
 namespace TimeTracker.Api
 {
@@ -32,6 +36,16 @@ namespace TimeTracker.Api
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(x => x.UseGoogle(
                     clientId: Configuration["Authentication:Google:ClientId"]));
+            
+            services.AddSwaggerDocument(configure => 
+            { 
+                configure.PostProcess = document =>
+                {
+                    document.Info.Version = "beta";
+                    document.Info.Title = "Time Tracker API";
+                    
+                };
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -55,6 +69,9 @@ namespace TimeTracker.Api
                 .AllowCredentials());
  
             app.UseAuthentication();
+
+            app.UseSwagger(settings => { });
+            app.UseSwaggerUi3(settings => { });
 
             app.UseMvc();
         }
