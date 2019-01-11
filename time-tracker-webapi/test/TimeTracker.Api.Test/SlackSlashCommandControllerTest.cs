@@ -8,17 +8,19 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Xunit;
 using FluentAssertions.Common;
+using Microsoft.Extensions.DependencyInjection;
+using TimeTracker.Api.Models;
 
 namespace TimeTracker.Api.Test
 {
     /// <summary>
     /// tests that bring up a webhost and startup application.
     /// </summary>
-    public class SlackSlashCommandControllerTest : IClassFixture<WebApplicationFactory<Startup>>
+    public class SlackSlashCommandControllerTest : IClassFixture<CustomWAF>
     {
         private readonly HttpClient _client;
-
-        public SlackSlashCommandControllerTest(WebApplicationFactory<Startup> fixture)
+        
+        public SlackSlashCommandControllerTest(CustomWAF fixture)
         {
             _client = fixture.CreateClient();
         }
@@ -34,6 +36,18 @@ namespace TimeTracker.Api.Test
                 new KeyValuePair<string, string>("text","record au 8 wfh") // this part could become theory input 
             }));
             response.IsSuccessStatusCode.Should().BeTrue();
+        }
+    }
+    
+    /// <summary>
+    /// to be able to change services injected, ie. data tier / or external http calls. 
+    /// </summary>
+    public class CustomWAF : WebApplicationFactory<Startup>
+    {
+        protected override void ConfigureWebHost(IWebHostBuilder builder)
+        {
+           // builder.ConfigureServices()
+            base.ConfigureWebHost(builder);
         }
     }
 }
