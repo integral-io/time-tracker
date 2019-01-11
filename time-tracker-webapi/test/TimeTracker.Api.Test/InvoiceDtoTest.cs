@@ -2,7 +2,7 @@ using FluentAssertions;
 using TimeTracker.Api.Models;
 using Xunit;
 
-namespace TimeTracker.Api.Tests
+namespace TimeTracker.Api.Test
 {
     public class InvoiceDtoTest
     {

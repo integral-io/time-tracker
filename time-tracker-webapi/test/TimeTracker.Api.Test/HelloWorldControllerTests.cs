@@ -6,7 +6,7 @@ using TimeTracker.Api.Controllers;
 using System.Threading.Tasks;
 using FluentAssertions;
 
-namespace TimeTracker.Api.Tests
+namespace TimeTracker.Api.Test
 {
     public class HelloWorldControllerTests
     {
