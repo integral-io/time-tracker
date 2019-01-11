@@ -22,5 +22,6 @@ namespace TimeTracker.Data
         }
 
         public DbSet<Models.TimeEntry> TimeEntries { get; set; }
+        public DbSet<Models.BillingClient> BillingClients { get; set; }
     }
 }
