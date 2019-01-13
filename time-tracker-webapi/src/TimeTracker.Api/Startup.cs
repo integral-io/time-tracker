@@ -14,7 +14,9 @@ using Microsoft.Extensions.Options;
 using NJsonSchema;
 using NSwag.AspNetCore;
 using System.Reflection;
+using Microsoft.EntityFrameworkCore;
 using NSwag.SwaggerGeneration.Processors;
+using TimeTracker.Data;
 
 namespace TimeTracker.Api
 {
@@ -45,6 +47,11 @@ namespace TimeTracker.Api
                     document.Info.Title = "Time Tracker API";
                     
                 };
+            });
+            string connection = Configuration.GetConnectionString("DefaultConnection");
+            services.AddDbContext<TimeTrackerDbContext>(options =>
+            {
+                options.UseSqlServer(connection);
             });
         }
 

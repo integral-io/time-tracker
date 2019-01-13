@@ -6,10 +6,6 @@ namespace TimeTracker.Data.Models
     {
         public Guid TimeEntryId { get; set; }
 
-        public Guid UserId { get; set; }
-
-        public string Project { get; set; }
-
         public double Hours { get; set; }
 
         public DateTime Date { get; set; }
@@ -17,8 +13,13 @@ namespace TimeTracker.Data.Models
         public Boolean IsBillable { get; set; }
 
         public int? BillingClientId { get; set; }
+        public int? ProjectId { get; set; }
+        public Guid UserId { get; set; }
 
         public BillingClient BillingClient { get; set; }
+        public User User { get; set; }
+        public Project Project { get; set; }
+        
         
     }
 }
