@@ -8,8 +8,11 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Xunit;
 using FluentAssertions.Common;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using TimeTracker.Api.Models;
+using TimeTracker.Data;
 
 namespace TimeTracker.Api.Test
 {
@@ -47,6 +50,11 @@ namespace TimeTracker.Api.Test
         protected override void ConfigureWebHost(IWebHostBuilder builder)
         {
            // builder.ConfigureServices()
+            builder.ConfigureServices(x =>
+            {
+                // Todo: check to see if we actually use a different db, or need code to not re-instantiate real db
+                x.AddDbContext<TimeTrackerDbContext>(options => { options.UseInMemoryDatabase("slack_hours"); });
+            });
             base.ConfigureWebHost(builder);
         }
     }
