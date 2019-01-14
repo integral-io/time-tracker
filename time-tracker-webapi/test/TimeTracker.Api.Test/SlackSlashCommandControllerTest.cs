@@ -11,6 +11,7 @@ using FluentAssertions.Common;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Newtonsoft.Json;
 using TimeTracker.Api.Models;
 using TimeTracker.Data;
 
@@ -29,16 +30,19 @@ namespace TimeTracker.Api.Test
         }
 
         [Fact]
-        public async Task HandleCommand_hours_returnsSuccessMessage()
+        public async Task HandleCommand_hours_processesRecordOption()
         {
+            string textCommand = "record Au 8 wfh";
             var response = await _client.PostAsync("/slack/slashcommand/hours", new FormUrlEncodedContent(new []
             {
                 new KeyValuePair<string, string>("team_id", "xxx"),
                 new KeyValuePair<string, string>("user_id", "UT33423"),
                 new KeyValuePair<string, string>("user_name", "James"),
-                new KeyValuePair<string, string>("text","record au 8 wfh") // this part could become theory input 
+                new KeyValuePair<string, string>("text",textCommand) // this part could become theory input 
             }));
             response.IsSuccessStatusCode.Should().BeTrue();
+            SlackMessage message = JsonConvert.DeserializeObject<SlackMessage>(await response.Content.ReadAsStringAsync());
+            message.Text.Should().Be("Registered *8.0 hours* for project *au* today. _Worked From Home_");
         }
     }
     
