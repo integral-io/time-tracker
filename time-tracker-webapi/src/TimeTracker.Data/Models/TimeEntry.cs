@@ -11,6 +11,7 @@ namespace TimeTracker.Data.Models
         public DateTime Date { get; set; }
 
         public Boolean IsBillable { get; set; }
+        public string NonBillableReason { get; set; }
 
         public int? BillingClientId { get; set; }
         public int? ProjectId { get; set; }
