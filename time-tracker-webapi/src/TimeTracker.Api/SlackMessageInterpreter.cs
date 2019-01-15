@@ -53,5 +53,7 @@ namespace TimeTracker.Api
         public double Hours { get; set; }
         public bool IsWorkFromHome { get; set; }
         public string ErrorMessage { get; set; }
+        public bool IsBillable { get; set; }
+        public string NonBillReason { get; set; }
     }
 }

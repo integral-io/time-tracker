@@ -34,7 +34,7 @@ namespace TimeTracker.Api.Controllers
                     
                     var user = await userSevice.FindOrCreateSlackUser(slashCommandPayload.user_id, slashCommandPayload.user_name);
                     var timeEntryService = new TimeEntryService(user.UserId, _dbContext);
-                    
+                    // todo: determine if billable and call correct method. test to check if data made it to db
 
                     var message = new SlackMessage()
                     {
