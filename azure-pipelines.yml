@@ -15,8 +15,9 @@ variables:
 steps:
 - script: |
     dotnet build $(Build.SourcesDirectory)/time-tracker-webapi/ --configuration $(buildConfiguration)
+    dotnet publish $(Build.SourcesDirectory)/time-tracker-webapi/ --configuration $(buildConfiguration) --output $BUILD_ARTIFACTSTAGINGDIRECTORY
 
-    displayName: 'dotnet build $(buildConfiguration)'
+  displayName: 'dotnet build $(buildConfiguration)'
 # - task: DotNetCoreCLI@2
 #   inputs:
 #     command: build
