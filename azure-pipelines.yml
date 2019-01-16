@@ -13,14 +13,17 @@ variables:
   buildConfiguration: 'Release'
 
 steps:
-- task: DotNetCoreCLI@2
-  inputs:
-    command: build
-    configuration: '$(BuildConfiguration)'
-    workingDirectory: '/time-tracker-webapi'
+- script: |
+    dotnet build $(Build.SourcesDirectory)/time-tracker-webapi/ --configuration $(buildConfiguration)
 
-# - script: |
-#     dotnet build --configuration $(buildConfiguration) --workingDirectory '/time-tracker-webapi'
+    displayName: 'dotnet build $(buildConfiguration)'
+# - task: DotNetCoreCLI@2
+#   inputs:
+#     command: build
+#     configuration: '$(BuildConfiguration)'
+#     workingDirectory: '/time-tracker-webapi'
+
+
    
 #     dotnet publish --configuration $(buildConfiguration) --output $BUILD_ARTIFACTSTAGINGDIRECTORY
 #   displayName: 'dotnet build $(buildConfiguration)'
