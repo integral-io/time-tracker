@@ -40,8 +40,11 @@ namespace TimeTracker.Api.Test
                 new KeyValuePair<string, string>("user_name", "James"),
                 new KeyValuePair<string, string>("text",textCommand) // this part could become theory input 
             }));
+            // project au does not exist and needs to be created before this will work. 
+            // ideally we could get access to dbContext here so that we can then call the db. 
+            string responseContent = await response.Content.ReadAsStringAsync();
             response.IsSuccessStatusCode.Should().BeTrue();
-            SlackMessage message = JsonConvert.DeserializeObject<SlackMessage>(await response.Content.ReadAsStringAsync());
+            SlackMessage message = JsonConvert.DeserializeObject<SlackMessage>(responseContent);
             message.Text.Should().Be("Registered *8.0 hours* for project *au* today. _Worked From Home_");
         }
     }

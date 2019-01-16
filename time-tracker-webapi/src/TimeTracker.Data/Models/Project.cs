@@ -12,6 +12,7 @@ namespace TimeTracker.Data.Models
         public string Name { get; set; }
         public DateTime? Start { get; set; }
         public DateTime? End { get; set; }
-        public int? BillingClientId { get; set; }
+        public int BillingClientId { get; set; }
+        public BillingClient BillingClient { get; set; }
     }
 }

@@ -26,6 +26,7 @@ namespace TimeTracker.Api
             dto.Project = splitText[1];
             dto.IsWorkFromHome = text.Contains("wfh");
             dto.Hours = Convert.ToDouble(splitText[2]);
+            dto.IsBillable = true;
             // process date portion
             string datePortion = splitText.Length >= 4 ? splitText[3] : null;
             DateTime dateTime = DateTime.UtcNow;

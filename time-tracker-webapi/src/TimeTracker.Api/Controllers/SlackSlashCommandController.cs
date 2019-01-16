@@ -34,15 +34,21 @@ namespace TimeTracker.Api.Controllers
                     
                     var user = await userSevice.FindOrCreateSlackUser(slashCommandPayload.user_id, slashCommandPayload.user_name);
                     var timeEntryService = new TimeEntryService(user.UserId, _dbContext);
-                    // todo: determine if billable and call correct method. test to check if data made it to db
+                    if (commandDto.IsBillable)
+                    {
+                        // resolve client and project
+                        var projectSvc = new ProjectService(user.UserId, _dbContext);
+                        var project = await projectSvc.FindProjectFromName(commandDto.Project);
+                        
+                        await timeEntryService.CreateBillableTimeEntry(commandDto.Date, commandDto.Hours, project.BillingClientId, project.ProjectId);
+                    }
 
                     var message = new SlackMessage()
                     {
-                        Text = $"Registered *{commandDto.Hours:F1} hours* for project *{commandDto.Project}* today. " + 
+                        Text = $"Registered *{commandDto.Hours:F1} hours* for project *{commandDto.Project}* {commandDto.Date:D}. " + 
                                (commandDto.IsWorkFromHome ? "_Worked From Home_" : "")
                     };
                     return Ok(message);
-                    break;
                 }
                 case SlackMessageInterpreter.OPTION_REPORT:
                 {

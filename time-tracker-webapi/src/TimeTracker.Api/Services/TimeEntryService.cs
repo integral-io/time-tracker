@@ -10,7 +10,6 @@ namespace TimeTracker.Api.Services
         private readonly Guid _userId;
         private readonly TimeTrackerDbContext _db;
 
-        // todo: get _db from Services
         public TimeEntryService(Guid userId, TimeTrackerDbContext db)
         {
             _userId = userId;
