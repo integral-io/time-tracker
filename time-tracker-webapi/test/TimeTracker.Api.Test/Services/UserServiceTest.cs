@@ -17,9 +17,7 @@ namespace TimeTracker.Api.Test.Services
         [Fact]
         public async Task FindOrCreateSlackUser_savesNewUserAndReturnsExisting()
         {
-            var options = new DbContextOptionsBuilder<TimeTrackerDbContext>()
-                .UseInMemoryDatabase("add-users")
-                .Options;
+            var options = TestHelpers.BuildInMemoryDatabaseOptions("users");
 
             User userCreated;
             string slackUsername = "userName";
