@@ -8,6 +8,11 @@ namespace TimeTracker.Api
         public const string OPTION_RECORD = "record";
         public const string OPTION_REPORT = "report";
 
+        /// <summary>
+        /// parse command string for report
+        /// </summary>
+        /// <param name="text">ex: report au, report, report au 2018-12</param>
+        /// <returns></returns>
         public static ReportInterpretedCommandDto InterpretReportMessage(string text)
         {
             string[] splitText = text.ToLowerInvariant().Split(' ');
@@ -18,9 +23,24 @@ namespace TimeTracker.Api
             }
 
             var dto = new ReportInterpretedCommandDto();
-            dto.Project = splitText[1];
-            dto.Month = DateTime.UtcNow.ToString("MMMM");
-
+            if (splitText.Length > 1)
+            {
+                dto.Project = splitText[1];
+            }
+            string datePortion = splitText[splitText.Length-1];
+            if (datePortion.Contains("-"))
+            {
+                string[] splitDate = datePortion.Split('-');
+                int year = Convert.ToInt32(splitDate[0]);
+                int month = Convert.ToInt32(splitDate[1]);
+                dto.StartDateMonth = new DateTime(year, month, 1,0,0,0,DateTimeKind.Utc);
+            }
+            else
+            {
+                var utcNow = DateTime.UtcNow;
+                dto.StartDateMonth = new DateTime(utcNow.Year, utcNow.Month, 1,0,0,0,DateTimeKind.Utc);
+            }
+            
             return dto;
         }
 
@@ -42,7 +62,13 @@ namespace TimeTracker.Api
             dto.Project = splitText[1];
             dto.IsWorkFromHome = text.Contains("wfh");
             dto.Hours = Convert.ToDouble(splitText[2]);
-            dto.IsBillable = true;
+            dto.IsBillable = !text.Contains("nonbill");
+
+            if (!dto.IsBillable)
+            {
+                dto.NonBillReason = text.Substring(text.IndexOf("\"")).Trim('"');
+            }
+            
             // process date portion
             string datePortion = splitText.Length >= 4 ? splitText[3] : null;
 
@@ -76,7 +102,7 @@ namespace TimeTracker.Api
     public class ReportInterpretedCommandDto : CommandDtoBase
     {
         public string Project { get; set; }
-        public string Month { get; set; }
+        public DateTime StartDateMonth { get; set; }
     }
 
     public class CommandDtoBase

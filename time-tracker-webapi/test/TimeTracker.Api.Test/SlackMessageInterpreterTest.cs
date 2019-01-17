@@ -34,12 +34,39 @@ namespace TimeTracker.Api.Test
         }
 
         [Fact]
-        public void InterpretReportMessage_canInterpretReportForMonth()
+        public void InterpretReportMessage_canInterpretReportForCurrentMonthAndProject()
         {
             String projectName = "validprojectname";
             var sut = SlackMessageInterpreter.InterpretReportMessage($"report {projectName}");
             sut.Project.Should().Be(projectName);
-            sut.Month.Should().Be(DateTime.UtcNow.ToString("MMMM"));
+            var utcNow = DateTime.UtcNow;
+            var expected = new DateTime(utcNow.Year, utcNow.Month, 1,0,0,0,DateTimeKind.Utc);
+            
+            sut.StartDateMonth.Should().Be(expected);
+        }
+        
+        [Fact]
+        public void InterpretReportMessage_canInterpretReportForSpecificMonth()
+        {
+            String projectName = "validprojectname";
+            var sut = SlackMessageInterpreter.InterpretReportMessage($"report {projectName} 2018-12");
+            sut.Project.Should().Be(projectName);
+            
+            var expected = new DateTime(2018, 12, 1,0,0,0,DateTimeKind.Utc);
+            
+            sut.StartDateMonth.Should().Be(expected);
+        }
+        
+        [Fact]
+        public void InterpretReportMessage_canInterpretReportWithDefaults()
+        {
+            String projectName = "validprojectname";
+            var sut = SlackMessageInterpreter.InterpretReportMessage($"report");
+            sut.Project.Should().Be(null);
+            var utcNow = DateTime.UtcNow;
+            var expected = new DateTime(utcNow.Year, utcNow.Month, 1,0,0,0,DateTimeKind.Utc);
+
+            sut.StartDateMonth.Should().Be(expected);
         }
     }
 }
