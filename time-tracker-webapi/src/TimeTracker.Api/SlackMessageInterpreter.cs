@@ -29,18 +29,18 @@ namespace TimeTracker.Api
             dto.IsBillable = true;
             // process date portion
             string datePortion = splitText.Length >= 4 ? splitText[3] : null;
-            DateTime dateTime = DateTime.UtcNow;
+            
             if (datePortion == "yesterday")
             {
-                dto.Date = dateTime.AddDays(-1);
+                dto.Date = DateTime.UtcNow.AddDays(-1);
             }
-            else if (DateTime.TryParse(datePortion, out dateTime))
+            else if (DateTime.TryParse(datePortion, out var dateTime))
             {
                 dto.Date = dateTime;
             }
             else
             {
-                dto.Date = dateTime;
+                dto.Date = DateTime.UtcNow;
             }
             
             return dto;
