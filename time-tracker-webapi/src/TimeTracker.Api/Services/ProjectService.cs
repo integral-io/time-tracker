@@ -19,7 +19,6 @@ namespace TimeTracker.Api.Services
 
         public async Task<Project> FindProjectFromName(string projectName)
         {
-            // todo: handle not finding project
             // todo: handle filtering by assigned users (optional feature)?
             return await _dbContext.Projects.FirstOrDefaultAsync(x =>
                 x.Name.Equals(projectName, StringComparison.InvariantCultureIgnoreCase));

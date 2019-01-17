@@ -32,5 +32,14 @@ namespace TimeTracker.Api.Test
             sut.IsBillable.Should().BeFalse();
             sut.NonBillReason.Should().Be("lunch and learn");
         }
+
+        [Fact]
+        public void InterpretReportMessage_canInterpretReportForMonth()
+        {
+            String projectName = "validprojectname";
+            var sut = SlackMessageInterpreter.InterpretReportMessage($"report {projectName}");
+            sut.Project.Should().Be(projectName);
+            sut.Month.Should().Be(DateTime.UtcNow.ToString("MMMM"));
+        }
     }
 }

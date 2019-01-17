@@ -31,6 +31,8 @@ namespace TimeTracker.Api.Controllers
                 case SlackMessageInterpreter.OPTION_RECORD:
                 {
                     var commandDto = SlackMessageInterpreter.InterpretHoursRecordMessage(slashCommandPayload.text);
+                    String messageText;
+                    SlackMessage message;
                     
                     var user = await userSevice.FindOrCreateSlackUser(slashCommandPayload.user_id, slashCommandPayload.user_name);
                     var timeEntryService = new TimeEntryService(user.UserId, _dbContext);
@@ -39,24 +41,48 @@ namespace TimeTracker.Api.Controllers
                         // resolve client and project
                         var projectSvc = new ProjectService(user.UserId, _dbContext);
                         var project = await projectSvc.FindProjectFromName(commandDto.Project);
+
+                        if (project == null)
+                        {
+                            // Project was not found
+                            messageText = $"Invalid Project Name {commandDto.Project}";
+                            message = BuildMessage(messageText, "error");
+                            return Ok(message);
+                        }
+                        
                         
                         await timeEntryService.CreateBillableTimeEntry(commandDto.Date, commandDto.Hours, project.BillingClientId, project.ProjectId);
                     }
 
-                    var message = new SlackMessage()
-                    {
-                        Text = $"Registered *{commandDto.Hours:F1} hours* for project *{commandDto.Project}* {commandDto.Date:D}. " + 
-                               (commandDto.IsWorkFromHome ? "_Worked From Home_" : "")
-                    };
+                    messageText =
+                        "Registered *{commandDto.Hours:F1} hours* for project *{commandDto.Project}* {commandDto.Date:D}. " +
+                        (commandDto.IsWorkFromHome ? "_Worked From Home_" : "");
+                    message = BuildMessage(messageText, "success");
                     return Ok(message);
                 }
                 case SlackMessageInterpreter.OPTION_REPORT:
                 {
+                    var commandDto = SlackMessageInterpreter.InterpretReportMessage(slashCommandPayload.text);
+                    var user = await userSevice.FindOrCreateSlackUser(slashCommandPayload.user_id, slashCommandPayload.user_name);
+                    
+                    // todo: query billable hours for project
+                    
+                    
                     break;
                 }
             }
 
             return Ok("unsupported option");
+        }
+
+        private SlackMessage BuildMessage(String text, String messageType)
+        {
+            var message = new SlackMessage()
+            {
+                Text = messageType == "success" ? text : $"Error: *{text}*"
+            };
+
+            return message;
         }
     }
 }
