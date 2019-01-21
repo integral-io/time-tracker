@@ -25,7 +25,8 @@ namespace TimeTracker.Api.Services
                 IsBillable = true,
                 Date = date,
                 UserId = _userId,
-                ProjectId = projectId
+                ProjectId = projectId,
+                Hours = hours
             };
             _db.TimeEntries.Add(model);
             await _db.SaveChangesAsync();

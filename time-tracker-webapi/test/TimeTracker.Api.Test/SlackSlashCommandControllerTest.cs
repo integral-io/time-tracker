@@ -26,14 +26,15 @@ namespace TimeTracker.Api.Test
     {
         private readonly HttpClient _client;
         private readonly DbContextOptions<TimeTrackerDbContext> _options;
+        private readonly TimeTrackerDbContext _dbContext;
         
         public SlackSlashCommandControllerTest(CustomWAF fixture)
         {
             _options = new DbContextOptionsBuilder<TimeTrackerDbContext>()
                 .UseInMemoryDatabase(fixture.InMemoryDbName)
                 .Options;
+            _dbContext = new TimeTrackerDbContext(_options);
             _client = fixture.CreateClient();
-            
         }
 
         [Fact]
@@ -42,14 +43,14 @@ namespace TimeTracker.Api.Test
             AddClientAndProject();
             DateTime utcNow = DateTime.UtcNow;
             string todayString = utcNow.ToString("D");
-            
+
             string textCommand = "record Au 8 wfh";
-            var response = await _client.PostAsync("/slack/slashcommand/hours", new FormUrlEncodedContent(new []
+            var response = await _client.PostAsync("/slack/slashcommand/hours", new FormUrlEncodedContent(new[]
             {
                 new KeyValuePair<string, string>("team_id", "xxx"),
                 new KeyValuePair<string, string>("user_id", "UT33423"),
                 new KeyValuePair<string, string>("user_name", "James"),
-                new KeyValuePair<string, string>("text",textCommand) // this part could become theory input 
+                new KeyValuePair<string, string>("text", textCommand) // this part could become theory input 
             }));
             // project au does not exist and needs to be created before this will work. 
             // ideally we could get access to dbContext here so that we can then call the db.
@@ -57,6 +58,12 @@ namespace TimeTracker.Api.Test
             response.IsSuccessStatusCode.Should().BeTrue();
             SlackMessage message = JsonConvert.DeserializeObject<SlackMessage>(responseContent);
             message.Text.Should().Be($"Registered *8.0 hours* for project *au* {todayString}. _Worked From Home_");
+
+            // todo: assert that data made it to database, specifically correct hours.
+            var timeEntry = await _dbContext.TimeEntries.FirstOrDefaultAsync();
+            timeEntry.Should().NotBeNull();
+            timeEntry.Hours.Should().Be(8);
+
         }
 
         [Fact]
@@ -82,21 +89,18 @@ namespace TimeTracker.Api.Test
 
         private void AddClientAndProject()
         {
-            var context = new TimeTrackerDbContext(_options);
-            
-                context.BillingClients.Add(new BillingClient()
-                {
-                    BillingClientId = 1,
-                    Name = "Autonomic"
-                });
-                context.Projects.Add(new Project()
-                {
-                    ProjectId = 1,
-                    BillingClientId = 1,
-                    Name = "au"
-                });
-                context.SaveChanges();
-            
+            _dbContext.BillingClients.Add(new BillingClient()
+            {
+                BillingClientId = 1,
+                Name = "Autonomic"
+            });
+            _dbContext.Projects.Add(new Project()
+            {
+                ProjectId = 1,
+                BillingClientId = 1,
+                Name = "au"
+            });
+            _dbContext.SaveChanges();
         }
     }
     
@@ -113,7 +117,6 @@ namespace TimeTracker.Api.Test
             {
                 x.AddDbContext<TimeTrackerDbContext>(options => { options.UseInMemoryDatabase(InMemoryDbName); });
             });
-            
 
             base.ConfigureWebHost(builder);
         }
