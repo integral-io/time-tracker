@@ -16,7 +16,7 @@ steps:
 - script: |
     dotnet build $(Build.SourcesDirectory)/time-tracker-webapi/ --configuration $(buildConfiguration)
     dotnet publish $(Build.SourcesDirectory)/time-tracker-webapi/ --configuration $(buildConfiguration) --output $BUILD_ARTIFACTSTAGINGDIRECTORY
-    dotnet test $(Build.SourcesDirectory)/time-tracker-webapi/test/TimeTracker.Api.Test/ dotnetcore-tests --configuration $(buildConfiguration) --logger trx
+    dotnet test $(Build.SourcesDirectory)/time-tracker-webapi/test/TimeTracker.Api.Test/ dotnetcore-tests --configuration $(buildConfiguration)/**/*test*.dll --logger trx
 
   displayName: 'dotnet build $(buildConfiguration)'
 
