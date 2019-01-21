@@ -19,6 +19,12 @@ steps:
     
   displayName: 'dotnet build $(buildConfiguration)'
 
-
+- task: efcore-migration-script-generator-task
+  inputs: 
+   projectpath: '$(Build.SourcesDirectory)/time-tracker-webapi/src/TimeTracker.Data/TimeTracker.Data.csproj'
+   databasecontexts: 'TimeTrackerDbContext'
+   startupprojectpath: '$(Build.SourcesDirectory)/time-tracker-webapi/src/TimeTracker.Api/TimeTracker.Api.csproj'
+   targetfolder: '$(build.artifactstagingdirectory)/migrations'
+    
 
 - task: PublishBuildArtifacts@1
