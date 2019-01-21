@@ -49,11 +49,18 @@ namespace TimeTracker.Api.Controllers
                             return Ok(message);
                         }
                         
+                        message = BuildMessage($"Registered *{commandDto.Hours:F1} hours* for project *{commandDto.Project}* {commandDto.Date:D}. " +
+                                           (commandDto.IsWorkFromHome ? "_Worked From Home_" : ""), "success");
                         await timeEntryService.CreateBillableTimeEntry(commandDto.Date, commandDto.Hours, project.BillingClientId, project.ProjectId);
                     }
+                    else
+                    {
+                        message = BuildMessage($"Registered *{commandDto.Hours:F1} hours* for Nonbillable reason: {commandDto.NonBillReason}", "success");
+                           
+                        await timeEntryService.CreateNonBillableTimeEntry(commandDto.Date, commandDto.Hours,
+                            commandDto.NonBillReason);
+                    }
 
-                    message = BuildMessage($"Registered *{commandDto.Hours:F1} hours* for project *{commandDto.Project}* {commandDto.Date:D}. " +
-                                           (commandDto.IsWorkFromHome ? "_Worked From Home_" : ""), "success");
                     return Ok(message);
                 }
                 case SlackMessageInterpreter.OPTION_REPORT:
