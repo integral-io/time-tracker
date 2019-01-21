@@ -48,5 +48,10 @@ namespace TimeTracker.Api.Services
             
             return model.TimeEntryId;
         }
+
+        public async Task<object> QueryHours(string commandDtoProject, DateTime commandDtoStartDateMonth)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

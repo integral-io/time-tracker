@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Xunit;
 using FluentAssertions.Common;
+using Microsoft.AspNetCore.TestHost;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -39,6 +40,8 @@ namespace TimeTracker.Api.Test
         public async Task HandleCommand_hours_processesRecordOption()
         {
             AddClientAndProject();
+            DateTime utcNow = DateTime.UtcNow;
+            string todayString = utcNow.ToString("D");
             
             string textCommand = "record Au 8 wfh";
             var response = await _client.PostAsync("/slack/slashcommand/hours", new FormUrlEncodedContent(new []
@@ -53,7 +56,7 @@ namespace TimeTracker.Api.Test
             string responseContent = await response.Content.ReadAsStringAsync();
             response.IsSuccessStatusCode.Should().BeTrue();
             SlackMessage message = JsonConvert.DeserializeObject<SlackMessage>(responseContent);
-            message.Text.Should().Be("Registered *8.0 hours* for project *au* today. _Worked From Home_");
+            message.Text.Should().Be($"Registered *8.0 hours* for project *au* {todayString}. _Worked From Home_");
         }
 
         [Fact]
@@ -106,10 +109,12 @@ namespace TimeTracker.Api.Test
         
         protected override void ConfigureWebHost(IWebHostBuilder builder)
         {
-            builder.ConfigureServices(x =>
+            builder.ConfigureTestServices(x =>
             {
                 x.AddDbContext<TimeTrackerDbContext>(options => { options.UseInMemoryDatabase(InMemoryDbName); });
             });
+            
+
             base.ConfigureWebHost(builder);
         }
     }

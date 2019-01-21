@@ -25,17 +25,17 @@ namespace TimeTracker.Api.Controllers
         {
             string option = slashCommandPayload.text.Split(' ').FirstOrDefault();
             var userSevice = new UserService(_dbContext);
+            SlackMessage message;
+            
+            var user = await userSevice.FindOrCreateSlackUser(slashCommandPayload.user_id, slashCommandPayload.user_name);
+            var timeEntryService = new TimeEntryService(user.UserId, _dbContext);
             
             switch (option)
             {
                 case SlackMessageInterpreter.OPTION_RECORD:
                 {
                     var commandDto = SlackMessageInterpreter.InterpretHoursRecordMessage(slashCommandPayload.text);
-                    String messageText;
-                    SlackMessage message;
                     
-                    var user = await userSevice.FindOrCreateSlackUser(slashCommandPayload.user_id, slashCommandPayload.user_name);
-                    var timeEntryService = new TimeEntryService(user.UserId, _dbContext);
                     if (commandDto.IsBillable)
                     {
                         // resolve client and project
@@ -45,27 +45,23 @@ namespace TimeTracker.Api.Controllers
                         if (project == null)
                         {
                             // Project was not found
-                            messageText = $"Invalid Project Name {commandDto.Project}";
-                            message = BuildMessage(messageText, "error");
+                            message = BuildMessage($"Invalid Project Name {commandDto.Project}", "error");
                             return Ok(message);
                         }
-                        
                         
                         await timeEntryService.CreateBillableTimeEntry(commandDto.Date, commandDto.Hours, project.BillingClientId, project.ProjectId);
                     }
 
-                    messageText =
-                        "Registered *{commandDto.Hours:F1} hours* for project *{commandDto.Project}* {commandDto.Date:D}. " +
-                        (commandDto.IsWorkFromHome ? "_Worked From Home_" : "");
-                    message = BuildMessage(messageText, "success");
+                    message = BuildMessage($"Registered *{commandDto.Hours:F1} hours* for project *{commandDto.Project}* {commandDto.Date:D}. " +
+                                           (commandDto.IsWorkFromHome ? "_Worked From Home_" : ""), "success");
                     return Ok(message);
                 }
                 case SlackMessageInterpreter.OPTION_REPORT:
                 {
                     var commandDto = SlackMessageInterpreter.InterpretReportMessage(slashCommandPayload.text);
-                    var user = await userSevice.FindOrCreateSlackUser(slashCommandPayload.user_id, slashCommandPayload.user_name);
                     
                     // todo: query billable hours for project
+                    var report = await timeEntryService.QueryHours(commandDto.Project, commandDto.StartDateMonth);
                     
                     
                     break;
