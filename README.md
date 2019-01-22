@@ -2,6 +2,13 @@
 
 developer focused time track tool where users interact via slack to record their hours.
 
+## Database setup on mac / linux
+
+You'll need to run a local docker instance of ms sql server on your mac or linux box to be able to run 
+the app locally. Here are instructions on how to do that: https://medium.com/@jamesrf/local-sql-server-running-in-container-mac-linux-for-use-with-ef-e37c17308754
+
+The database name, userid and password are configured in the app under the appsettings.json (Development one for local).
+
 ## testing locally against Slack
 
 You'll need to change the url to which Slack calls out in the config here:
