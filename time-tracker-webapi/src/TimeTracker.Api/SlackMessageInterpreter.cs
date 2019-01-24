@@ -97,6 +97,8 @@ namespace TimeTracker.Api
         public bool IsWorkFromHome { get; set; }
         public bool IsBillable { get; set; }
         public string NonBillReason { get; set; }
+        // need way to store Category or Tag, which would be used for sick or vacation time, billable is also a type. 
+        // maybe another table with Category and then whether it is billable or not. 
     }
 
     public class ReportInterpretedCommandDto : CommandDtoBase
