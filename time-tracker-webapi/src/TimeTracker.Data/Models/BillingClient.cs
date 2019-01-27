@@ -8,6 +8,5 @@ namespace TimeTracker.Data.Models
         public string AddressLine2 { get; set; }
         public string CityStateZip { get; set; }
         public string Email { get; set; }
-        public int ValueToCompany { get; set; }
     }
 }

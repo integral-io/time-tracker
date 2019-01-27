@@ -10,8 +10,8 @@ using TimeTracker.Data;
 namespace TimeTracker.Data.Migrations
 {
     [DbContext(typeof(TimeTrackerDbContext))]
-    [Migration("20190124233441_time entry type")]
-    partial class timeentrytype
+    [Migration("20190127221353_timeEntryCol")]
+    partial class timeEntryCol
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -36,8 +36,6 @@ namespace TimeTracker.Data.Migrations
                     b.Property<string>("Email");
 
                     b.Property<string>("Name");
-
-                    b.Property<int>("ValueToCompany");
 
                     b.HasKey("BillingClientId");
 
@@ -103,7 +101,7 @@ namespace TimeTracker.Data.Migrations
 
                     b.Property<int?>("ProjectId");
 
-                    b.Property<int?>("TimeEntryTypeId");
+                    b.Property<int>("TimeEntryType");
 
                     b.Property<Guid>("UserId");
 
@@ -113,26 +111,9 @@ namespace TimeTracker.Data.Migrations
 
                     b.HasIndex("ProjectId");
 
-                    b.HasIndex("TimeEntryTypeId");
-
                     b.HasIndex("UserId");
 
                     b.ToTable("TimeEntries");
-                });
-
-            modelBuilder.Entity("TimeTracker.Data.Models.TimeEntryType", b =>
-                {
-                    b.Property<int>("TimeEntryTypeId")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<bool>("IsBillable");
-
-                    b.Property<string>("Name");
-
-                    b.HasKey("TimeEntryTypeId");
-
-                    b.ToTable("TimeEntryType");
                 });
 
             modelBuilder.Entity("TimeTracker.Data.Models.User", b =>
@@ -170,10 +151,6 @@ namespace TimeTracker.Data.Migrations
                     b.HasOne("TimeTracker.Data.Models.Project", "Project")
                         .WithMany()
                         .HasForeignKey("ProjectId");
-
-                    b.HasOne("TimeTracker.Data.Models.TimeEntryType", "TimeEntryType")
-                        .WithMany()
-                        .HasForeignKey("TimeEntryTypeId");
 
                     b.HasOne("TimeTracker.Data.Models.User", "User")
                         .WithMany()

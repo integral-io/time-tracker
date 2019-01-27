@@ -15,7 +15,6 @@ namespace TimeTracker.Data.Models
 
         public int? BillingClientId { get; set; }
         public int? ProjectId { get; set; }
-        public int? TimeEntryTypeId { get; set; }
         public Guid UserId { get; set; }
 
         #region Navigation Properties
@@ -23,7 +22,7 @@ namespace TimeTracker.Data.Models
         public BillingClient BillingClient { get; set; }
         public User User { get; set; }
         public Project Project { get; set; }
-        public TimeEntryType TimeEntryType { get; set; }
+        public TimeEntryTypeEnum TimeEntryType { get; set; }
         
         #endregion
     }

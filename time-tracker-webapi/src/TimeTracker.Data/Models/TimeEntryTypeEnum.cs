@@ -3,12 +3,11 @@ namespace TimeTracker.Data.Models
     /// <summary>
     /// used to describe a time entry into groups. This would be used to mark entry as Sick or Vacation time for example.
     /// </summary>
-    public class TimeEntryType
+    public enum TimeEntryTypeEnum
     {
-        public int TimeEntryTypeId { get; set; }
-
-        public bool IsBillable { get; set; }
-
-        public string Name { get; set; }
+        BillableProject = 0,
+        NonBillable = 1,
+        Sick = 5,
+        Vacation = 6
     }
 }
