@@ -34,15 +34,18 @@ namespace TimeTracker.Api.Services
             return model.TimeEntryId;
         }
         
-        public async Task<Guid> CreateNonBillableTimeEntry(DateTime date, double hours, string nonBillReason)
+        public async Task<Guid> CreateNonBillableTimeEntry(DateTime date, double hours, string nonBillReason, 
+            TimeEntryTypeEnum timeEntryTypeEnum = TimeEntryTypeEnum.NonBillable)
         {
             var model = new TimeEntry
             {
                 TimeEntryId = Guid.NewGuid(),
                 IsBillable = false,
                 Date = date,
+                Hours = hours,
                 UserId = _userId,
                 NonBillableReason = nonBillReason,
+                TimeEntryType = timeEntryTypeEnum
             };
             _db.TimeEntries.Add(model);
             await _db.SaveChangesAsync();

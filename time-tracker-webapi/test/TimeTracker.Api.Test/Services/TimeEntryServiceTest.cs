@@ -4,6 +4,7 @@ using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using TimeTracker.Api.Services;
 using TimeTracker.Data;
+using TimeTracker.Data.Models;
 using Xunit;
 
 namespace TimeTracker.Api.Test.Services
@@ -25,6 +26,29 @@ namespace TimeTracker.Api.Test.Services
                 var entry = await context.TimeEntries.FirstOrDefaultAsync(x => x.TimeEntryId == id);
                 entry.Should().NotBeNull();
                 entry.Hours.Should().Be(7);
+                entry.TimeEntryType.Should().Be(TimeEntryTypeEnum.BillableProject);
+            }
+        }
+
+        [Fact]
+        public async Task CreateNonBillableTimeEntry_createsDbRecord()
+        {
+            var options = TestHelpers.BuildInMemoryDatabaseOptions("projects");
+            Guid userId = Guid.NewGuid();
+
+            using (var context = new TimeTrackerDbContext(options))
+            {
+                TimeEntryService sut = new TimeEntryService(userId, context);
+                DateTime date = DateTime.UtcNow.Date;
+                string nonBillReason = "sick with flu";
+                Guid id = await sut.CreateNonBillableTimeEntry(date, 6, nonBillReason, 
+                    TimeEntryTypeEnum.Sick);
+
+                var entry = await context.TimeEntries.FirstOrDefaultAsync(x => x.TimeEntryId == id);
+                entry.Should().NotBeNull();
+                entry.Hours.Should().Be(6);
+                entry.TimeEntryType.Should().Be(TimeEntryTypeEnum.Sick);
+                entry.NonBillableReason.Should().Be(nonBillReason);
             }
         }
     }
