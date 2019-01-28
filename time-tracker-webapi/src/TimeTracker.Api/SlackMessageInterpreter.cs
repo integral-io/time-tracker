@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using TimeTracker.Data.Models;
 
 namespace TimeTracker.Api
 {
@@ -47,7 +48,7 @@ namespace TimeTracker.Api
         /// <summary>
         /// parse command string and return typed object
         /// </summary>
-        /// <param name="text">ex: record au 8 wfh. or record au 8 yesterday.</param>
+        /// <param name="text">ex: record au 8 wfh. or record au 8 yesterday, record vacation 8, record sick 6.</param>
         /// <returns></returns>
         public static HoursInterpretedCommandDto InterpretHoursRecordMessage(string text)
         {
@@ -62,11 +63,25 @@ namespace TimeTracker.Api
             dto.Project = splitText[1];
             dto.IsWorkFromHome = text.Contains("wfh");
             dto.Hours = Convert.ToDouble(splitText[2]);
-            dto.IsBillable = !text.Contains("nonbill");
+            
+            TimeEntryTypeEnum entryTypeEnum;
+            if (TimeEntryTypeEnum.TryParse(dto.Project, true, out entryTypeEnum))
+            {
+                dto.TimeEntryType = entryTypeEnum;
+            }
+            else
+            {
+                dto.IsBillable = !text.Contains("nonbill");
+                dto.TimeEntryType = TimeEntryTypeEnum.NonBillable;
+            }
 
             if (!dto.IsBillable)
             {
-                dto.NonBillReason = text.Substring(text.IndexOf("\"")).Trim('"');
+                int startIndexOfReason = text.IndexOf("\"", StringComparison.Ordinal);
+                if (startIndexOfReason > 0)
+                {
+                    dto.NonBillReason = text.Substring(startIndexOfReason).Trim('"');
+                }
             }
             
             // process date portion
@@ -97,8 +112,8 @@ namespace TimeTracker.Api
         public bool IsWorkFromHome { get; set; }
         public bool IsBillable { get; set; }
         public string NonBillReason { get; set; }
-        // need way to store Category or Tag, which would be used for sick or vacation time, billable is also a type. 
-        // maybe another table with Category and then whether it is billable or not. 
+
+        public TimeEntryTypeEnum TimeEntryType { get; set; }
     }
 
     public class ReportInterpretedCommandDto : CommandDtoBase

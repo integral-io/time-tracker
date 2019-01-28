@@ -55,10 +55,10 @@ namespace TimeTracker.Api.Controllers
                     }
                     else
                     {
-                        message = BuildMessage($"Registered *{commandDto.Hours:F1} hours* for Nonbillable reason: {commandDto.NonBillReason}", "success");
+                        message = BuildMessage($"Registered *{commandDto.Hours:F1} hours* for Nonbillable reason: {commandDto.NonBillReason ?? commandDto.TimeEntryType.ToString()}", "success");
                            
                         await timeEntryService.CreateNonBillableTimeEntry(commandDto.Date, commandDto.Hours,
-                            commandDto.NonBillReason);
+                            commandDto.NonBillReason, commandDto.TimeEntryType);
                     }
 
                     return Ok(message);

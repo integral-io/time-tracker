@@ -1,11 +1,13 @@
 using System;
 using FluentAssertions;
+using TimeTracker.Data.Models;
 using Xunit;
 
 namespace TimeTracker.Api.Test
 {
     public class SlackMessageInterpreterTest
     {
+        #region record
         [Fact]
         public void InterpretHoursRecordMessage_canInterpretHoursTodayForProjectWFH()
         {
@@ -32,6 +34,32 @@ namespace TimeTracker.Api.Test
             sut.IsBillable.Should().BeFalse();
             sut.NonBillReason.Should().Be("lunch and learn");
         }
+
+        [Fact]
+        public void InterpretHoursRecordMessage_canInterpretSickHours()
+        {
+            var sut = SlackMessageInterpreter.InterpretHoursRecordMessage("record sick 8 \"flu\"");
+            sut.Date.Date.Should().Be(DateTime.UtcNow.Date);
+            sut.Hours.Should().Be(8d);
+            sut.IsBillable.Should().BeFalse();
+            sut.TimeEntryType.Should().Be(TimeEntryTypeEnum.Sick);
+            sut.NonBillReason.Should().Be("flu");
+        }
+        
+        [Fact]
+        public void InterpretHoursRecordMessage_canInterpretVacationHours()
+        {
+            var sut = SlackMessageInterpreter.InterpretHoursRecordMessage("record vacation 8");
+            sut.Date.Date.Should().Be(DateTime.UtcNow.Date);
+            sut.Hours.Should().Be(8d);
+            sut.IsBillable.Should().BeFalse();
+            sut.TimeEntryType.Should().Be(TimeEntryTypeEnum.Vacation);
+            sut.NonBillReason.Should().BeNull();
+        }
+        
+        #endregion
+        
+        #region report
 
         [Fact]
         public void InterpretReportMessage_canInterpretReportForCurrentMonthAndProject()
@@ -69,6 +97,6 @@ namespace TimeTracker.Api.Test
             sut.StartDateMonth.Should().Be(expected);
         }
         
-        // pending sick and vacation options
+        #endregion
     }
 }
