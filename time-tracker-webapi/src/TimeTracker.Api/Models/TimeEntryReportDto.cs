@@ -29,6 +29,7 @@ namespace TimeTracker.Api.Models
                 .Sum(x => x.Hours);
             
             StringBuilder sb = new StringBuilder();
+            // todo: count of billable entries
             sb.AppendLine($"{currentMonthDisplay} Billable Hours: {billableHoursMonth:F1}");
             sb.AppendLine($"{currentMonthDisplay} Sick Hours: {sickHoursMonth:F1}");
             sb.AppendLine($"{currentMonthDisplay} Vacation Hours: {vacationHoursMonth:F1}");

@@ -12,9 +12,17 @@ namespace TimeTracker.Api.Test
         public void InterpretHoursRecordMessage_canInterpretHoursTodayForProjectWFH()
         {
             var sut = SlackMessageInterpreter.InterpretHoursRecordMessage("record au 8 wfh");
+            
+            // change timezone on sut. date, and then compare the Date portion only.
+            TimeZoneInfo tzi = TimeZoneInfo.FindSystemTimeZoneById("Asia/Kabul");
+
+            DateTime kabulTime = TimeZoneInfo.ConvertTimeFromUtc(sut.Date, tzi);
+
             sut.Hours.Should().Be(8d);
             sut.Project.Should().Be("au");
             sut.IsWorkFromHome.Should().BeTrue();
+
+            kabulTime.Day.Should().Be(sut.Date.Day);
         }
         
         [Fact]

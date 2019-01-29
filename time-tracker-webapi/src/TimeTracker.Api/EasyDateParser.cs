@@ -16,6 +16,10 @@ namespace TimeTracker.Api
         /// <returns></returns>
         public static DateTime? ParseEasyDate(string humanDate)
         {
+            if (string.IsNullOrWhiteSpace(humanDate))
+            {
+                return null;
+            }
             string[] split = humanDate.ToLowerInvariant().Split('-');
             
             if (split.Length >= 2)

@@ -100,7 +100,9 @@ namespace TimeTracker.Api
             else
             {
                 DateTime? easyDate = EasyDateParser.ParseEasyDate(datePortion);
-                dto.Date = easyDate ?? DateTime.UtcNow;
+                var utcNow = DateTime.UtcNow;
+                var dtoDate = new DateTime(utcNow.Year, utcNow.Month, utcNow.Day, 0, 0, 1, DateTimeKind.Utc);
+                dto.Date = easyDate ?? dtoDate;
             }
 
             return dto;
