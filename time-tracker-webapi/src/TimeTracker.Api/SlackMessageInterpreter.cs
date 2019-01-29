@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using Microsoft.EntityFrameworkCore.Storage;
 using TimeTracker.Data.Models;
 
 namespace TimeTracker.Api
@@ -86,7 +87,8 @@ namespace TimeTracker.Api
             
             // process date portion
             string datePortion = splitText.Length >= 4 ? splitText[3] : null;
-
+            
+            // todo: move all of this logic to EasyDateParser
             if (datePortion == "yesterday")
             {
                 dto.Date = DateTime.UtcNow.AddDays(-1);
@@ -97,11 +99,14 @@ namespace TimeTracker.Api
             }
             else
             {
-                dto.Date = DateTime.UtcNow;
+                DateTime? easyDate = EasyDateParser.ParseEasyDate(datePortion);
+                dto.Date = easyDate ?? DateTime.UtcNow;
             }
 
             return dto;
         }
+
+        
     }
 
     public class HoursInterpretedCommandDto : CommandDtoBase

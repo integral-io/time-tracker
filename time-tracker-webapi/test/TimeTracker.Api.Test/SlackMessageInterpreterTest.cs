@@ -57,44 +57,26 @@ namespace TimeTracker.Api.Test
             sut.NonBillReason.Should().BeNull();
         }
         
-        #endregion
-        
-        #region report
-
         [Fact]
-        public void InterpretReportMessage_canInterpretReportForCurrentMonthAndProject()
+        public void InterpretHoursRecordMessage_canInterpretVacationSpecificDate()
         {
-            String projectName = "validprojectname";
-            var sut = SlackMessageInterpreter.InterpretReportMessage($"report {projectName}");
-            sut.Project.Should().Be(projectName);
-            var utcNow = DateTime.UtcNow;
-            var expected = new DateTime(utcNow.Year, utcNow.Month, 1,0,0,0,DateTimeKind.Utc);
-            
-            sut.StartDateMonth.Should().Be(expected);
+            var sut = SlackMessageInterpreter.InterpretHoursRecordMessage("record vacation 8 2019-01-10");
+            sut.Date.Date.Should().Be(new DateTime(2019,1,10,0,0,0, DateTimeKind.Utc));
+            sut.Hours.Should().Be(8d);
+            sut.IsBillable.Should().BeFalse();
+            sut.TimeEntryType.Should().Be(TimeEntryTypeEnum.Vacation);
+            sut.NonBillReason.Should().BeNull();
         }
         
         [Fact]
-        public void InterpretReportMessage_canInterpretReportForSpecificMonth()
+        public void InterpretHoursRecordMessage_canInterpretVacationEasyDate()
         {
-            String projectName = "validprojectname";
-            var sut = SlackMessageInterpreter.InterpretReportMessage($"report {projectName} 2018-12");
-            sut.Project.Should().Be(projectName);
-            
-            var expected = new DateTime(2018, 12, 1,0,0,0,DateTimeKind.Utc);
-            
-            sut.StartDateMonth.Should().Be(expected);
-        }
-        
-        [Fact]
-        public void InterpretReportMessage_canInterpretReportWithDefaults()
-        {
-            String projectName = "validprojectname";
-            var sut = SlackMessageInterpreter.InterpretReportMessage($"report");
-            sut.Project.Should().Be(null);
-            var utcNow = DateTime.UtcNow;
-            var expected = new DateTime(utcNow.Year, utcNow.Month, 1,0,0,0,DateTimeKind.Utc);
-
-            sut.StartDateMonth.Should().Be(expected);
+            var sut = SlackMessageInterpreter.InterpretHoursRecordMessage("record vacation 8 jan-21");
+            sut.Date.Date.Should().Be(new DateTime(2019,1,21,0,0,0, DateTimeKind.Utc));
+            sut.Hours.Should().Be(8d);
+            sut.IsBillable.Should().BeFalse();
+            sut.TimeEntryType.Should().Be(TimeEntryTypeEnum.Vacation);
+            sut.NonBillReason.Should().BeNull();
         }
         
         #endregion
