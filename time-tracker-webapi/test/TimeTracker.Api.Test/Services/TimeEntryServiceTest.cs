@@ -51,5 +51,38 @@ namespace TimeTracker.Api.Test.Services
                 entry.NonBillableReason.Should().Be(nonBillReason);
             }
         }
+
+        [Fact]
+        public async Task DeleteHours_ThatDontExistFromToday_works()
+        {
+            var options = TestHelpers.BuildInMemoryDatabaseOptions("hoursDeleted1");
+            Guid userId = Guid.NewGuid();
+
+            using (var context = new TimeTrackerDbContext(options))
+            {
+                TimeEntryService sut = new TimeEntryService(userId, context);
+                double hoursDeleted = await sut.DeleteHours(DateTime.UtcNow);
+
+                hoursDeleted.Should().Be(0);
+            }
+        }
+
+        [Fact]
+        public async Task DeleteHours_ThatDoExistToday_works()
+        {
+            var options = TestHelpers.BuildInMemoryDatabaseOptions("hoursDeleted1");
+            Guid userId = Guid.NewGuid();
+            using (var context = new TimeTrackerDbContext(options))
+            {
+                TimeEntryService sut = new TimeEntryService(userId, context);
+                DateTime date = DateTime.UtcNow.Date;
+                Guid id = await sut.CreateBillableTimeEntry(date, 7, 1, 1);
+
+                var entry = await context.TimeEntries.FirstOrDefaultAsync(x => x.TimeEntryId == id);
+                double hoursDeleted = await sut.DeleteHours(date);
+
+                hoursDeleted.Should().Be(7);
+            }
+        }
     }
 }

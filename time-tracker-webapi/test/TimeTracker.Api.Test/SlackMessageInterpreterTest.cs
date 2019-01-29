@@ -103,5 +103,29 @@ namespace TimeTracker.Api.Test
         }
         
         #endregion
+
+        #region delete
+
+        [Fact]
+        public void InterpretDeleteMessage_canInterpretDeleteCurrentDay()
+        {
+            var sut = SlackMessageInterpreter.InterpretDeleteMessage("delete");
+            var now = DateTime.UtcNow;
+            sut.Date.Year.Should().Be(now.Year);
+            sut.Date.Month.Should().Be(now.Month);
+            sut.Date.Day.Should().Be(now.Day);
+        }
+        
+        [Fact]
+        public void InterpretDeleteMessage_canInterpretDeleteSpecificDay()
+        {
+            var sut = SlackMessageInterpreter.InterpretDeleteMessage("delete jan-17");
+            var now = DateTime.UtcNow;
+            sut.Date.Year.Should().Be(now.Year);
+            sut.Date.Month.Should().Be(1);
+            sut.Date.Day.Should().Be(17);
+        }
+
+        #endregion
     }
 }

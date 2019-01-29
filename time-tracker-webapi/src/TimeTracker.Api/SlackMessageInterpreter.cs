@@ -7,9 +7,6 @@ namespace TimeTracker.Api
 {
     public static class SlackMessageInterpreter
     {
-        public const string OPTION_RECORD = "record";
-        public const string OPTION_REPORT = "report";
-
         /// <summary>
         /// parse command string for report
         /// </summary>
@@ -100,15 +97,36 @@ namespace TimeTracker.Api
             else
             {
                 DateTime? easyDate = EasyDateParser.ParseEasyDate(datePortion);
-                var utcNow = DateTime.UtcNow;
-                var dtoDate = new DateTime(utcNow.Year, utcNow.Month, utcNow.Day, 0, 0, 1, DateTimeKind.Utc);
-                dto.Date = easyDate ?? dtoDate;
+                dto.Date = easyDate ?? EasyDateParser.GetUtcNow();
             }
 
             return dto;
         }
 
-        
+
+        public static DeleteInterpretedCommandDto InterpretDeleteMessage(string text)
+        {
+            string[] splitText = text.ToLowerInvariant().Split(' ');
+            if (!text.StartsWith("delete"))
+            {
+                return new DeleteInterpretedCommandDto()
+                    {ErrorMessage = $"Invalid start option: {splitText.FirstOrDefault()}"};
+            }
+            var dto = new DeleteInterpretedCommandDto();
+            string datePortion = splitText.Length >= 2 ? splitText[1] : null;
+            
+            if (DateTime.TryParse(datePortion, out var dateTime))
+            {
+                dto.Date = dateTime;
+            }
+            else
+            {
+                DateTime? easyDate = EasyDateParser.ParseEasyDate(datePortion);
+                dto.Date = easyDate ?? EasyDateParser.GetUtcNow();
+            }
+
+            return dto;
+        }
     }
 
     public class HoursInterpretedCommandDto : CommandDtoBase
@@ -127,6 +145,11 @@ namespace TimeTracker.Api
     {
         public string Project { get; set; }
         public DateTime StartDateMonth { get; set; }
+    }
+
+    public class DeleteInterpretedCommandDto : CommandDtoBase
+    {
+        public DateTime Date { get; set; }
     }
 
     public class CommandDtoBase

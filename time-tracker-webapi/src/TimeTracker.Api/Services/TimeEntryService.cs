@@ -77,5 +77,20 @@ namespace TimeTracker.Api.Services
 
             return report;
         }
+
+        public async Task<double> DeleteHours(DateTime commandDtoDate)
+        {
+            var timeEntries = await _db.TimeEntries.Where(x => x.UserId == _userId && x.Date >= commandDtoDate.Date).ToListAsync();
+            if (timeEntries == null || timeEntries.Count == 0)
+            {
+                return 0;
+            }
+            var hoursDeleted = timeEntries.Sum(x=>x.Hours);
+            
+            _db.TimeEntries.RemoveRange(timeEntries);
+
+            await _db.SaveChangesAsync();
+            return hoursDeleted;
+        }
     }
 }

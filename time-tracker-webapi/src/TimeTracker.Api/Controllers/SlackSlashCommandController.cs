@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using TimeTracker.Api.Infrastructure;
 using TimeTracker.Api.Models;
 using TimeTracker.Api.Services;
 using TimeTracker.Data;
@@ -29,10 +30,12 @@ namespace TimeTracker.Api.Controllers
             
             var user = await userSevice.FindOrCreateSlackUser(slashCommandPayload.user_id, slashCommandPayload.user_name);
             var timeEntryService = new TimeEntryService(user.UserId, _dbContext);
-            
-            switch (option)
+            SlackMessageOptions optionEnum;
+            SlackMessageOptions.TryParse(option, out optionEnum);
+                
+            switch (optionEnum)
             {
-                case SlackMessageInterpreter.OPTION_RECORD:
+                case SlackMessageOptions.Record:
                 {
                     var commandDto = SlackMessageInterpreter.InterpretHoursRecordMessage(slashCommandPayload.text);
                     
@@ -63,7 +66,7 @@ namespace TimeTracker.Api.Controllers
 
                     return Ok(message);
                 }
-                case SlackMessageInterpreter.OPTION_REPORT:
+                case SlackMessageOptions.Report:
                 {
                     var commandDto = SlackMessageInterpreter.InterpretReportMessage(slashCommandPayload.text);
                     
@@ -72,6 +75,18 @@ namespace TimeTracker.Api.Controllers
 
                     return Ok(message);
                 }
+                case SlackMessageOptions.Delete:
+                {
+                    var commandDto = SlackMessageInterpreter.InterpretDeleteMessage(slashCommandPayload.text);
+                    double hoursDeleted = await timeEntryService.DeleteHours(commandDto.Date);
+                    message = BuildMessage($"Deleted {hoursDeleted:F1} hours", "success");
+                    return Ok(message);
+                }
+                // TODO - implement default/help
+                /*default:
+                {
+                    
+                }*/
             }
 
             return Ok("unsupported option");
