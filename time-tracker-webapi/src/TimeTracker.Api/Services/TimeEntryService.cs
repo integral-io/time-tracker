@@ -1,5 +1,9 @@
 using System;
+using System.Collections.Immutable;
+using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
+using TimeTracker.Api.Models;
 using TimeTracker.Data;
 using TimeTracker.Data.Models;
 
@@ -53,9 +57,25 @@ namespace TimeTracker.Api.Services
             return model.TimeEntryId;
         }
 
-        public async Task<object> QueryHours(string commandDtoProject, DateTime commandDtoStartDateMonth)
+        // todo: unit test
+        public async Task<TimeEntryReportDto> QueryHours(DateTime startDateMonth)
         {
-            throw new NotImplementedException();
+            DateTime beginningCurrentYear = new DateTime(DateTime.UtcNow.Year, 1, 1, 1,1,1,DateTimeKind.Utc);
+            var timeEntries = await _db.TimeEntries.Include(x=>x.Project).Where(x => x.UserId == _userId && x.Date >= beginningCurrentYear)
+                .ToListAsync();
+            var report = new TimeEntryReportDto()
+            {
+                ProjectHours = (from t in timeEntries
+                                select new HourPairDto()
+                                {
+                                    Hours = t.Hours,
+                                    ProjectOrName = t.Project.Name,
+                                    Date = t.Date,
+                                    TimeEntryType = t.TimeEntryType
+                                }).ToList()
+            };
+
+            return report;
         }
     }
 }

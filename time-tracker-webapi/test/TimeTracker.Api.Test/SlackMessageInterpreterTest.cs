@@ -80,5 +80,20 @@ namespace TimeTracker.Api.Test
         }
         
         #endregion
+        
+        #region report
+
+        [Fact]
+        public void InterpretReportMessage_canInterpretReportCurrentMonth()
+        {
+            var currentDate = DateTime.UtcNow;
+            
+            var sut = SlackMessageInterpreter.InterpretReportMessage("report");
+            sut.Project.Should().BeNull();
+            sut.StartDateMonth.Year.Should().Be(currentDate.Year);
+            sut.StartDateMonth.Month.Should().Be(currentDate.Month);
+        }
+        
+        #endregion
     }
 }

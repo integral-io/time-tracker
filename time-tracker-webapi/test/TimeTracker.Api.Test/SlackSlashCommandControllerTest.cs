@@ -44,6 +44,7 @@ namespace TimeTracker.Api.Test
             return new Tuple<HttpClient, TimeTrackerDbContext>(_fixture.CreateClient(), dbContext);
         }
 
+        // Have not been able to get this test to pass - seems like in memory DB getting mixed up
         [Fact]
         public async Task HandleCommand_hours_processesRecordOption()
         {

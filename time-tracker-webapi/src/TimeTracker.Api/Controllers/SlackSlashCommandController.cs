@@ -67,11 +67,10 @@ namespace TimeTracker.Api.Controllers
                 {
                     var commandDto = SlackMessageInterpreter.InterpretReportMessage(slashCommandPayload.text);
                     
-                    // todo: query billable hours for project
-                    var report = await timeEntryService.QueryHours(commandDto.Project, commandDto.StartDateMonth);
-                    
-                    
-                    break;
+                    var report = await timeEntryService.QueryHours(commandDto.StartDateMonth);
+                    message = BuildMessage(report.ToMessage(), "success");
+
+                    return Ok(message);
                 }
             }
 
