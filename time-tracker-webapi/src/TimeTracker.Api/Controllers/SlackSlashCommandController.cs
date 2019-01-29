@@ -31,7 +31,7 @@ namespace TimeTracker.Api.Controllers
             var user = await userSevice.FindOrCreateSlackUser(slashCommandPayload.user_id, slashCommandPayload.user_name);
             var timeEntryService = new TimeEntryService(user.UserId, _dbContext);
             SlackMessageOptions optionEnum;
-            SlackMessageOptions.TryParse(option, out optionEnum);
+            SlackMessageOptions.TryParse(option, true, out optionEnum);
                 
             switch (optionEnum)
             {
