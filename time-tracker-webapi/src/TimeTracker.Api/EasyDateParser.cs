@@ -20,6 +20,16 @@ namespace TimeTracker.Api
             {
                 return null;
             }
+            if (humanDate == "yesterday")
+            {
+                return GetUtcNow().AddDays(-1);
+            }
+            // first check if .net parsable style date
+            if (DateTime.TryParse(humanDate, out var dateTime))
+            {
+                return dateTime;
+            }
+            
             string[] split = humanDate.ToLowerInvariant().Split('-');
             
             if (split.Length >= 2)
@@ -46,6 +56,10 @@ namespace TimeTracker.Api
             return null;
         }
 
+        /// <summary>
+        /// Gets current UTC date but at beginning of day so as not to have TZ issues
+        /// </summary>
+        /// <returns></returns>
         public static DateTime GetUtcNow()
         {
             var utcNow = DateTime.UtcNow;

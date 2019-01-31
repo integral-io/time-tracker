@@ -26,19 +26,9 @@ namespace TimeTracker.Api
             {
                 dto.Project = splitText[1];
             }
-            string datePortion = splitText[splitText.Length-1];
-            if (datePortion.Contains("-"))
-            {
-                string[] splitDate = datePortion.Split('-');
-                int year = Convert.ToInt32(splitDate[0]);
-                int month = Convert.ToInt32(splitDate[1]);
-                dto.StartDateMonth = new DateTime(year, month, 1,0,0,0,DateTimeKind.Utc);
-            }
-            else
-            {
-                var utcNow = DateTime.UtcNow;
-                dto.StartDateMonth = new DateTime(utcNow.Year, utcNow.Month, 1,0,0,0,DateTimeKind.Utc);
-            }
+            string datePortion = splitText.Length > 1 ? splitText[splitText.Length-1] : null;
+            
+            ProcessDate(datePortion,dto);
             
             return dto;
         }
@@ -83,22 +73,17 @@ namespace TimeTracker.Api
             }
             
             // process date portion
+            if (dto.NonBillReason != null || dto.IsWorkFromHome)
+            {
+                string preprocessed = text.ToLowerInvariant()
+                    .Replace("wfh","")
+                    .Replace($"\"{dto.NonBillReason}\"", "");
+                splitText = preprocessed.Split(' ');
+            }
+
             string datePortion = splitText.Length >= 4 ? splitText[3] : null;
             
-            // todo: move all of this logic to EasyDateParser
-            if (datePortion == "yesterday")
-            {
-                dto.Date = DateTime.UtcNow.AddDays(-1);
-            }
-            else if (DateTime.TryParse(datePortion, out var dateTime))
-            {
-                dto.Date = dateTime;
-            }
-            else
-            {
-                DateTime? easyDate = EasyDateParser.ParseEasyDate(datePortion);
-                dto.Date = easyDate ?? EasyDateParser.GetUtcNow();
-            }
+            ProcessDate(datePortion, dto);
 
             return dto;
         }
@@ -115,24 +100,35 @@ namespace TimeTracker.Api
             var dto = new DeleteInterpretedCommandDto();
             string datePortion = splitText.Length >= 2 ? splitText[1] : null;
             
-            if (DateTime.TryParse(datePortion, out var dateTime))
+            ProcessDate(datePortion, dto);
+
+            return dto;
+        }
+
+        private static void ProcessDate(string datePortion, CommandDtoBase dto)
+        {
+            if (String.IsNullOrEmpty(datePortion))
             {
-                dto.Date = dateTime;
+                dto.Date = EasyDateParser.GetUtcNow();
             }
             else
             {
                 DateTime? easyDate = EasyDateParser.ParseEasyDate(datePortion);
-                dto.Date = easyDate ?? EasyDateParser.GetUtcNow();
+                if (!easyDate.HasValue)
+                {
+                    dto.ErrorMessage = $"Could not parse date: {datePortion}";
+                }
+                else
+                {
+                    dto.Date = easyDate.Value;
+                }
             }
-
-            return dto;
         }
     }
 
     public class HoursInterpretedCommandDto : CommandDtoBase
     {
         public string Project { get; set; }
-        public DateTime Date { get; set; }
         public double Hours { get; set; }
         public bool IsWorkFromHome { get; set; }
         public bool IsBillable { get; set; }
@@ -144,16 +140,16 @@ namespace TimeTracker.Api
     public class ReportInterpretedCommandDto : CommandDtoBase
     {
         public string Project { get; set; }
-        public DateTime StartDateMonth { get; set; }
     }
 
     public class DeleteInterpretedCommandDto : CommandDtoBase
     {
-        public DateTime Date { get; set; }
     }
 
     public class CommandDtoBase
     {
         public string ErrorMessage { get; set; }
+        
+        public DateTime Date { get; set; }
     }
 }

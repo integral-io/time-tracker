@@ -24,6 +24,16 @@ namespace TimeTracker.Api.Test
 
             kabulTime.Day.Should().Be(sut.Date.Day);
         }
+
+        [Fact]
+        public void InterpretHoursRecordMessage_canInterpretHoursTodayWithWfh()
+        {
+            var sut = SlackMessageInterpreter.InterpretHoursRecordMessage("record au 8 wfh");
+            sut.Hours.Should().Be(8d);
+            sut.IsWorkFromHome.Should().BeTrue();
+            sut.Project.Should().Be("au");
+            sut.Date.Day.Should().Be(DateTime.UtcNow.Day);
+        }
         
         [Fact]
         public void InterpretHoursRecordMessage_canInterpretHoursYesterdayForProject()
@@ -98,8 +108,8 @@ namespace TimeTracker.Api.Test
             
             var sut = SlackMessageInterpreter.InterpretReportMessage("report");
             sut.Project.Should().BeNull();
-            sut.StartDateMonth.Year.Should().Be(currentDate.Year);
-            sut.StartDateMonth.Month.Should().Be(currentDate.Month);
+            sut.Date.Year.Should().Be(currentDate.Year);
+            sut.Date.Month.Should().Be(currentDate.Month);
         }
         
         #endregion

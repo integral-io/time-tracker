@@ -8,6 +8,9 @@ namespace TimeTracker.Data.Models
 
         public double Hours { get; set; }
 
+        /// <summary>
+        /// Always saves date as UTC in db. We dont care about date conversions, always assume fixed date/tz for users.
+        /// </summary>
         public DateTime Date { get; set; }
 
         public Boolean IsBillable { get; set; }

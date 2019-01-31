@@ -59,10 +59,10 @@ namespace TimeTracker.Api.Controllers
                     }
                     else
                     {
-                        message = BuildMessage($"Registered *{commandDto.Hours:F1} hours* for Nonbillable reason: {commandDto.NonBillReason ?? commandDto.TimeEntryType.ToString()}", "success");
-                           
                         await timeEntryService.CreateNonBillableTimeEntry(commandDto.Date, commandDto.Hours,
                             commandDto.NonBillReason, commandDto.TimeEntryType);
+                        
+                        message = BuildMessage($"Registered *{commandDto.Hours:F1} hours* for Nonbillable reason: {commandDto.NonBillReason ?? commandDto.TimeEntryType.ToString()} for date: {commandDto.Date:D}", "success");
                     }
 
                     return Ok(message);
@@ -71,7 +71,7 @@ namespace TimeTracker.Api.Controllers
                 {
                     var commandDto = SlackMessageInterpreter.InterpretReportMessage(slashCommandPayload.text);
                     
-                    var report = await timeEntryService.QueryHours(commandDto.StartDateMonth);
+                    var report = await timeEntryService.QueryHours(commandDto.Date);
                     message = BuildMessage(report.ToMessage(), "success");
 
                     return Ok(message);
@@ -80,7 +80,7 @@ namespace TimeTracker.Api.Controllers
                 {
                     var commandDto = SlackMessageInterpreter.InterpretDeleteMessage(slashCommandPayload.text);
                     double hoursDeleted = await timeEntryService.DeleteHours(commandDto.Date);
-                    message = BuildMessage($"Deleted {hoursDeleted:F1} hours", "success");
+                    message = BuildMessage($"Deleted {hoursDeleted:F1} hours for date: {commandDto.Date:D}", "success");
                     return Ok(message);
                 }
                 default:

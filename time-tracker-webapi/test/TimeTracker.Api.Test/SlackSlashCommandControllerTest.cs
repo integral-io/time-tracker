@@ -52,7 +52,6 @@ namespace TimeTracker.Api.Test
             response.IsSuccessStatusCode.Should().BeTrue();
             SlackMessage message = JsonConvert.DeserializeObject<SlackMessage>(responseContent);
             message.Text.Should().StartWith("*/hours* record <projectName>");
-            _factory.ServiceScope.Dispose();
         }
 
         [Fact]
@@ -79,8 +78,6 @@ namespace TimeTracker.Api.Test
             var timeEntry = await _factory.DbContext.TimeEntries.FirstOrDefaultAsync();
             timeEntry.Should().NotBeNull();
             timeEntry.Hours.Should().Be(8);
-            
-            _factory.ServiceScope.Dispose();
         }
 
         [Fact]
@@ -100,7 +97,6 @@ namespace TimeTracker.Api.Test
             response.IsSuccessStatusCode.Should().BeTrue();
             SlackMessage message = JsonConvert.DeserializeObject<SlackMessage>(responseContent);
             message.Text.Should().Be($"Error: *Invalid Project Name {recordInvalidProjectName}*");
-            _factory.ServiceScope.Dispose();
         }
     }
 }
