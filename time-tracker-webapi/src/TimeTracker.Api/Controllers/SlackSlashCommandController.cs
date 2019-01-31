@@ -25,9 +25,8 @@ namespace TimeTracker.Api.Controllers
         [Produces("application/json")]
         public async Task<ActionResult<SlackMessage>> HandleCommand([FromForm]SlashCommandPayload slashCommandPayload)
         {
-            string option = slashCommandPayload.text.Split(' ').FirstOrDefault();
-            SlackMessageOptions optionEnum;
-            SlackMessageOptions.TryParse(option, true, out optionEnum);
+            string option = String.IsNullOrWhiteSpace(slashCommandPayload.text) ? "" : slashCommandPayload.text.Split(' ').FirstOrDefault();
+            SlackMessageOptions.TryParse(option, true, out SlackMessageOptions optionEnum);
             
             var userSevice = new UserService(_dbContext);
             SlackMessage message;
