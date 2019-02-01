@@ -20,7 +20,7 @@ namespace TimeTracker.Api.Test
             AddClientAndProject(db);
         }
         
-        private static void AddClientAndProject(TimeTrackerDbContext dbContext)
+        public static void AddClientAndProject(TimeTrackerDbContext dbContext)
         {
             dbContext.BillingClients.Add(new BillingClient()
             {
