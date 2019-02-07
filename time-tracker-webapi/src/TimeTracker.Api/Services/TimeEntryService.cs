@@ -91,5 +91,27 @@ namespace TimeTracker.Api.Services
             await _db.SaveChangesAsync();
             return hoursDeleted;
         }
+
+        public async Task<AllTimeOffDto> QueryAllTimeOff()
+        {
+            var query = from t in _db.TimeEntries
+                group t by t.UserId into g
+                select new TimeOffDto()
+                {
+                    Username = g.FirstOrDefault().User.UserName,
+                    PtoTYD = g.Where(x=>x.TimeEntryType == TimeEntryTypeEnum.Vacation).Sum(x=>x.Hours),
+                    SickYTD = g.Where(x=>x.TimeEntryType == TimeEntryTypeEnum.Sick).Sum(x=>x.Hours)
+                };
+            var hours = await query.ToListAsync();
+
+            var allTimeOff = new AllTimeOffDto()
+            {
+                TimeOffSummaries = hours
+            };
+            
+            return allTimeOff;
+        }
     }
+
+   
 }

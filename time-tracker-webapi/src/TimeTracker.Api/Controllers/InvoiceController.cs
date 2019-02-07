@@ -13,5 +13,14 @@ namespace TimeTracker.Api.Controllers
         {
             return View(model: new InvoiceDto());
         }
+        
+        
+        [HttpGet("adminreport"), AllowAnonymous] // anon temp
+        public async Task<IActionResult> AdminTimeOffReport()
+        {
+            return View(model: new InvoiceDto());
+        }
+        
+        
     }
 }

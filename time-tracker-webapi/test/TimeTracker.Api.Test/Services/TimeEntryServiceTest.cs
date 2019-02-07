@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
+using TimeTracker.Api.Models;
 using TimeTracker.Api.Services;
 using TimeTracker.Data;
 using TimeTracker.Data.Models;
@@ -87,7 +88,7 @@ namespace TimeTracker.Api.Test.Services
         }
 
         [Fact]
-        public async Task QueryHours_pullsCorrectHoursAndInfo()
+        public async Task QueryHours_pullsCorrectHoursAndInfo_forUser()
         {
             var options = TestHelpers.BuildInMemoryDatabaseOptions("hoursReport");
             
@@ -110,5 +111,32 @@ namespace TimeTracker.Api.Test.Services
                 hours.ProjectHours.Select(x => x.ProjectOrName).Should().Contain("au");
             }
         }
+        
+        
+        [Fact]
+        public async Task AdminReport_GetsTimeOff_ForAllUsers()
+        {
+            var options = TestHelpers.BuildInMemoryDatabaseOptions("adminReport");
+            
+            Guid userId = Guid.NewGuid();
+            using (var context = new TimeTrackerDbContext(options))
+            {
+                TestHelpers.AddClientAndProject(context);
+                TestHelpers.AddTestUsers(context);
+                TestHelpers.AddTimeOff(context);
+                
+                
+                TimeEntryService sut = new TimeEntryService(userId, context);
+                
+
+                AllTimeOffDto hours = await sut.QueryAllTimeOff();
+
+                hours.TimeOffSummaries.Count.Should().Be(2);
+
+
+            }
+        }
+        
+        
     }
 }
