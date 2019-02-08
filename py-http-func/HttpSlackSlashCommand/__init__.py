@@ -11,6 +11,8 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
 
     # todo: pull this from env var with `os.environ['SB_CONN_STR']`
     sb_connectStr = os.environ['SB_CONN_STR']
+
+    if not sb_connectStr: return func.HttpResponse(body='Service Bus connection string not set', status_code=500)
     
     sb_client = ServiceBusClient.from_connection_string(sb_connectStr)
     queue_client = sb_client.get_queue("slack-slash-commands")
@@ -18,5 +20,5 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
     message = Message(req_body_str)
     queue_client.send(message)
 
-    return func.HttpResponse(body=None, status_code=200)
+    return func.HttpResponse(body='', status_code=200)
     
