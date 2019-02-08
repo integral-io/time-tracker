@@ -125,15 +125,14 @@ namespace TimeTracker.Api.Test.Services
                 TestHelpers.AddTestUsers(context);
                 TestHelpers.AddTimeOff(context);
                 
-                
                 TimeEntryService sut = new TimeEntryService(userId, context);
-                
 
                 AllTimeOffDto hours = await sut.QueryAllTimeOff();
 
                 hours.TimeOffSummaries.Count.Should().Be(2);
-
-
+                hours.TimeOffSummaries.FirstOrDefault().Username.Should().Be("username1");
+                hours.TimeOffSummaries.LastOrDefault().PtoTYD.Should().Be(8);
+                hours.TimeOffSummaries.FirstOrDefault().SickYTD.Should().Be(2);
             }
         }
         
