@@ -17,7 +17,17 @@ source .env/bin/activate
 ```
 FOr more about pyenv: https://github.com/pyenv/pyenv
 
+Once you have version 3.6.0 active, and you have activated the virtual env using above bash commands:
 to run locally, from terminal: `func host start`
 
 The python script will need access to an environment variable containing the connection string to service bus.
-To set the env variable do: `export SB_CONN_STR=Endpoint=sb://yourstuff`
+To set the env variable do:
+Note wrapping ' around connection string
+
+```bash
+export SB_CONN_STR='Endpoint=sb://yourstuff'
+```
+
+^^You must run above command in the python `venv` after activating it.
+
+http requests locally will go to: `http://localhost:7071/api/HttpSlackSlashCommand` so therefore slack slash-command will need to be set to point to `/api/HttpSlackSlashCommand`
