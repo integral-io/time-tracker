@@ -14,10 +14,16 @@ namespace TimeTracker.Api.Models
         public string ToMessage()
         {
             DateTime currentBeginningMonth = new DateTime(DateTime.UtcNow.Year, DateTime.UtcNow.Month, 1, 1, 1, 1, DateTimeKind.Utc);
+            DateTime currentBeginningYear = new DateTime(DateTime.UtcNow.Year, 1, 1, 1, 1, 1, DateTimeKind.Utc);
+            
             string currentMonthDisplay = currentBeginningMonth.ToString("MMM yyyy");
             
             double billableHoursMonth = ProjectHours.Where(x =>
                 x.Date >= currentBeginningMonth && x.TimeEntryType == TimeEntryTypeEnum.BillableProject).Sum(x=>x.Hours);
+
+            double billableHourssYTD = ProjectHours.Where(x =>
+                x.Date >= currentBeginningYear && x.TimeEntryType == TimeEntryTypeEnum.BillableProject).Sum(x=>x.Hours);
+            
             double sickHoursMonth = ProjectHours
                 .Where(x => x.Date >= currentBeginningMonth && x.TimeEntryType == TimeEntryTypeEnum.Sick)
                 .Sum(x => x.Hours);
@@ -35,7 +41,7 @@ namespace TimeTracker.Api.Models
             sb.AppendLine($"{currentMonthDisplay} Vacation Hours: {vacationHoursMonth:F1}");
             sb.AppendLine($"{currentMonthDisplay} Other Non-billable Hours: {nonBillableHoursMonth:F1}");
             sb.AppendLine("------------------------");
-            sb.AppendLine("YTD Total Billable Hours:");
+            sb.AppendLine($"YTD Total Billable Hours: {billableHourssYTD:F1}");
             sb.AppendLine("YTD Total Sick Hours: ");
             sb.AppendLine("YTD Total Vacation Hours:");
             sb.AppendLine("YTD Total Other Non-billable Hours:");
