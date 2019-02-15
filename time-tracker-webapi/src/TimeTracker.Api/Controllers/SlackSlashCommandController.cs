@@ -3,10 +3,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using TimeTracker.Api.Infrastructure;
 using TimeTracker.Api.Models;
-using TimeTracker.Api.Services;
+using TimeTracker.Library.Services;
 using TimeTracker.Data;
+using TimeTracker.Library;
+using TimeTracker.Library.Models;
 
 namespace TimeTracker.Api.Controllers
 {

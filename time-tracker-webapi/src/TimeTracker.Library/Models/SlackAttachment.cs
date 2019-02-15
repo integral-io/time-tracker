@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace TimeTracker.Api.Models
+namespace TimeTracker.Library.Models
 {
      /// <summary>
     /// Slack message attachment. A message can have zero or more attachments.

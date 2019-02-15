@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using TimeTracker.Data.Models;
 
-namespace TimeTracker.Api.Models
+namespace TimeTracker.Library.Models
 {
     public class TimeEntryReportDto
     {

@@ -3,7 +3,7 @@ using FluentAssertions;
 using TimeTracker.Data.Models;
 using Xunit;
 
-namespace TimeTracker.Api.Test
+namespace TimeTracker.Library.Test
 {
     public class SlackMessageInterpreterTest
     {

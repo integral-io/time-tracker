@@ -16,6 +16,7 @@ using Newtonsoft.Json;
 using TimeTracker.Api.Models;
 using TimeTracker.Data;
 using TimeTracker.Data.Models;
+using TimeTracker.Library.Models;
 
 namespace TimeTracker.Api.Test
 {

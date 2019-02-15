@@ -1,4 +1,4 @@
-namespace TimeTracker.Api.Infrastructure
+namespace TimeTracker.Library
 {
     public enum SlackMessageOptions
     {

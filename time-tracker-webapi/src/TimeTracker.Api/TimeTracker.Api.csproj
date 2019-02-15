@@ -12,6 +12,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Folder Include="Infrastructure" />
     <Folder Include="wwwroot\" />
   </ItemGroup>
 
@@ -26,6 +27,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\TimeTracker.Data\TimeTracker.Data.csproj" />
+    <ProjectReference Include="..\TimeTracker.Library\TimeTracker.Library.csproj" />
   </ItemGroup>
 
 </Project>

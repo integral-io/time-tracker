@@ -3,13 +3,13 @@ using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
-using TimeTracker.Api.Models;
-using TimeTracker.Api.Services;
+using TimeTracker.Library.Models;
+using TimeTracker.Library.Services;
 using TimeTracker.Data;
 using TimeTracker.Data.Models;
 using Xunit;
 
-namespace TimeTracker.Api.Test.Services
+namespace TimeTracker.Library.Test.Services
 {
     public class TimeEntryServiceTest
     {

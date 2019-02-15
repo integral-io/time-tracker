@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace TimeTracker.Api.Models
+namespace TimeTracker.Library.Models
 {
     public class AllTimeOffDto
     {

@@ -1,4 +1,4 @@
-namespace TimeTracker.Api.Models
+namespace TimeTracker.Library.Models
 {
     /// <summary>
     /// Slack Field. Fields are displayed in a table on the message

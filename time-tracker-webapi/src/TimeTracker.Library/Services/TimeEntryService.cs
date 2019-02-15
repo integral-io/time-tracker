@@ -3,11 +3,11 @@ using System.Collections.Immutable;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using TimeTracker.Api.Models;
+using TimeTracker.Library.Models;
 using TimeTracker.Data;
 using TimeTracker.Data.Models;
 
-namespace TimeTracker.Api.Services
+namespace TimeTracker.Library.Services
 {
     public class TimeEntryService
     {

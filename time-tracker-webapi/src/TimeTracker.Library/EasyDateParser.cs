@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace TimeTracker.Api
+namespace TimeTracker.Library
 {
     /// <summary>
     /// interprets dates in human readable form and returns them in datetime object UTC

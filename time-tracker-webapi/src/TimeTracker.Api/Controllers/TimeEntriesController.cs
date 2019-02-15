@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using TimeTracker.Api.Models;
+using TimeTracker.Library.Models;
 
 
 namespace TimeTracker.Api.Controllers

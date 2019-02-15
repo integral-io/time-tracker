@@ -15,14 +15,11 @@ You'll need to activate an environment in 3.6 once you have set to run version 3
 python -m venv .env
 source .env/bin/activate
 ```
-FOr more about pyenv: https://github.com/pyenv/pyenv
-
-Once you have version 3.6.0 active, and you have activated the virtual env using above bash commands:
-to run locally, from terminal: `func host start`
+For more about pyenv: https://github.com/pyenv/pyenv
 
 The python script will need access to an environment variable containing the connection string to service bus.
 To set the env variable do:
-Note wrapping ' around connection string
+Note wrapping ' around connection string. Just copy paste your connection string from the Shared access policies in Azure
 
 ```bash
 export SB_CONN_STR='Endpoint=sb://yourstuff'
@@ -30,4 +27,7 @@ export SB_CONN_STR='Endpoint=sb://yourstuff'
 
 ^^You must run above command in the python `venv` after activating it.
 
-http requests locally will go to: `http://localhost:7071/api/HttpSlackSlashCommand` so therefore slack slash-command will need to be set to point to `/api/HttpSlackSlashCommand`
+Once you have version 3.6.0 active, and you have activated the virtual env using above bash commands, as well as exported SB_CONN_STR for servicebus:
+to run locally, from terminal: `func host start`
+
+http requests locally will go to: `http://localhost:7071/api/HttpSlackSlashCommand` so therefore slack slash-command will need to be set to point to `http(s):{your url and port}/api/HttpSlackSlashCommand`

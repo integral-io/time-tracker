@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using TimeTracker.Data;
 using TimeTracker.Data.Models;
 
-namespace TimeTracker.Api.Services
+namespace TimeTracker.Library.Services
 {
     public class UserService
     {
