@@ -1,9 +1,8 @@
 using System;
 using System.Linq;
-using Microsoft.EntityFrameworkCore.Storage;
 using TimeTracker.Data.Models;
 
-namespace TimeTracker.Api
+namespace TimeTracker.Library
 {
     public static class SlackMessageInterpreter
     {

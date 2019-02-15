@@ -1,8 +1,11 @@
 using System;
 using System.Collections.Generic;
 
-namespace TimeTracker.Api.Models
+namespace TimeTracker.Library.Models
 {
+    /// <summary>
+    /// Message object that slack expects 
+    /// </summary>
     public class SlackMessage
     {
         private bool _markdown = true;

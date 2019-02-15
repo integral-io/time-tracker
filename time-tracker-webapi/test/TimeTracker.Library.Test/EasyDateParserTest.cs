@@ -2,7 +2,7 @@ using System;
 using FluentAssertions;
 using Xunit;
 
-namespace TimeTracker.Api.Test
+namespace TimeTracker.Library.Test
 {
     public class EasyDateParserTest
     {

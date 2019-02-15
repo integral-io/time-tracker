@@ -2,6 +2,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TimeTracker.Api.Models;
+using TimeTracker.Library.Models;
 
 namespace TimeTracker.Api.Controllers
 {
@@ -18,7 +19,7 @@ namespace TimeTracker.Api.Controllers
         [HttpGet("adminreport"), AllowAnonymous] // anon temp
         public async Task<IActionResult> AdminTimeOffReport()
         {
-            return View(model: new InvoiceDto());
+            return View(model: new AllTimeOffDto());
         }
         
         

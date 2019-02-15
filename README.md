@@ -2,6 +2,11 @@
 
 developer focused time track tool where users interact via slack to record their hours.
 
+## high level architecture
+
+Serverless, functions as a service. Slack web hooks call into python function, which has lowest cold start time. Python function deposits payload into a service-bus queue, which is listened to by .net core function. Here is where all the business logic happens and data is persisted. Finally, response is sent to slack user using the asyncronous url.
+The reason to build solution this way was because slack requires a response either within 3 seconds OR using the async url. Working with the async url provides more reliability and better scaling, specially when trying to run on the cheapest available infrastructure (ie. free shared tier in Azure or others) where you can't guarantee "Always On" or dedicated availability.
+
 ## Database setup on mac / linux
 
 You'll need to run a local docker instance of ms sql server on your mac or linux box to be able to run 
@@ -12,7 +17,7 @@ The database name, userid and password are configured in the app under the appse
 ## testing locally against Slack
 
 You'll need to change the url to which Slack calls out in the config here:
-https://api.slack.com/apps/AFA9JRRBK/slash-commands?
+https://api.slack.com/apps/{your-app-id}/slash-commands?
 
 Then start a ngrok session locally that aims from the url to you local machine:
 From the terminal: `# ngrok http 5000`
@@ -35,4 +40,4 @@ When a command comes in, we currently don't validate the message really being fr
 
 APi for Slash commands: https://api.slack.com/slash-commands
 Our Apps: https://api.slack.com/apps (this is where we can find the integral time tracker setup)
-Our Integral Time Tracker app setup page for slack commands: https://api.slack.com/apps/AFA9JRRBK/slash-commands?
+MEssage Builder: https://api.slack.com/tools/block-kit-builder

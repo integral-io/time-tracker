@@ -3,13 +3,13 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.InMemory.Storage.Internal;
-using TimeTracker.Api.Services;
+using TimeTracker.Library.Services;
 using TimeTracker.Data;
 using TimeTracker.Data.Models;
 using FluentAssertions.Common;
 using Xunit;
 
-namespace TimeTracker.Api.Test.Services
+namespace TimeTracker.Library.Test.Services
 {
     public class UserServiceTest
     {

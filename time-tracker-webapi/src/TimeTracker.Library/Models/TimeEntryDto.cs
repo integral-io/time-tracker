@@ -1,6 +1,6 @@
 using System;
 
-namespace TimeTracker.Api.Models
+namespace TimeTracker.Library.Models
 {
     public class TimeEntryDto
     {
