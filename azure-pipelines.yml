@@ -11,13 +11,33 @@ pool:
 
 variables:
   buildConfiguration: 'Release'
+  Authentication__Google__ClientId: '1234'
 
 steps:
-- script: |
-    dotnet build $(Build.SourcesDirectory)/time-tracker-webapi/ --configuration $(buildConfiguration)
-    dotnet publish $(Build.SourcesDirectory)/time-tracker-webapi/ --configuration $(buildConfiguration) --output $BUILD_ARTIFACTSTAGINGDIRECTORY
-    
+- script: dotnet build $(Build.SourcesDirectory)/time-tracker-webapi/ --configuration $(buildConfiguration)
   displayName: 'dotnet build $(buildConfiguration)'
+
+- script: |
+    mkdir $(Build.SourcesDirectory)/results
+    dotnet test --logger trx /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura  $(Build.SourcesDirectory)/time-tracker-webapi/test/TimeTracker.Api.Test/
+    dotnet test --logger trx /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura /p:MergeWtih=$(Build.SourcesDirectory)/time-tracker-webapi/test/TimeTracker.Api.Test/coverage.cobertura.xml $(Build.SourcesDirectory)/time-tracker-webapi/test/TimeTracker.Library.Test/
+ #   cp $(Build.SourcesDirectory)/time-tracker-webapi/test/TimeTracker.Api.Test/coverage.cobertura.xml $(Build.SourcesDirectory)/results
+ #   dotnet tool install dotnet-reportgenerator-globaltool --tool-path . --version 4.0.0-rc4
+ #   ./reportgenerator "-reports:$(Build.SourcesDirectory)/results/coverage.cobertura.xml" "-targetdir:results" "-reporttypes:HTMLInline;HTMLChart"
+  displayName: 'Unit testing'
+
+- task: PublishTestResults@2
+  inputs:
+    testRunner: VSTest
+    testResultsFiles: '**/*.trx'
+
+- task: PublishCodeCoverageResults@1
+  inputs:
+    summaryFileLocation: $(Build.SourcesDirectory)/results/coverage.cobertura.xml
+    reportDirectory: $(Build.SourcesDirectory)/results
+    codecoverageTool: cobertura
+
+- script: dotnet publish $(Build.SourcesDirectory)/time-tracker-webapi/ --configuration $(buildConfiguration) --output $BUILD_ARTIFACTSTAGINGDIRECTORY
 
 - task: efcore-migration-script-generator-task@0
   inputs: 

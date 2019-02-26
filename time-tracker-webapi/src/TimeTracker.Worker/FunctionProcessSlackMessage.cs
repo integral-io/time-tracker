@@ -1,5 +1,11 @@
+using System.Globalization;
+using System.Threading.Tasks;
 using Microsoft.Azure.WebJobs;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using TimeTracker.Data;
 using TimeTracker.Library.Models;
 using TimeTracker.Library.Services;
 
@@ -7,20 +13,58 @@ namespace TimeTracker.Worker
 {
     public static class FunctionProcessSlackMessage
     {
+        private static IConfigurationRoot _configuration;
+        private static ServiceProvider _serviceProvider;
+        
+        private const string SlackQueueName = "slack-slash-commands";
+        
+        
+        private static void SetupConfiguration(ExecutionContext context)
+        {
+            IConfigurationBuilder builder = new ConfigurationBuilder().SetBasePath(context.FunctionAppDirectory)
+                .AddJsonFile("local.settings.json", optional: true, reloadOnChange: false)
+                .AddEnvironmentVariables();
+            _configuration = builder.Build();
+        }
+        private static void SetupServiceCollection()
+        {
+            string connectionString = _configuration.GetConnectionString("DefaultConnection");
+               
+            // add db context with contable connection string
+            var serviceProvider = new ServiceCollection()
+                .AddEntityFrameworkSqlServer()
+                .AddDbContextPool<TimeTrackerDbContext>(options =>
+                {
+                    options.UseSqlServer(connectionString)
+                        .UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
+                })
+                .AddScoped<SlackMessageOrchestrator>()
+                .BuildServiceProvider();
+
+            _serviceProvider = serviceProvider;
+        }
+
         [FunctionName("processSlackMessage")]
-        public static void Run([ServiceBusTrigger("slack-slash-commands", Connection = "itt-commands-ServiceBus")]string message, ILogger logger)
+        public static async Task Run([ServiceBusTrigger(SlackQueueName, Connection = "itt-commands-ServiceBus")]string message, ILogger logger, ExecutionContext context)
         {
             logger.LogInformation($"C# ServiceBus queue trigger function processed message: {message}");
+            
+            if (_configuration == null)
+            {
+                SetupConfiguration(context);
+            }
+            if (_serviceProvider == null)
+            {
+                SetupServiceCollection();
+            }
 
             var typedMessage = SlashCommandPayload.ParseFromFormEncodedData(message);
-            // todo: process the message much like we do in controller.
+
+            SlackMessageOrchestrator orchestrator = _serviceProvider.GetService<SlackMessageOrchestrator>();
+            var responseMessage = await orchestrator.HandleCommand(typedMessage);
             
-            // improve dependency injection? what is best practice with serverless...
             SlackMessageResponder slackResponder = new SlackMessageResponder(logger);
-            slackResponder.SendMessage(typedMessage.response_url, new SlackMessage()
-            {
-                Text = "Cool I got your message"
-            });
+            await slackResponder.SendMessage(typedMessage.response_url, responseMessage);
         }
     }
 }

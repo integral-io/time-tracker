@@ -10,11 +10,6 @@ namespace TimeTracker.Data
         public TimeTrackerDbContext(DbContextOptions dbContextOptions) : base(dbContextOptions)
         {
         }
-        
-        public TimeTrackerDbContext(string connectionString)
-        {
-            _connectionString = connectionString;
-        }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
