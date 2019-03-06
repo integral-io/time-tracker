@@ -69,7 +69,7 @@ namespace TimeTracker.Library.Services
                                 select new HourPairDto()
                                 {
                                     Hours = t.Hours,
-                                    ProjectOrName = t.Project.Name,
+                                    ProjectOrName = t.ProjectId.HasValue ? t.Project.Name : null,
                                     Date = t.Date,
                                     TimeEntryType = t.TimeEntryType
                                 }).ToList()
