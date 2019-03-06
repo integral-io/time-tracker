@@ -19,10 +19,12 @@ namespace TimeTracker.Library.Models
             string currentMonthDisplay = currentBeginningMonth.ToString("MMM yyyy");
             
             double billableHoursMonth = ProjectHours.Where(x =>
-                x.Date >= currentBeginningMonth && x.TimeEntryType == TimeEntryTypeEnum.BillableProject).Sum(x=>x.Hours);
+                x.Date >= currentBeginningMonth && x.TimeEntryType == TimeEntryTypeEnum.BillableProject)
+                .Sum(x=>x.Hours);
 
-            double billableHourssYTD = ProjectHours.Where(x =>
-                x.Date >= currentBeginningYear && x.TimeEntryType == TimeEntryTypeEnum.BillableProject).Sum(x=>x.Hours);
+            double billableHourssYTD = ProjectHours
+                .Where(x => x.Date >= currentBeginningYear && x.TimeEntryType == TimeEntryTypeEnum.BillableProject)
+                .Sum(x=>x.Hours);
             
             double sickHoursMonth = ProjectHours
                 .Where(x => x.Date >= currentBeginningMonth && x.TimeEntryType == TimeEntryTypeEnum.Sick)

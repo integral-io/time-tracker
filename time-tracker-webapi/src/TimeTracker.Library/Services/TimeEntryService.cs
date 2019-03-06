@@ -59,8 +59,9 @@ namespace TimeTracker.Library.Services
 
         public async Task<TimeEntryReportDto> QueryHours(DateTime startDateMonth)
         {
-            DateTime beginningCurrentYear = new DateTime(DateTime.UtcNow.Year, startDateMonth.Month, 1, 1,1,1,DateTimeKind.Utc);
-            var timeEntries = await _db.TimeEntries.Include(x=>x.Project).Where(x => x.UserId == _userId && x.Date >= beginningCurrentYear)
+            var timeEntries = await _db.TimeEntries
+                .Include(x => x.Project)
+                .Where(x => x.UserId == _userId)
                 .ToListAsync();
             var report = new TimeEntryReportDto()
             {
