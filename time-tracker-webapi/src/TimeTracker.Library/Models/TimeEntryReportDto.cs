@@ -22,19 +22,16 @@ namespace TimeTracker.Library.Models
                 x.Date >= currentBeginningMonth && x.TimeEntryType == TimeEntryTypeEnum.BillableProject)
                 .Sum(x=>x.Hours);
 
-            double billableHourssYTD = ProjectHours
-                .Where(x => x.Date >= currentBeginningYear && x.TimeEntryType == TimeEntryTypeEnum.BillableProject)
-                .Sum(x=>x.Hours);
+            double billableHourssYTD = CalculateHours(currentBeginningYear, TimeEntryTypeEnum.BillableProject);
+
+            double sickHoursMonth = CalculateHours(currentBeginningMonth, TimeEntryTypeEnum.Sick); 
+            double vacationHoursMonth = CalculateHours(currentBeginningMonth, TimeEntryTypeEnum.Vacation); 
+            double nonBillableHoursMonth = CalculateHours(currentBeginningMonth, TimeEntryTypeEnum.Vacation); 
             
-            double sickHoursMonth = ProjectHours
-                .Where(x => x.Date >= currentBeginningMonth && x.TimeEntryType == TimeEntryTypeEnum.Sick)
-                .Sum(x => x.Hours);
-            double vacationHoursMonth = ProjectHours
-                .Where(x => x.Date >= currentBeginningMonth && x.TimeEntryType == TimeEntryTypeEnum.Vacation)
-                .Sum(x => x.Hours);
-            double nonBillableHoursMonth = ProjectHours
-                .Where(x => x.Date >= currentBeginningMonth && x.TimeEntryType == TimeEntryTypeEnum.NonBillable)
-                .Sum(x => x.Hours);
+            
+            double sickHoursYTD = CalculateHours(currentBeginningMonth, TimeEntryTypeEnum.Sick); 
+            double vacationHoursYTD = CalculateHours(currentBeginningMonth, TimeEntryTypeEnum.Vacation); 
+            double nonBillableHoursYTD = CalculateHours(currentBeginningMonth, TimeEntryTypeEnum.Vacation); 
             
             StringBuilder sb = new StringBuilder();
             // todo: count of billable entries
@@ -44,13 +41,27 @@ namespace TimeTracker.Library.Models
             sb.AppendLine($"{currentMonthDisplay} Other Non-billable Hours: {nonBillableHoursMonth:F1}");
             sb.AppendLine("------------------------");
             sb.AppendLine($"YTD Total Billable Hours: {billableHourssYTD:F1}");
-            sb.AppendLine("YTD Total Sick Hours: ");
-            sb.AppendLine("YTD Total Vacation Hours:");
-            sb.AppendLine("YTD Total Other Non-billable Hours:");
+            sb.AppendLine($"YTD Total Sick Hours: {sickHoursYTD:F1}");
+            sb.AppendLine($"YTD Total Vacation Hours: {vacationHoursYTD:F1}");
+            sb.AppendLine($"YTD Total Other Non-billable Hours: {nonBillableHoursYTD:F1}");
 
             return sb.ToString();
         }
+
+        private double CalculateHours(DateTime? start, TimeEntryTypeEnum type)
+        {
+            var query = ProjectHours
+                .Where(x => x.TimeEntryType == type);
+
+            if (start.HasValue)
+            {
+                query = query.Where(x => x.Date >= start);
+            }
+            
+            return query.Sum(x=>x.Hours);
+        }
     }
+    
 
     public class HourPairDto
     {
