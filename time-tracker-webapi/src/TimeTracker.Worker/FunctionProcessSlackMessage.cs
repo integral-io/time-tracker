@@ -45,7 +45,7 @@ namespace TimeTracker.Worker
         }
 
         [FunctionName("processSlackMessage")]
-        public static async Task Run([ServiceBusTrigger(SlackQueueName, Connection = "itt-commands-ServiceBus")]string message, ILogger logger, ExecutionContext context)
+        public static async Task Run([ServiceBusTrigger(SlackQueueName, Connection = "itt_commands_ServiceBus")]string message, ILogger logger, ExecutionContext context)
         {
             logger.LogInformation($"C# ServiceBus queue trigger function processed message: {message}");
             
