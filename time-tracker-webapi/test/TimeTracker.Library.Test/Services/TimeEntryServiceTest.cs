@@ -88,32 +88,6 @@ namespace TimeTracker.Library.Test.Services
         }
 
         [Fact]
-        public async Task QueryHours_pullsCorrectHoursAndInfo_forUser()
-        {
-            var options = TestHelpers.BuildInMemoryDatabaseOptions("hoursReport");
-            
-            Guid userId = Guid.NewGuid();
-            using (var context = new TimeTrackerDbContext(options))
-            {
-                TestHelpers.AddClientAndProject(context);
-                
-                TimeEntryService sut = new TimeEntryService(userId, context);
-                DateTime dateBefore = new DateTime(2018,11,30);
-                DateTime dateAfter = new DateTime(2019, 1, 15);
-                await sut.CreateBillableTimeEntry(dateBefore, 7, 1, 1);
-                await sut.CreateBillableTimeEntry(dateAfter, 7, 1, 1);
-
-                var hours = await sut.QueryHours(new DateTime(2019, 1, 1));
-
-                hours.ProjectHours.Count.Should().Be(1);
-                hours.ProjectHours.Sum(x=>x.Hours).Should().Be(7);
-                hours.ProjectHours.FirstOrDefault().TimeEntryType.Should().Be(TimeEntryTypeEnum.BillableProject);
-                hours.ProjectHours.Select(x => x.ProjectOrName).Should().Contain("au");
-            }
-        }
-        
-        
-        [Fact]
         public async Task AdminReport_GetsTimeOff_ForAllUsers()
         {
             var options = TestHelpers.BuildInMemoryDatabaseOptions("adminReport");

@@ -69,11 +69,12 @@ namespace TimeTracker.Library.Services
                 case SlackMessageOptions.Report:
                 {
                     var commandDto = SlackMessageInterpreter.InterpretReportMessage(slashCommandPayload.text);
+                    var userReportSvc = new UserReportService(_dbContext, user.UserId);
                     
-                    var report = await timeEntryService.QueryHours(commandDto.Date);
-                    message = BuildMessage(report.ToMessage(), "success");
+                    var report = await userReportSvc.QueryAllHours();
+                //    message = BuildMessage(report.ToMessage(), "success");
 
-                    return message;
+                    return BuildMessage("wip", "success");;
                 }
                 case SlackMessageOptions.Delete:
                 {

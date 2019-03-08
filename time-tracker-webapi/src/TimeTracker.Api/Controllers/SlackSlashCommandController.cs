@@ -26,6 +26,7 @@ namespace TimeTracker.Api.Controllers
         [Produces("application/json")]
         public async Task<ActionResult<SlackMessage>> HandleCommand([FromForm]SlashCommandPayload slashCommandPayload)
         {
+            // todo: user SlackMessageOrchestrator in Library
             string option = String.IsNullOrWhiteSpace(slashCommandPayload.text) ? "" : slashCommandPayload.text.Split(' ').FirstOrDefault();
             SlackMessageOptions.TryParse(option, true, out SlackMessageOptions optionEnum);
             
@@ -65,15 +66,6 @@ namespace TimeTracker.Api.Controllers
                         
                         message = BuildMessage($"Registered *{commandDto.Hours:F1} hours* for Nonbillable reason: {commandDto.NonBillReason ?? commandDto.TimeEntryType.ToString()} for date: {commandDto.Date:D}", "success");
                     }
-
-                    return Ok(message);
-                }
-                case SlackMessageOptions.Report:
-                {
-                    var commandDto = SlackMessageInterpreter.InterpretReportMessage(slashCommandPayload.text);
-                    
-                    var report = await timeEntryService.QueryHours(commandDto.Date);
-                    message = BuildMessage(report.ToMessage(), "success");
 
                     return Ok(message);
                 }

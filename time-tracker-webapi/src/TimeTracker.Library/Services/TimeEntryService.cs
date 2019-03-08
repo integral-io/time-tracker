@@ -57,26 +57,7 @@ namespace TimeTracker.Library.Services
             return model.TimeEntryId;
         }
 
-        public async Task<TimeEntryReportDto> QueryHours(DateTime startDateMonth)
-        {
-            var timeEntries = await _db.TimeEntries
-                .Include(x => x.Project)
-                .Where(x => x.UserId == _userId)
-                .ToListAsync();
-            var report = new TimeEntryReportDto()
-            {
-                ProjectHours = (from t in timeEntries
-                                select new HourPairDto()
-                                {
-                                    Hours = t.Hours,
-                                    ProjectOrName = t.ProjectId.HasValue ? t.Project.Name : null,
-                                    Date = t.Date,
-                                    TimeEntryType = t.TimeEntryType
-                                }).ToList()
-            };
-
-            return report;
-        }
+        
 
         public async Task<double> DeleteHours(DateTime commandDtoDate)
         {
