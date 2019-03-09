@@ -16,7 +16,7 @@ namespace TimeTracker.Library.Services
     {
         private readonly ILogger _logger;
 
-        public SlackMessageResponder(ILogger logger)
+        public SlackMessageResponder(in ILogger logger)
         {
             _logger = logger;
         }
@@ -42,7 +42,7 @@ namespace TimeTracker.Library.Services
         };
        
         
-        public JsonContent(object obj) :
+        public JsonContent(in object obj) :
             base(JsonConvert.SerializeObject(obj, serializerSettings), Encoding.UTF8, "application/json")
         {
         }

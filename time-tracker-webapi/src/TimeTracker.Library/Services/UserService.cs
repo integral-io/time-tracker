@@ -11,7 +11,7 @@ namespace TimeTracker.Library.Services
     {
         private readonly TimeTrackerDbContext _db;
         
-        public UserService(TimeTrackerDbContext db)
+        public UserService(in TimeTrackerDbContext db)
         {
             _db = db;
         }

@@ -10,7 +10,7 @@ namespace TimeTracker.Library.Services
     {
         private readonly TimeTrackerDbContext _db;
 
-        public AdminReportService(TimeTrackerDbContext db)
+        public AdminReportService(in TimeTrackerDbContext db)
         {
             _db = db;
         }

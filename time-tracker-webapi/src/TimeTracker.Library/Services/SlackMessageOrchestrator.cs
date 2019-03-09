@@ -71,7 +71,7 @@ namespace TimeTracker.Library.Services
                     var commandDto = SlackMessageInterpreter.InterpretReportMessage(slashCommandPayload.text);
                     var userReportSvc = new UserReportService(_dbContext, user.UserId);
                     
-                    var report = await userReportSvc.GetHoursSummaryMonthAndYTD(null);
+                    var report = await userReportSvc.GetHoursSummaryMonthAndYtd(null);
                     return BuildMessage(report.ToMessage(), "success");
                 }
                 case SlackMessageOptions.Delete:

@@ -11,7 +11,7 @@ namespace TimeTracker.Library.Services
         private readonly Guid _userId;
         private readonly TimeTrackerDbContext _dbContext;
 
-        public ProjectService(Guid userId, TimeTrackerDbContext dbContext)
+        public ProjectService(in Guid userId, in TimeTrackerDbContext dbContext)
         {
             _userId = userId;
             _dbContext = dbContext;

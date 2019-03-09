@@ -69,7 +69,7 @@ namespace TimeTracker.Library.Test.Services
                     TimeEntryTypeEnum.NonBillable);
 
                 UserReportService sut = new UserReportService(context, userId);
-                var hours = await sut.GetHoursSummaryMonthAndYTD(testMonth);
+                var hours = await sut.GetHoursSummaryMonthAndYtd(testMonth);
                 
                 hours.CurrentMonthDisplay.Should().Be("March 2019");
                 hours.BillableHoursMonth.Should().Be(20d);

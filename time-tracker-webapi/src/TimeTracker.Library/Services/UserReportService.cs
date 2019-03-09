@@ -14,7 +14,7 @@ namespace TimeTracker.Library.Services
         private readonly TimeTrackerDbContext _db;
         private readonly Guid _userId;
 
-        public UserReportService(TimeTrackerDbContext db, Guid userId)
+        public UserReportService(in TimeTrackerDbContext db, in Guid userId)
         {
             _db = db;
             _userId = userId;
@@ -31,7 +31,7 @@ namespace TimeTracker.Library.Services
                 select new HourPair()
                 {
                     Hours = t.Hours,
-                    ProjectOrName = t.ProjectId.HasValue ? t.Project.Name : null,
+                    ProjectOrName = t.ProjectId.HasValue ? t.Project.Name : string.Empty,
                     Date = t.Date,
                     TimeEntryType = t.TimeEntryType
                 }).ToList();
@@ -39,7 +39,7 @@ namespace TimeTracker.Library.Services
             return allHours;
         }
 
-        public async Task<TimeEntryReport> GetHoursSummaryMonthAndYTD(int? month)
+        public async Task<TimeEntryReport> GetHoursSummaryMonthAndYtd(int? month)
         {
             var currentDate = DateTime.UtcNow;
             if (!month.HasValue)
