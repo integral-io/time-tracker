@@ -20,7 +20,7 @@ namespace TimeTracker.Library.Services
             _userId = userId;
         }
         
-        public async Task<IReadOnlyCollection<HourPairDto>> QueryAllHours()
+        public async Task<IReadOnlyCollection<HourPair>> QueryAllHours()
         {
             var timeEntries = await _db.TimeEntries
                 .Include(x => x.Project)
@@ -28,7 +28,7 @@ namespace TimeTracker.Library.Services
                 .ToListAsync();
 
             var allHours = (from t in timeEntries
-                select new HourPairDto()
+                select new HourPair()
                 {
                     Hours = t.Hours,
                     ProjectOrName = t.ProjectId.HasValue ? t.Project.Name : null,
@@ -39,38 +39,36 @@ namespace TimeTracker.Library.Services
             return allHours;
         }
 
-        public async Task<dynamic> GetHoursSummary()
+        public async Task<TimeEntryReport> GetHoursSummaryMonthAndYTD(int? month)
         {
-            DateTime currentBeginningMonth = new DateTime(DateTime.UtcNow.Year, DateTime.UtcNow.Month, 1, 1, 1, 1, DateTimeKind.Utc);
-            DateTime currentBeginningYear = new DateTime(DateTime.UtcNow.Year, 1, 1, 1, 1, 1, DateTimeKind.Utc);
+            var currentDate = DateTime.UtcNow;
+            if (!month.HasValue)
+            {
+                month = currentDate.Month;
+            }
+            DateTime currentBeginningMonth = new DateTime(currentDate.Year, month.Value, 1, 1, 1, 1, DateTimeKind.Utc);
+            DateTime currentBeginningYear = new DateTime(currentDate.Year, 1, 1, 1, 1, 1, DateTimeKind.Utc);
+            TimeEntryReport timeEntryReport = new TimeEntryReport();
             
-            string currentMonthDisplay = currentBeginningMonth.ToString("MMM yyyy");
+            timeEntryReport.CurrentMonthDisplay = currentBeginningMonth.ToString("MMMM yyyy");
 
             var allHours = await this.QueryAllHours();
-            
-            double billableHoursMonth = allHours.Where(x =>
-                    x.Date >= currentBeginningMonth && x.TimeEntryType == TimeEntryTypeEnum.BillableProject)
-                .Sum(x=>x.Hours);
 
-            double billableHoursYtd = CalculateHours(allHours, currentBeginningYear, TimeEntryTypeEnum.BillableProject);
+            timeEntryReport.BillableHoursMonth = CalculateHours(allHours, currentBeginningMonth, TimeEntryTypeEnum.BillableProject);
+            timeEntryReport.BillableHourssYtd = CalculateHours(allHours, currentBeginningYear, TimeEntryTypeEnum.BillableProject);
 
-            double sickHoursMonth = CalculateHours(allHours, currentBeginningMonth, TimeEntryTypeEnum.Sick); 
-            double vacationHoursMonth = CalculateHours(allHours, currentBeginningMonth, TimeEntryTypeEnum.Vacation); 
-            double nonBillableHoursMonth = CalculateHours(allHours, currentBeginningMonth, TimeEntryTypeEnum.Vacation); 
+            timeEntryReport.SickHoursMonth = CalculateHours(allHours, currentBeginningMonth, TimeEntryTypeEnum.Sick); 
+            timeEntryReport.VacationHoursMonth = CalculateHours(allHours, currentBeginningMonth, TimeEntryTypeEnum.Vacation); 
+            timeEntryReport.NonBillableHoursMonth = CalculateHours(allHours, currentBeginningMonth, TimeEntryTypeEnum.NonBillable); 
             
-            
-            double sickHoursYTD = CalculateHours(allHours, currentBeginningMonth, TimeEntryTypeEnum.Sick); 
-            double vacationHoursYTD = CalculateHours(allHours, currentBeginningMonth, TimeEntryTypeEnum.Vacation); 
-            double nonBillableHoursYTD = CalculateHours(allHours, currentBeginningMonth, TimeEntryTypeEnum.Vacation);
+            timeEntryReport.SickHoursYtd = CalculateHours(allHours, currentBeginningMonth, TimeEntryTypeEnum.Sick); 
+            timeEntryReport.VacationHoursYtd = CalculateHours(allHours, currentBeginningMonth, TimeEntryTypeEnum.Vacation); 
+            timeEntryReport.NonBillableHoursYtd = CalculateHours(allHours, currentBeginningMonth, TimeEntryTypeEnum.NonBillable);
 
-            // todo: wip
-            return new
-            {
-                currentMonthDisplay = currentMonthDisplay
-            };
+            return timeEntryReport;
         }
         
-        private double CalculateHours(IReadOnlyCollection<HourPairDto> hours, DateTime? start, TimeEntryTypeEnum type)
+        private double CalculateHours(IReadOnlyCollection<HourPair> hours, DateTime? start, TimeEntryTypeEnum type)
         {
             var query = hours.Where(x => x.TimeEntryType == type);
 
