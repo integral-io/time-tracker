@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Immutable;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using TimeTracker.Data;
@@ -38,7 +39,7 @@ namespace TimeTracker.Library.Test
             dbContext.SaveChanges();
         }
 
-        public static void AddTestUsers(TimeTrackerDbContext dbContext)
+        public static IImmutableList<User> AddTestUsers(TimeTrackerDbContext dbContext)
         {
             dbContext.Users.AddRange(new User()
                 {
@@ -58,6 +59,7 @@ namespace TimeTracker.Library.Test
             );
             
             dbContext.SaveChanges();
+            return dbContext.Users.ToImmutableList();
         }
 
         public static void AddTimeOff(TimeTrackerDbContext dbContext)
