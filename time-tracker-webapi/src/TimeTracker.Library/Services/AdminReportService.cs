@@ -4,6 +4,7 @@ using TimeTracker.Data;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using TimeTracker.Data.Models;
 using TimeTracker.Library.Models.Admin;
 
 namespace TimeTracker.Library.Services
@@ -28,7 +29,10 @@ namespace TimeTracker.Library.Services
                     SlackUserName = u.UserName,
                     Last = u.LastName,
                     First = u.FirstName,
-                    BillableHoursYtd = 0d
+                    BillableHoursYtd = u.TimeEntries.Where(x=>x.TimeEntryType == TimeEntryTypeEnum.BillableProject).Sum(x=>x.Hours),
+                    OtherNonBillableYtd = u.TimeEntries.Where(x=>x.TimeEntryType == TimeEntryTypeEnum.NonBillable).Sum(x=>x.Hours),
+                    SickHoursYtd = u.TimeEntries.Where(x=>x.TimeEntryType == TimeEntryTypeEnum.Sick).Sum(x=>x.Hours),
+                    VacationHoursYtd = u.TimeEntries.Where(x=>x.TimeEntryType == TimeEntryTypeEnum.Vacation).Sum(x=>x.Hours)
                 };
             return (await query.ToListAsync()).ToImmutableList();
         }
