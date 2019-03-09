@@ -17,7 +17,7 @@ namespace TimeTracker.Api.Controllers
     public class TimeEntriesController : ControllerBase
     {
         [HttpPost("push"), ProducesResponseType(typeof(IEnumerable<Guid>), 201), ProducesResponseType(typeof(ModelStateDictionary),400)]
-        public async Task<ActionResult<IEnumerable<Guid>>> PushRecords(ICollection<TimeEntryDto> entries)
+        public async Task<ActionResult<IEnumerable<Guid>>> PushRecords(ICollection<TimeEntry> entries)
         {
             if (!ModelState.IsValid)
             {

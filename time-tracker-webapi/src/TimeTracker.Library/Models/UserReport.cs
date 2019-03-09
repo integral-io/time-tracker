@@ -1,6 +1,6 @@
 namespace TimeTracker.Library.Services
 {
-    public class UserReportDto
+    public class UserReport
     {
         public string SlackUserName { get; set; }
         public string First { get; set; }

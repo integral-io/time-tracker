@@ -15,9 +15,9 @@ namespace TimeTracker.Library.Services
             _db = db;
         }
 
-        public IReadOnlyCollection<UserReportDto> GetAllUsers()
+        public IReadOnlyCollection<UserReport> GetAllUsers()
         {
-            return new List<UserReportDto>();
+            return new List<UserReport>();
         }
     }
 }

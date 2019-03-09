@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using TimeTracker.Library.Models;
 using TimeTracker.Data;
 using TimeTracker.Data.Models;
+using TimeEntry = TimeTracker.Data.Models.TimeEntry;
 
 namespace TimeTracker.Library.Services
 {
@@ -74,19 +75,19 @@ namespace TimeTracker.Library.Services
             return hoursDeleted;
         }
 
-        public async Task<AllTimeOffDto> QueryAllTimeOff()
+        public async Task<AllTimeOff> QueryAllTimeOff()
         {
             var query = from t in _db.TimeEntries
                 group t by t.UserId into g
-                select new TimeOffDto()
+                select new TimeOff()
                 {
                     Username = g.FirstOrDefault().User.UserName,
-                    PtoTYD = g.Where(x=>x.TimeEntryType == TimeEntryTypeEnum.Vacation).Sum(x=>x.Hours),
-                    SickYTD = g.Where(x=>x.TimeEntryType == TimeEntryTypeEnum.Sick).Sum(x=>x.Hours)
+                    PtoTyd = g.Where(x=>x.TimeEntryType == TimeEntryTypeEnum.Vacation).Sum(x=>x.Hours),
+                    SickYtd = g.Where(x=>x.TimeEntryType == TimeEntryTypeEnum.Sick).Sum(x=>x.Hours)
                 };
             var hours = await query.ToListAsync();
 
-            var allTimeOff = new AllTimeOffDto()
+            var allTimeOff = new AllTimeOff()
             {
                 TimeOffSummaries = hours
             };

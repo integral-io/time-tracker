@@ -2,7 +2,7 @@ using System;
 
 namespace TimeTracker.Library.Models
 {
-    public class TimeEntryDto
+    public class TimeEntry
     {
         public double Hours { get; set; }
         public String Project { get; set; }
