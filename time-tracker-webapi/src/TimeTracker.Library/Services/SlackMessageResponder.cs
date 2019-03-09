@@ -42,7 +42,7 @@ namespace TimeTracker.Library.Services
         };
        
         
-        public JsonContent(in object obj) :
+        public JsonContent(object obj) :
             base(JsonConvert.SerializeObject(obj, serializerSettings), Encoding.UTF8, "application/json")
         {
         }

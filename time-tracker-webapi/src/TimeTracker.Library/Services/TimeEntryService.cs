@@ -15,7 +15,7 @@ namespace TimeTracker.Library.Services
         private readonly Guid _userId;
         private readonly TimeTrackerDbContext _db;
 
-        public TimeEntryService(in Guid userId, in TimeTrackerDbContext db)
+        public TimeEntryService(in Guid userId, TimeTrackerDbContext db)
         {
             _userId = userId;
             _db = db;

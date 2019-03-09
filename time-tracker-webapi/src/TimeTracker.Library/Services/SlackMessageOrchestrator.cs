@@ -4,6 +4,7 @@ using System.Text;
 using System.Threading.Tasks;
 using TimeTracker.Data;
 using TimeTracker.Library.Models;
+using TimeTracker.Library.Utils;
 
 namespace TimeTracker.Library.Services
 {
@@ -24,6 +25,7 @@ namespace TimeTracker.Library.Services
         /// <returns></returns>
         public async Task<SlackMessage> HandleCommand(SlashCommandPayload slashCommandPayload)
         {
+            Guard.ThrowIfNull(slashCommandPayload);
             string option = String.IsNullOrWhiteSpace(slashCommandPayload.text) ? "" : slashCommandPayload.text.Split(' ').FirstOrDefault();
             SlackMessageOptions.TryParse(option, true, out SlackMessageOptions optionEnum);
             

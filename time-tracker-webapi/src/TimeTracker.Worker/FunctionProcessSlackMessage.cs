@@ -9,6 +9,7 @@ using Microsoft.Extensions.Logging;
 using TimeTracker.Data;
 using TimeTracker.Library.Models;
 using TimeTracker.Library.Services;
+using TimeTracker.Library.Utils;
 
 namespace TimeTracker.Worker
 {
@@ -51,7 +52,9 @@ namespace TimeTracker.Worker
             string message, ILogger logger, ExecutionContext context)
         {
             logger.LogInformation($"C# ServiceBus queue trigger function processed message: {message}");
-
+            
+            Guard.ThrowIfCheckFails(String.IsNullOrEmpty(message), "cannot be null or empty", nameof(message));
+            
             if (_configuration == null)
             {
                 SetupConfiguration(context);
@@ -66,7 +69,6 @@ namespace TimeTracker.Worker
             
             try
             {
-
                 SlackMessageOrchestrator orchestrator = _serviceProvider.GetService<SlackMessageOrchestrator>();
                 var responseMessage = await orchestrator.HandleCommand(typedMessage);
                 
@@ -78,7 +80,7 @@ namespace TimeTracker.Worker
 
                 await slackResponder.SendMessage(typedMessage.response_url, new SlackMessage()
                 {
-                    Text = $"*Error:* _{exc.Message}_"
+                    Text = $"*Error:* _{exc.Message}_\n Source: {exc.Source} \n {exc.StackTrace}"
                 });
                 
                 throw;
