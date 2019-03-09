@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using TimeTracker.Data.Models;
+using TimeTracker.Library.Utils;
 
 namespace TimeTracker.Library
 {
@@ -39,12 +40,12 @@ namespace TimeTracker.Library
         /// <returns></returns>
         public static HoursInterpretedCommandDto InterpretHoursRecordMessage(string text)
         {
+            Guard.ThrowIfNull(text);
+            
             string[] splitText = text.ToLowerInvariant().Split(' ');
-            if (!text.StartsWith("record"))
-            {
-                return new HoursInterpretedCommandDto()
-                    {ErrorMessage = $"Invalid start option: {splitText.FirstOrDefault()}"};
-            }
+            
+            Guard.ThrowIfCheckFails(text.StartsWith("record"), 
+                $"Invalid start option: {splitText.FirstOrDefault()}", nameof(text));
 
             var dto = new HoursInterpretedCommandDto();
             dto.Project = splitText[1];

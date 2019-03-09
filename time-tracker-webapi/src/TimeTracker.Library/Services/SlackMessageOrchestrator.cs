@@ -26,6 +26,7 @@ namespace TimeTracker.Library.Services
         public async Task<SlackMessage> HandleCommand(SlashCommandPayload slashCommandPayload)
         {
             Guard.ThrowIfNull(slashCommandPayload);
+            
             string option = String.IsNullOrWhiteSpace(slashCommandPayload.text) ? "" : slashCommandPayload.text.Split(' ').FirstOrDefault();
             SlackMessageOptions.TryParse(option, true, out SlackMessageOptions optionEnum);
             
