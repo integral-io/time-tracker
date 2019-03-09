@@ -19,8 +19,8 @@ namespace TimeTracker.Library.Services
 
         public async Task<User> FindOrCreateSlackUser(string slackUserId, string slackUsername)
         {
-            Guard.ThrowIfCheckFails(String.IsNullOrEmpty(slackUserId), "cannot be null or empty", nameof(slackUserId));
-            Guard.ThrowIfCheckFails(String.IsNullOrEmpty(slackUsername), "cannot be null or empty", nameof(slackUsername));
+            Guard.ThrowIfCheckFails(!String.IsNullOrEmpty(slackUserId), "cannot be null or empty", nameof(slackUserId));
+            Guard.ThrowIfCheckFails(!String.IsNullOrEmpty(slackUsername), "cannot be null or empty", nameof(slackUsername));
             
             var user = await _db.Users.FirstOrDefaultAsync(
                 x => x.SlackUserId.Equals(slackUserId, StringComparison.InvariantCultureIgnoreCase));

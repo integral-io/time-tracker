@@ -53,8 +53,6 @@ namespace TimeTracker.Worker
         {
             logger.LogInformation($"C# ServiceBus queue trigger function processed message: {message}");
             
-            Guard.ThrowIfCheckFails(String.IsNullOrEmpty(message), "cannot be null or empty", nameof(message));
-            
             if (_configuration == null)
             {
                 SetupConfiguration(context);
@@ -65,10 +63,15 @@ namespace TimeTracker.Worker
             }
             
             SlackMessageResponder slackResponder = new SlackMessageResponder(logger);
-            var typedMessage = SlashCommandPayload.ParseFromFormEncodedData(message);
+            string responseUrl = null;
             
             try
             {
+                Guard.ThrowIfCheckFails(!String.IsNullOrEmpty(message), "cannot be null or empty", nameof(message));
+                
+                var typedMessage = SlashCommandPayload.ParseFromFormEncodedData(message);
+                responseUrl = typedMessage.response_url;
+                
                 SlackMessageOrchestrator orchestrator = _serviceProvider.GetService<SlackMessageOrchestrator>();
                 var responseMessage = await orchestrator.HandleCommand(typedMessage);
                 
@@ -78,11 +81,14 @@ namespace TimeTracker.Worker
             {
                 logger.LogError(exc.Message);
 
-                await slackResponder.SendMessage(typedMessage.response_url, new SlackMessage()
+                if (responseUrl != null)
                 {
-                    Text = $"*Error:* _{exc.Message}_\n Source: {exc.Source} \n {exc.StackTrace}"
-                });
-                
+                    await slackResponder.SendMessage(responseUrl, new SlackMessage()
+                    {
+                        Text = $"*Error:* _{exc.Message}_\n Source: {exc.Source} \n {exc.StackTrace}"
+                    });
+                }
+
                 throw;
             }
         }
