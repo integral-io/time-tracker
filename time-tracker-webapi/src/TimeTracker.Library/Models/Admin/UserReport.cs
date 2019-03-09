@@ -1,4 +1,4 @@
-namespace TimeTracker.Library.Services
+namespace TimeTracker.Library.Models.Admin
 {
     public class UserReport
     {
@@ -9,5 +9,6 @@ namespace TimeTracker.Library.Services
         public double BillableHoursYtd { get; set; }
         public double SickHoursYtd { get; set; }
         public double VacationHoursYtd { get; set; }
+        public double OtherNonBillableYtd { get; set; }
     }
 }

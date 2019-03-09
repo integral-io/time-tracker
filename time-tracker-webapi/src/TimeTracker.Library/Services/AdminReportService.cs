@@ -1,5 +1,10 @@
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using TimeTracker.Data;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
+using TimeTracker.Library.Models.Admin;
 
 namespace TimeTracker.Library.Services
 {
@@ -15,9 +20,17 @@ namespace TimeTracker.Library.Services
             _db = db;
         }
 
-        public IReadOnlyCollection<UserReport> GetAllUsers()
+        public async Task<IImmutableList<UserReport>> GetAllUsersReport()
         {
-            return new List<UserReport>();
+            var query = from u in _db.Users
+                select new UserReport
+                {
+                    SlackUserName = u.UserName,
+                    Last = u.LastName,
+                    First = u.FirstName,
+                    BillableHoursYtd = 0d
+                };
+            return (await query.ToListAsync()).ToImmutableList();
         }
     }
 }
