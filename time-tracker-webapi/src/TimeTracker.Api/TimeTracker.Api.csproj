@@ -12,13 +12,15 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Infrastructure" />
+    <Folder Include="Pages" />
     <Folder Include="wwwroot\" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Hellang.Authentication.JwtBearer.Google" Version="1.2.0" />
+    <PackageReference Include="Microsoft.AspNetCore" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.App" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.2.2" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="2.2.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="2.2.0" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.1" />
@@ -28,6 +30,22 @@
   <ItemGroup>
     <ProjectReference Include="..\TimeTracker.Data\TimeTracker.Data.csproj" />
     <ProjectReference Include="..\TimeTracker.Library\TimeTracker.Library.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="Infrastructure\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Remove="Infrastructure\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="Infrastructure\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Remove="Infrastructure\**" />
   </ItemGroup>
 
 </Project>
