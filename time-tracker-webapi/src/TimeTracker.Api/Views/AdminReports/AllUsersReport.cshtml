@@ -1,0 +1,32 @@
+@model System.Collections.Immutable.IImmutableList<TimeTracker.Library.Models.Admin.UserReport>
+
+@{
+    ViewBag.Title = "Users YTD Hour Report";
+    Layout = "_Layout";
+}
+
+<h2>Users YTD Hour Report</h2>
+
+<table>
+    <thead>
+    <tr>
+        <th>Username</th>
+        <th>First</th>
+        <th>Last</th>
+        <th>Total Billable</th>
+    </tr>
+    </thead>
+    <tbody>
+        @foreach (var user in Model)
+        {
+            <tr>
+                <td>@user.SlackUserName</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+        }
+    </tbody>
+</table>
+
