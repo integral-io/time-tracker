@@ -1,7 +1,12 @@
 using System;
 using System.Globalization;
+using System.IO;
+using System.Net.Http;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
+using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -91,6 +96,57 @@ namespace TimeTracker.Worker
 
                 throw;
             }
+        }
+        
+        [FunctionName("processSlackMessageHttp")]
+        public static async Task<IActionResult> RunHttpTrigger([HttpTrigger(AuthorizationLevel.Function, "post", Route = null)]
+            HttpRequest request, ILogger logger, ExecutionContext context)
+        {
+            logger.LogInformation($"C# Http trigger function processed message: {request}");
+            
+            if (_configuration == null)
+            {
+                SetupConfiguration(context);
+            }
+            if (_serviceProvider == null)
+            {
+                SetupServiceCollection();
+            }
+            
+            SlackMessageResponder slackResponder = new SlackMessageResponder(logger);
+            string responseUrl = null;
+            
+            try
+            {
+                string requestBody = await new StreamReader(request.Body).ReadToEndAsync();
+                
+                Guard.ThrowIfCheckFails(!String.IsNullOrEmpty(requestBody), "cannot be null or empty", nameof(request));
+                
+                var typedMessage = SlashCommandPayload.ParseFromFormEncodedData(requestBody);
+                responseUrl = typedMessage.response_url;
+                
+                SlackMessageOrchestrator orchestrator = _serviceProvider.GetService<SlackMessageOrchestrator>();
+                var responseMessage = await orchestrator.HandleCommand(typedMessage);
+                
+                await slackResponder.SendMessage(typedMessage.response_url, responseMessage);
+            }
+            catch (Exception exc)
+            {
+                logger.LogError(exc.Message);
+
+                if (responseUrl != null)
+                {
+                    await slackResponder.SendMessage(responseUrl, new SlackMessage()
+                    {
+                        Text = $"*Error:* _{exc.Message}_\n Source: {exc.Source} \n {exc.StackTrace}"
+                    });
+                }
+                return new BadRequestObjectResult(exc.Message);
+
+                throw;
+            }
+
+            return new OkResult();
         }
     }
 }
