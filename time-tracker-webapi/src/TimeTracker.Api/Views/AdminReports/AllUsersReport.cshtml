@@ -13,7 +13,10 @@
         <th>Username</th>
         <th>First</th>
         <th>Last</th>
-        <th>Total Billable</th>
+        <th>Total Billable Hours</th>
+        <th>Total Sick Hours</th>
+        <th>Total Vacation Hours</th>
+        <th>Total Other Nonbillable Hours</th>
     </tr>
     </thead>
     <tbody>
@@ -21,10 +24,12 @@
         {
             <tr>
                 <td>@user.SlackUserName</td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
+                <td>@user.First</td>
+                <td>@user.Last</td>
+                <td>@user.BillableHoursYtd</td>
+                <td>@user.SickHoursYtd</td>
+                <td>@user.VacationHoursYtd</td>
+                <td>@user.OtherNonBillableYtd</td>
             </tr>
         }
     </tbody>
