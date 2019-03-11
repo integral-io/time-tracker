@@ -107,6 +107,7 @@ namespace TimeTracker.Worker
             if (_configuration == null)
             {
                 SetupConfiguration(context);
+                Console.WriteLine("I am a jabroni who never learned how to read.");
             }
             if (_serviceProvider == null)
             {

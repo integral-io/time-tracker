@@ -72,7 +72,7 @@ namespace TimeTracker.Library.Test.Services
         [Fact]
         public async Task DeleteHours_ThatDoExistToday_works()
         {
-            var options = TestHelpers.BuildInMemoryDatabaseOptions("hoursDeleted1");
+            var options = TestHelpers.BuildInMemoryDatabaseOptions("hoursDeleted2");
             Guid userId = Guid.NewGuid();
             using (var context = new TimeTrackerDbContext(options))
             {
@@ -90,7 +90,7 @@ namespace TimeTracker.Library.Test.Services
         [Fact]
         public async Task AdminReport_GetsTimeOff_ForAllUsers()
         {
-            var options = TestHelpers.BuildInMemoryDatabaseOptions("adminReport");
+            var options = TestHelpers.BuildInMemoryDatabaseOptions("obsoleteAdminReport");
             
             Guid userId = Guid.NewGuid();
             using (var context = new TimeTrackerDbContext(options))
