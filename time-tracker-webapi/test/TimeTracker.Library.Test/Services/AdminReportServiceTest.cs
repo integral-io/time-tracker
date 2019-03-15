@@ -17,7 +17,7 @@ namespace TimeTracker.Library.Test.Services
         [Fact]
         public async Task GetAllUsersReport_includesExpectedHours()
         {
-            using (var context = new TimeTrackerDbContext(TestHelpers.BuildInMemoryDatabaseOptions("adminReport")))
+            using (var context = new TimeTrackerDbContext(TestHelpers.BuildInMemoryDatabaseOptions("adminReportExpectedHours")))
             {
                 TestHelpers.AddClientAndProject(context);
                 var testUsers = TestHelpers.AddTestUsers(context);
@@ -36,7 +36,7 @@ namespace TimeTracker.Library.Test.Services
         [Fact]
         public async Task GetAllUsersReport_includesExpectedUsers()
         {
-            using (var context = new TimeTrackerDbContext(TestHelpers.BuildInMemoryDatabaseOptions("adminReport")))
+            using (var context = new TimeTrackerDbContext(TestHelpers.BuildInMemoryDatabaseOptions("adminReportExpectedUsers")))
             {
                 TestHelpers.AddClientAndProject(context);
                 var testUsers = TestHelpers.AddTestUsers(context);
