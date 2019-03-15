@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Microsoft.EntityFrameworkCore;
 using TimeTracker.Data;
 using TimeTracker.Data.Models;
 using TimeTracker.Library.Services;
@@ -14,10 +15,8 @@ namespace TimeTracker.Library.Test.Services
         [Fact]
         public async Task QueryHours_pullsCorrectHoursAndInfo_forUser()
         {
-            var options = TestHelpers.BuildInMemoryDatabaseOptions("queryHours1");
-            
             Guid userId = Guid.NewGuid();
-            using (var context = new TimeTrackerDbContext(options))
+            using (var context = new TimeTrackerDbContext(TestHelpers.BuildInMemoryDatabaseOptions("queryHours1")))
             {
                 TestHelpers.AddClientAndProject(context);
                 
@@ -40,10 +39,8 @@ namespace TimeTracker.Library.Test.Services
         [Fact]
         public async Task GetHoursSummary_summarizesHoursCorrectly()
         {
-            var options = TestHelpers.BuildInMemoryDatabaseOptions("hoursReport");
-            
             Guid userId = Guid.NewGuid();
-            using (var context = new TimeTrackerDbContext(options))
+            using (var context = new TimeTrackerDbContext(TestHelpers.BuildInMemoryDatabaseOptions("hoursReport")))
             {
                 TestHelpers.AddClientAndProject(context);
                 int currentYear = DateTime.UtcNow.Year;

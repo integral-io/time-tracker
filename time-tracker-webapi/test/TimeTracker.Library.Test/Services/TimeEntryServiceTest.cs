@@ -16,10 +16,9 @@ namespace TimeTracker.Library.Test.Services
         [Fact]
         public async Task CreateBillableTimeEntry_createsDbRecord()
         {
-            var options = TestHelpers.BuildInMemoryDatabaseOptions("projects");
             Guid userId = Guid.NewGuid();
 
-            using (var context = new TimeTrackerDbContext(options))
+            using (var context = new TimeTrackerDbContext(TestHelpers.BuildInMemoryDatabaseOptions("projects")))
             {
                 TimeEntryService sut = new TimeEntryService(userId, context);
                 DateTime date = DateTime.UtcNow.Date;
@@ -35,10 +34,9 @@ namespace TimeTracker.Library.Test.Services
         [Fact]
         public async Task CreateNonBillableTimeEntry_createsDbRecord()
         {
-            var options = TestHelpers.BuildInMemoryDatabaseOptions("projects");
             Guid userId = Guid.NewGuid();
 
-            using (var context = new TimeTrackerDbContext(options))
+            using (var context = new TimeTrackerDbContext(TestHelpers.BuildInMemoryDatabaseOptions("projects")))
             {
                 TimeEntryService sut = new TimeEntryService(userId, context);
                 DateTime date = DateTime.UtcNow.Date;
@@ -57,10 +55,9 @@ namespace TimeTracker.Library.Test.Services
         [Fact]
         public async Task DeleteHours_ThatDontExistFromToday_works()
         {
-            var options = TestHelpers.BuildInMemoryDatabaseOptions("hoursDeleted1");
             Guid userId = Guid.NewGuid();
 
-            using (var context = new TimeTrackerDbContext(options))
+            using (var context = new TimeTrackerDbContext(TestHelpers.BuildInMemoryDatabaseOptions("hoursDeleted1")))
             {
                 TimeEntryService sut = new TimeEntryService(userId, context);
                 double hoursDeleted = await sut.DeleteHours(DateTime.UtcNow);
@@ -72,9 +69,8 @@ namespace TimeTracker.Library.Test.Services
         [Fact]
         public async Task DeleteHours_ThatDoExistToday_works()
         {
-            var options = TestHelpers.BuildInMemoryDatabaseOptions("hoursDeleted2");
             Guid userId = Guid.NewGuid();
-            using (var context = new TimeTrackerDbContext(options))
+            using (var context = new TimeTrackerDbContext(TestHelpers.BuildInMemoryDatabaseOptions("hoursDeleted2")))
             {
                 TimeEntryService sut = new TimeEntryService(userId, context);
                 DateTime date = DateTime.UtcNow.Date;
@@ -90,10 +86,8 @@ namespace TimeTracker.Library.Test.Services
         [Fact]
         public async Task AdminReport_GetsTimeOff_ForAllUsers()
         {
-            var options = TestHelpers.BuildInMemoryDatabaseOptions("obsoleteAdminReport");
-            
             Guid userId = Guid.NewGuid();
-            using (var context = new TimeTrackerDbContext(options))
+            using (var context = new TimeTrackerDbContext(TestHelpers.BuildInMemoryDatabaseOptions("obsoleteAdminReport")))
             {
                 TestHelpers.AddClientAndProject(context);
                 TestHelpers.AddTestUsers(context);
@@ -109,7 +103,5 @@ namespace TimeTracker.Library.Test.Services
                 hours.TimeOffSummaries.FirstOrDefault().SickYtd.Should().Be(2);
             }
         }
-        
-        
     }
 }
