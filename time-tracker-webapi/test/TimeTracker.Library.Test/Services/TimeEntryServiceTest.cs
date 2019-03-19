@@ -74,12 +74,13 @@ namespace TimeTracker.Library.Test.Services
             {
                 TimeEntryService sut = new TimeEntryService(userId, context);
                 DateTime date = DateTime.UtcNow.Date;
-                Guid id = await sut.CreateBillableTimeEntry(date, 7, 1, 1);
+                await sut.CreateBillableTimeEntry(date, 7, 1, 1);
+                await sut.CreateNonBillableTimeEntry(date, 8, null, TimeEntryTypeEnum.Vacation);
+                await sut.CreateNonBillableTimeEntry(date, 8, "flu", TimeEntryTypeEnum.Sick);
 
-                var entry = await context.TimeEntries.FirstOrDefaultAsync(x => x.TimeEntryId == id);
                 double hoursDeleted = await sut.DeleteHours(date);
 
-                hoursDeleted.Should().Be(7);
+                hoursDeleted.Should().Be(23);
             }
         }
 
