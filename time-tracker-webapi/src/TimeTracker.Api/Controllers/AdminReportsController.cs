@@ -20,8 +20,16 @@ namespace TimeTracker.Api.Controllers
         }
 
         /* anonymous until figure out auth with google */
-        [HttpGet(""), AllowAnonymous, ProducesResponseType(typeof(IEnumerable<UserReport>), 200)]
+        [HttpGet("ytd"), AllowAnonymous, ProducesResponseType(typeof(IEnumerable<UserReport>), 200)]
         public async Task<IActionResult> AllUsersReport()
+        {
+            AdminReportService adminReportService = new AdminReportService(_dbContext);
+            var items = await adminReportService.GetAllUsersReport();
+            return View(model: items);
+        }
+        
+        [HttpGet("payperiod"), AllowAnonymous, ProducesResponseType(typeof(IEnumerable<UserReport>), 200)]
+        public async Task<IActionResult> PeriodReport(string start, string end)
         {
             AdminReportService adminReportService = new AdminReportService(_dbContext);
             var items = await adminReportService.GetAllUsersReport();

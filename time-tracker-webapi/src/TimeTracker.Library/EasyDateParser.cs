@@ -63,7 +63,7 @@ namespace TimeTracker.Library
         public static DateTime GetUtcNow()
         {
             var utcNow = DateTime.UtcNow;
-            return new DateTime(utcNow.Year, utcNow.Month, utcNow.Day, 0, 0, 1, DateTimeKind.Utc);
+            return new DateTime(utcNow.Year, utcNow.Month, utcNow.Day, 0, 0, 0, DateTimeKind.Utc);
         }
 
         private static IReadOnlyDictionary<int, string> GetMonths()

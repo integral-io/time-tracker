@@ -9,9 +9,13 @@
     <title>@ViewBag.Title</title>
 </head>
 <body>
+<div>
+    <a href=@Url.Action(action: "AllUsersReport", controller: "AdminReports")>YTD Report</a>
+    <a href="">Pay Period Report</a>
+</div>
 <div class="container body-content">
     @RenderBody()
-    <hr />
+    <hr/>
     <footer>
         <p>&copy; 2019</p>
     </footer>

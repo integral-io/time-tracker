@@ -1,6 +1,9 @@
 using System;
+using System.Collections.Generic;
+using System.Net.Mime;
 using FluentAssertions;
 using TimeTracker.Data.Models;
+using TimeTracker.Library.Models;
 using Xunit;
 
 namespace TimeTracker.Library.Test
@@ -21,6 +24,7 @@ namespace TimeTracker.Library.Test
             sut.Hours.Should().Be(8d);
             sut.Project.Should().Be("au");
             sut.IsWorkFromHome.Should().BeTrue();
+            sut.TimeEntryType.Should().Be(TimeEntryTypeEnum.BillableProject);
 
             kabulTime.Day.Should().Be(sut.Date.Day);
         }
@@ -32,6 +36,7 @@ namespace TimeTracker.Library.Test
             sut.Hours.Should().Be(8d);
             sut.IsWorkFromHome.Should().BeTrue();
             sut.Project.Should().Be("au");
+            sut.TimeEntryType.Should().Be(TimeEntryTypeEnum.BillableProject);
             sut.Date.Day.Should().Be(DateTime.UtcNow.Day);
         }
         
@@ -43,16 +48,32 @@ namespace TimeTracker.Library.Test
             sut.Hours.Should().Be(8d);
         }
         
-        [Fact]
-        public void InterpretHoursRecordMessage_canInterpretHoursTodayForNonBillable()
+        [Theory]
+        [InlineData("nonbill", "\"lunch and learn\"", 2, null)]
+        [InlineData("nonbillable", "\"lunch and learn\"", 2, null)]
+        [InlineData("nonbillable", "pda", 2, null)]
+        [InlineData("nonbillable", "fsa", 4, "mar-21")]
+        [InlineData("nonbill", "fsa", 4, "mar-21-2019")]
+        [InlineData("nonbill", "mar-19", 4, "some non bill reason")]
+        public void InterpretHoursRecordMessage_canInterpretNonBillableWithVarietyText(string nonbillText, string description, double hours, string dateText)
         {
-            var sut = SlackMessageInterpreter.InterpretHoursRecordMessage("record nonbill 2 \"lunch and learn\"");
-            sut.Date.Date.Should().Be(DateTime.UtcNow.Date);
-            sut.Hours.Should().Be(2d);
+            var sut = SlackMessageInterpreter.InterpretHoursRecordMessage($"record {nonbillText} {hours:F1} {description} {dateText ?? ""}");
+            if (dateText != "some non bill reason")
+            {
+                sut.Date.Date.Should().Be(EasyDateParser.ParseEasyDate(dateText) ?? EasyDateParser.GetUtcNow().Date);
+                sut.NonBillReason.Should().Be(description.Replace("\"", ""));
+            }
+            else
+            {
+                sut.Date.Date.Should().Be(EasyDateParser.ParseEasyDate(description).Value);
+                sut.NonBillReason.Should().Be(dateText.Replace("\"", ""));
+            }
+            
+            sut.Hours.Should().Be(hours);
             sut.IsBillable.Should().BeFalse();
-            sut.NonBillReason.Should().Be("lunch and learn");
+            sut.TimeEntryType.Should().Be(TimeEntryTypeEnum.NonBillable);
         }
-
+        
         [Fact]
         public void InterpretHoursRecordMessage_canInterpretSickHours()
         {
@@ -96,7 +117,7 @@ namespace TimeTracker.Library.Test
             sut.TimeEntryType.Should().Be(TimeEntryTypeEnum.Vacation);
             sut.NonBillReason.Should().BeNull();
         }
-        
+
         #endregion
         
         #region report
@@ -136,6 +157,42 @@ namespace TimeTracker.Library.Test
             sut.Date.Day.Should().Be(17);
         }
 
+        #endregion
+
+        #region helpers
+        [Fact]
+        public void FindDatePart_findsDateText()
+        {
+            string dateText = "jan-21";
+            var list = new List<TextMessagePart>()
+            {
+                new TextMessagePart() { Text = dateText},
+                new TextMessagePart() { Text = "wfh"},
+                new TextMessagePart() { Text = "8"},
+                new TextMessagePart() { Text = "au"},
+                new TextMessagePart() { Text = "i lik toilets"}
+            };
+            string datePart = SlackMessageInterpreter.FindDatePart(list);
+            datePart.Should().NotBeEmpty();
+            datePart.Should().Be(dateText);
+        }
+        
+        [Fact]
+        public void FindDatePart_findsYesterday()
+        {
+            string dateText = "yesterday";
+            var list = new List<TextMessagePart>()
+            {
+                new TextMessagePart() { Text = "wfh"},
+                new TextMessagePart() { Text = dateText},
+                new TextMessagePart() { Text = "8"},
+                new TextMessagePart() { Text = "au", IsUsed = true},
+                new TextMessagePart() { Text = "i lik toilets"}
+            };
+            string datePart = SlackMessageInterpreter.FindDatePart(list);
+            datePart.Should().NotBeEmpty();
+            datePart.Should().Be(dateText);
+        }
         #endregion
     }
 }

@@ -1,0 +1,37 @@
+@model System.Collections.Immutable.IImmutableList<TimeTracker.Library.Models.Admin.UserReport>
+
+@{
+    ViewBag.Title = "Report by Pay Period or Range";
+    Layout = "_Layout";
+}
+
+<h2>Report by Pay Period or Range</h2>
+/* todo: refactor into partial view*/
+
+<table>
+    <thead>
+    <tr>
+        <th>Username</th>
+        <th>First</th>
+        <th>Last</th>
+        <th>Total Billable Hours</th>
+        <th>Total Sick Hours</th>
+        <th>Total Vacation Hours</th>
+        <th>Total Other Nonbillable Hours</th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (var user in Model)
+    {
+        <tr>
+            <td>@user.SlackUserName</td>
+            <td>@user.First</td>
+            <td>@user.Last</td>
+            <td>@user.BillableHoursYtd</td>
+            <td>@user.SickHoursYtd</td>
+            <td>@user.VacationHoursYtd</td>
+            <td>@user.OtherNonBillableYtd</td>
+        </tr>
+    }
+    </tbody>
+</table>
