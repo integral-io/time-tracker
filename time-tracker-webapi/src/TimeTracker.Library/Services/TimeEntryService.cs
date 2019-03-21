@@ -35,6 +35,7 @@ namespace TimeTracker.Library.Services
             };
             _db.TimeEntries.Add(model);
             await _db.SaveChangesAsync();
+            _db.Dispose();
             
             return model.TimeEntryId;
         }
@@ -54,11 +55,10 @@ namespace TimeTracker.Library.Services
             };
             _db.TimeEntries.Add(model);
             await _db.SaveChangesAsync();
+            _db.Dispose();
             
             return model.TimeEntryId;
         }
-
-        
 
         public async Task<double> DeleteHours(DateTime commandDtoDate)
         {
@@ -72,6 +72,8 @@ namespace TimeTracker.Library.Services
             _db.TimeEntries.RemoveRange(timeEntries);
 
             await _db.SaveChangesAsync();
+            _db.Dispose();
+            
             return hoursDeleted;
         }
 
@@ -85,7 +87,7 @@ namespace TimeTracker.Library.Services
                     PtoTyd = g.Where(x=>x.TimeEntryType == TimeEntryTypeEnum.Vacation).Sum(x=>x.Hours),
                     SickYtd = g.Where(x=>x.TimeEntryType == TimeEntryTypeEnum.Sick).Sum(x=>x.Hours)
                 };
-            var hours = await query.ToListAsync();
+            var hours = await query.AsNoTracking().ToListAsync();
 
             var allTimeOff = new AllTimeOff()
             {
