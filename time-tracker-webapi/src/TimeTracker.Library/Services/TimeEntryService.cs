@@ -35,7 +35,6 @@ namespace TimeTracker.Library.Services
             };
             _db.TimeEntries.Add(model);
             await _db.SaveChangesAsync();
-            _db.Dispose();
             
             return model.TimeEntryId;
         }
@@ -55,7 +54,6 @@ namespace TimeTracker.Library.Services
             };
             _db.TimeEntries.Add(model);
             await _db.SaveChangesAsync();
-            _db.Dispose();
             
             return model.TimeEntryId;
         }
@@ -72,7 +70,6 @@ namespace TimeTracker.Library.Services
             _db.TimeEntries.RemoveRange(timeEntries);
 
             await _db.SaveChangesAsync();
-            _db.Dispose();
             
             return hoursDeleted;
         }
