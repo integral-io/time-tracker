@@ -116,7 +116,7 @@ namespace TimeTracker.Worker
             
             SlackMessageResponder slackResponder = new SlackMessageResponder(logger);
             string responseUrl = null;
-            
+            // todo: play with dc scope / disposing
             try
             {
                 string requestBody = await new StreamReader(request.Body).ReadToEndAsync();

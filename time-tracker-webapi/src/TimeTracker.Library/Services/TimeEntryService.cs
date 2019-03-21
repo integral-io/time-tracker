@@ -35,10 +35,12 @@ namespace TimeTracker.Library.Services
             };
             _db.TimeEntries.Add(model);
             await _db.SaveChangesAsync();
+
+            _db.DetachEntity(model);
             
             return model.TimeEntryId;
         }
-        
+
         public async Task<Guid> CreateNonBillableTimeEntry(DateTime date, double hours, string nonBillReason, 
             TimeEntryTypeEnum timeEntryTypeEnum = TimeEntryTypeEnum.NonBillable)
         {
@@ -55,6 +57,8 @@ namespace TimeTracker.Library.Services
             _db.TimeEntries.Add(model);
             await _db.SaveChangesAsync();
             
+            _db.DetachEntity(model);
+            
             return model.TimeEntryId;
         }
 
@@ -70,6 +74,8 @@ namespace TimeTracker.Library.Services
             _db.TimeEntries.RemoveRange(timeEntries);
 
             await _db.SaveChangesAsync();
+            
+            timeEntries.ForEach(x=> _db.DetachEntity(x));
             
             return hoursDeleted;
         }

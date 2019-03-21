@@ -19,6 +19,11 @@ namespace TimeTracker.Data
             }
             base.OnConfiguring(optionsBuilder);
         }
+        
+        public void DetachEntity(Object entity)
+        {
+            this.Entry(entity).State = EntityState.Detached;
+        }
 
         public DbSet<Models.BillingClient> BillingClients { get; set; }
         public DbSet<Models.BillingRate> BillingRates { get; set; }
