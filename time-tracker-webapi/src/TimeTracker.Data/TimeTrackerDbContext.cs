@@ -5,24 +5,13 @@ namespace TimeTracker.Data
 {
     public class TimeTrackerDbContext : DbContext
     {
-        private readonly string _connectionString;
-
-        public TimeTrackerDbContext(DbContextOptions dbContextOptions) : base(dbContextOptions)
+        public TimeTrackerDbContext(DbContextOptions options) : base(options)
         {
         }
 
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        public void DetachEntity(object entity)
         {
-            if (!optionsBuilder.IsConfigured)
-            {
-                optionsBuilder.UseSqlServer(_connectionString);
-            }
-            base.OnConfiguring(optionsBuilder);
-        }
-        
-        public void DetachEntity(Object entity)
-        {
-            this.Entry(entity).State = EntityState.Detached;
+            Entry(entity).State = EntityState.Detached;
         }
 
         public DbSet<Models.BillingClient> BillingClients { get; set; }

@@ -33,7 +33,7 @@ namespace TimeTracker.Api
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
-            services.AddSingleton<IConfiguration>(Configuration);
+            services.AddSingleton(Configuration);
             
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(x => x.UseGoogle(
@@ -48,7 +48,7 @@ namespace TimeTracker.Api
                     
                 };
             });
-            string connection = Configuration.GetConnectionString("DefaultConnection");
+            var connection = Configuration.GetConnectionString("DefaultConnection");
             services.AddDbContext<TimeTrackerDbContext>(options =>
             {
                 options.UseSqlServer(connection);
@@ -66,16 +66,17 @@ namespace TimeTracker.Api
             {
                 app.UseHsts();
                 app.UseHttpsRedirection();
+                
+                app.UseAuthentication();
             }
-            
+
             // global cors policy
             app.UseCors(x => x
                 .AllowAnyOrigin()
                 .AllowAnyMethod()
                 .AllowAnyHeader()
                 .AllowCredentials());
- 
-            app.UseAuthentication();
+
 
             app.UseSwagger(settings => { });
             app.UseSwaggerUi3(settings => { });
