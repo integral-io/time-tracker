@@ -58,7 +58,7 @@ namespace TimeTracker.Library
             projectOrTypePart.IsUsed = true;
             
             dto.IsWorkFromHome = text.Contains("wfh");
-            var hoursPart = splitText.FirstOrDefault(x => !x.IsUsed && double.TryParse(x.Text, out var harry));
+            var hoursPart = splitText.FirstOrDefault(x => !x.IsUsed && double.TryParse(x.Text, out _));
             if (hoursPart == null)
             {
                 dto.ErrorMessage = "No Hours found!";
@@ -171,7 +171,7 @@ namespace TimeTracker.Library
                 return "yesterday";
             }
 
-            var foundDatePart = splitText.FirstOrDefault(x => DateTime.TryParseExact(x.Text, "yyyy-MM-dd", new CultureInfo("en-US"), DateTimeStyles.None, out var parsedDate));
+            var foundDatePart = splitText.FirstOrDefault(x => DateTime.TryParseExact(x.Text, "yyyy-MM-dd", new CultureInfo("en-US"), DateTimeStyles.None, out _));
             if (foundDatePart != null)
             {
                 foundDatePart.IsUsed = true;
