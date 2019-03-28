@@ -61,7 +61,7 @@ namespace TimeTracker.Library
             projectOrTypePart.IsUsed = true;
             
             dto.IsWorkFromHome = text.Contains("wfh");
-            var hoursPart = splitText.FirstOrDefault(x => !x.IsUsed && Double.TryParse(x.Text, out var harry));
+            var hoursPart = splitText.FirstOrDefault(x => !x.IsUsed && double.TryParse(x.Text, out var harry));
             if (hoursPart == null)
             {
                 dto.ErrorMessage = "No Hours found!";
@@ -99,12 +99,12 @@ namespace TimeTracker.Library
                     dto.NonBillReason = text.Substring(startIndexOfReason).Replace("\"", "").Trim();
                 }
 
-                if (String.IsNullOrEmpty(dto.NonBillReason))
+                if (string.IsNullOrEmpty(dto.NonBillReason))
                 {
                     var possibleNonBills = splitText.Where(x => !x.IsUsed).Select(x => x.Text).ToArray();
                     if (possibleNonBills.Any())
                     {
-                        dto.NonBillReason = String.Join(" ", possibleNonBills).Trim();
+                        dto.NonBillReason = string.Join(" ", possibleNonBills).Trim();
                     }
                 }
             }
@@ -142,7 +142,7 @@ namespace TimeTracker.Library
 
         private static void ProcessDate(string datePortion, CommandDtoBase dto)
         {
-            if (String.IsNullOrEmpty(datePortion))
+            if (string.IsNullOrEmpty(datePortion))
             {
                 dto.Date = EasyDateParser.GetUtcNow();
             }

@@ -35,7 +35,7 @@ namespace TimeTracker.Worker
 
         private static void SetupServiceCollection()
         {
-            var serviceProvider = new ServiceCollection()
+            serviceProvider = new ServiceCollection()
                 .AddEntityFrameworkSqlServer()
                 .AddDbContextPool<TimeTrackerDbContext>(options =>
                 {
@@ -46,8 +46,6 @@ namespace TimeTracker.Worker
                 })
                 .AddScoped<SlackMessageOrchestrator>()
                 .BuildServiceProvider();
-
-            FunctionProcessSlackMessage.serviceProvider = serviceProvider;
         }
 
         [FunctionName("processSlackMessage")]
@@ -70,7 +68,7 @@ namespace TimeTracker.Worker
             
             try
             {
-                Guard.ThrowIfCheckFails(!String.IsNullOrEmpty(message), "cannot be null or empty", nameof(message));
+                Guard.ThrowIfCheckFails(!string.IsNullOrEmpty(message), "cannot be null or empty", nameof(message));
                 
                 var typedMessage = SlashCommandPayload.ParseFromFormEncodedData(message);
                 responseUrl = typedMessage.response_url;
@@ -119,7 +117,7 @@ namespace TimeTracker.Worker
             {
                 var requestBody = await new StreamReader(request.Body).ReadToEndAsync();
                 
-                Guard.ThrowIfCheckFails(!String.IsNullOrEmpty(requestBody), "cannot be null or empty", nameof(request));
+                Guard.ThrowIfCheckFails(!string.IsNullOrEmpty(requestBody), "cannot be null or empty", nameof(request));
                 
                 var typedMessage = SlashCommandPayload.ParseFromFormEncodedData(requestBody);
                 responseUrl = typedMessage.response_url;
