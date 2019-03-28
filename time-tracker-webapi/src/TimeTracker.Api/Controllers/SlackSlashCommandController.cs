@@ -91,8 +91,6 @@ namespace TimeTracker.Api.Controllers
                     return Ok(message);
                 }
             }
-
-            return Ok("unsupported option");
         }
 
         private SlackMessage BuildMessage(string text, string messageType)
