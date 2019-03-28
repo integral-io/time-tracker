@@ -23,7 +23,7 @@ namespace TimeTracker.Api.Controllers
         {
             var orchestration = messageOrchestrationFactory.Create(slashCommandPayload);
 
-            var response = orchestration.GenerateResponse(slashCommandPayload);
+            var response = await orchestration.GenerateResponse(slashCommandPayload);
             
             return Ok(response);
         }

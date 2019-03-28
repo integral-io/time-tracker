@@ -28,13 +28,10 @@ namespace TimeTracker.Library.Services.Orchestration
                 {
                     return new DeleteMessageOrchestration(dbContext);
                 }
-                case SlackMessageOptions.Help:
-                case SlackMessageOptions.Report:
+                default:
                 {
                     return new HelpMessageOrchestration();
                 }
-                default:
-                    throw new ArgumentOutOfRangeException();
             }
         }
     }
