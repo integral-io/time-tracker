@@ -1,5 +1,3 @@
-using System;
-
 namespace TimeTracker.Api.Models
 {
     public class GoogleTokenResponse

@@ -1,11 +1,8 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Net.Http;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json;
 using TimeTracker.Data;
 using TimeTracker.Library.Models;
 using TimeTracker.Library.Services;

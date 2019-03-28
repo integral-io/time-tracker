@@ -3,12 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Microsoft.EntityFrameworkCore;
 using TimeTracker.Data;
 using TimeTracker.Data.Models;
 using TimeTracker.Library.Services;
 using Xunit;
-using Xunit.Sdk;
 
 namespace TimeTracker.Library.Test.Services
 {

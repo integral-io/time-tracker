@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TimeTracker.Data;
-using TimeTracker.Library.Models;
 using TimeTracker.Library.Models.Admin;
 using TimeTracker.Library.Services;
 

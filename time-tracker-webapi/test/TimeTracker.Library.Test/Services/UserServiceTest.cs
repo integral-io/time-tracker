@@ -1,12 +1,9 @@
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.InMemory.Storage.Internal;
 using TimeTracker.Library.Services;
 using TimeTracker.Data;
 using TimeTracker.Data.Models;
-using FluentAssertions.Common;
 using Xunit;
 
 namespace TimeTracker.Library.Test.Services

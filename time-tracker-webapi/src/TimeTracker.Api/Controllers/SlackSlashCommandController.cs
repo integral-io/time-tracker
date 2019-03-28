@@ -3,7 +3,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using TimeTracker.Api.Models;
 using TimeTracker.Library.Services;
 using TimeTracker.Data;
 using TimeTracker.Library;
