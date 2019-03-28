@@ -27,7 +27,7 @@ namespace TimeTracker.Library.Services
         {
             Guard.ThrowIfNull(slashCommandPayload);
             
-            var option = String.IsNullOrWhiteSpace(slashCommandPayload.text) ? "" : slashCommandPayload.text.Split(' ').FirstOrDefault();
+            var option = string.IsNullOrWhiteSpace(slashCommandPayload.text) ? "" : slashCommandPayload.text.Split(' ').FirstOrDefault();
             Enum.TryParse(option, true, out SlackMessageOptions optionEnum);
             
             var userSevice = new UserService(dbContext);
@@ -102,7 +102,7 @@ namespace TimeTracker.Library.Services
             }
         }
         
-        private SlackMessage BuildMessage(String text, String messageType)
+        private SlackMessage BuildMessage(string text, string messageType)
         {
             var message = new SlackMessage()
             {

@@ -27,7 +27,7 @@ namespace TimeTracker.Api.Controllers
         public async Task<ActionResult<SlackMessage>> HandleCommand([FromForm]SlashCommandPayload slashCommandPayload)
         {
             // todo: user SlackMessageOrchestrator in Library
-            var option = String.IsNullOrWhiteSpace(slashCommandPayload.text) ? "" : slashCommandPayload.text.Split(' ').FirstOrDefault();
+            var option = string.IsNullOrWhiteSpace(slashCommandPayload.text) ? "" : slashCommandPayload.text.Split(' ').FirstOrDefault();
             Enum.TryParse(option, true, out SlackMessageOptions optionEnum);
             
             var userSevice = new UserService(dbContext);
@@ -96,7 +96,7 @@ namespace TimeTracker.Api.Controllers
             return Ok("unsupported option");
         }
 
-        private SlackMessage BuildMessage(String text, String messageType)
+        private SlackMessage BuildMessage(string text, string messageType)
         {
             var message = new SlackMessage()
             {
