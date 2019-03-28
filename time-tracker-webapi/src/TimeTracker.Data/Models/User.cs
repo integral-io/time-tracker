@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using Microsoft.EntityFrameworkCore.Scaffolding.Metadata;
 
 namespace TimeTracker.Data.Models
 {

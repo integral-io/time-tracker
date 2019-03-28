@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Net.Mime;
 using FluentAssertions;
 using TimeTracker.Data.Models;
 using TimeTracker.Library.Models;
