@@ -2,7 +2,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using TimeTracker.Data;
 using TimeTracker.Library.Models;
-using TimeTracker.Library.Services.Orchestration;
+using TimeTracker.Library.Services;
 
 namespace TimeTracker.Api.Controllers
 {
@@ -10,22 +10,20 @@ namespace TimeTracker.Api.Controllers
     [Route("slack/slashcommand")]
     public class SlackSlashCommandController : ControllerBase
     {
-        private readonly MessageOrchestrationFactory messageOrchestrationFactory;
+        private readonly SlackMessageOrchestrator messageOrchestrator;
 
         public SlackSlashCommandController(TimeTrackerDbContext dbContext)
         {
-            messageOrchestrationFactory = new MessageOrchestrationFactory(dbContext);
+            messageOrchestrator = new SlackMessageOrchestrator(dbContext);
         }
 
         [HttpPost("hours")]
         [Produces("application/json")]
         public async Task<ActionResult<SlackMessage>> HandleCommand([FromForm] SlashCommandPayload slashCommandPayload)
         {
-            var orchestration = messageOrchestrationFactory.Create(slashCommandPayload);
-
-            var response = await orchestration.GenerateResponse(slashCommandPayload);
+            var message = await messageOrchestrator.HandleCommand(slashCommandPayload);
             
-            return Ok(response);
+            return Ok(message);
         }
     }
 }

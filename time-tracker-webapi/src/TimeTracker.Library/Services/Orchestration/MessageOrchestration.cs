@@ -1,5 +1,6 @@
 using System.Threading.Tasks;
 using TimeTracker.Library.Models;
+using TimeTracker.Library.Utils;
 
 namespace TimeTracker.Library.Services.Orchestration
 {
@@ -7,6 +8,8 @@ namespace TimeTracker.Library.Services.Orchestration
     {
         public async Task<SlackMessage> GenerateResponse(SlashCommandPayload payload)
         {
+            Guard.ThrowIfNull(payload);
+            
             var response = await RespondTo(payload);
             
             return ToMessage(response);

@@ -31,17 +31,16 @@ namespace TimeTracker.Library.Services.Orchestration
 
                 if (project == null)
                 {
-                    // Project was not found
                     return new SlackMessageResponse($"Invalid Project Name {commandDto.Project}", "error");
                 }
-                else
-                {
-                    await timeEntryService.CreateBillableTimeEntry(commandDto.Date, commandDto.Hours,
-                        project.BillingClientId, project.ProjectId);
-                    return new SlackMessageResponse(
-                        $"Registered *{commandDto.Hours:F1} hours* for project *{commandDto.Project}* {commandDto.Date:D}. " +
-                        (commandDto.IsWorkFromHome ? "_Worked From Home_" : ""), "success");
-                }
+
+                await timeEntryService.CreateBillableTimeEntry(
+                    commandDto.Date, commandDto.Hours, 
+                    project.BillingClientId, project.ProjectId);
+                
+                return new SlackMessageResponse(
+                    $"Registered *{commandDto.Hours:F1} hours* for project *{commandDto.Project}* {commandDto.Date:D}. " +
+                    (commandDto.IsWorkFromHome ? "_Worked From Home_" : ""), "success");
             }
 
             await timeEntryService.CreateNonBillableTimeEntry(commandDto.Date, commandDto.Hours,
