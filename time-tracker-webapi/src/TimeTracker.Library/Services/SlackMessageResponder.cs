@@ -14,11 +14,11 @@ namespace TimeTracker.Library.Services
     /// </summary>
     public class SlackMessageResponder
     {
-        private readonly ILogger _logger;
+        private readonly ILogger logger;
 
         public SlackMessageResponder(in ILogger logger)
         {
-            _logger = logger;
+            this.logger = logger;
         }
 
         private static readonly Lazy<HttpClient> LazyHttpClient = new Lazy<HttpClient>(() => new HttpClient());
@@ -29,7 +29,7 @@ namespace TimeTracker.Library.Services
             if (!postAsync.IsSuccessStatusCode)
             {
                 string errorContent = await postAsync.Content.ReadAsStringAsync();
-                _logger.LogError("Could not post message back to slack: " + errorContent);
+                logger.LogError("Could not post message back to slack: " + errorContent);
             }
         }
     }

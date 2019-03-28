@@ -16,12 +16,12 @@ namespace TimeTracker.Api.Controllers
     [ApiController]
     public class AuthController : ControllerBase
     {
-        private readonly GoogleConfigurationProperties _config;
+        private readonly GoogleConfigurationProperties config;
         private const string GoogleTokenExchangeUrl = "https://www.googleapis.com/oauth2/v4/token";
 
         public AuthController(IConfiguration configuration)
         {
-            _config = new GoogleConfigurationProperties()
+            config = new GoogleConfigurationProperties()
             {
                 GoogleOrgClientId = configuration["Authentication:Google:ClientId"],
                 GoogleOrgClientSecret = configuration["Authentication:Google:ClientSecret"],
@@ -34,7 +34,7 @@ namespace TimeTracker.Api.Controllers
         {
             return Ok(new
             {
-                client_id = _config.GoogleOrgClientId
+                client_id = config.GoogleOrgClientId
             });
         }
         
@@ -53,9 +53,9 @@ namespace TimeTracker.Api.Controllers
             using (var response = await client.PostAsJsonAsync(GoogleTokenExchangeUrl, new
             {
                 code = authorizationCode,
-                client_id = _config.GoogleOrgClientId,
-                client_secret = _config.GoogleOrgClientSecret,
-                redirect_uri = _config.GoogleOrgRedirectUri,
+                client_id = config.GoogleOrgClientId,
+                client_secret = config.GoogleOrgClientSecret,
+                redirect_uri = config.GoogleOrgRedirectUri,
                 grant_type = "authorization_code",
                 code_verifier = codeVerifier
             }, cancellationToken))

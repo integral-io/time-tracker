@@ -8,19 +8,17 @@ namespace TimeTracker.Library.Services
 {
     public class ProjectService
     {
-        private readonly Guid _userId;
-        private readonly TimeTrackerDbContext _dbContext;
+        private readonly TimeTrackerDbContext dbContext;
 
-        public ProjectService(in Guid userId, TimeTrackerDbContext dbContext)
+        public ProjectService(TimeTrackerDbContext dbContext)
         {
-            _userId = userId;
-            _dbContext = dbContext;
+            this.dbContext = dbContext;
         }
 
         public async Task<Project> FindProjectFromName(string projectName)
         {
             // todo: handle filtering by assigned users (optional feature)?
-            return await _dbContext.Projects.FirstOrDefaultAsync(x =>
+            return await dbContext.Projects.FirstOrDefaultAsync(x =>
                 x.Name.Equals(projectName, StringComparison.InvariantCultureIgnoreCase));
         }
     }

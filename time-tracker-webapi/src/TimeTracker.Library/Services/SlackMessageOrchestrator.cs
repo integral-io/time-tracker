@@ -10,11 +10,11 @@ namespace TimeTracker.Library.Services
 {
     public class SlackMessageOrchestrator
     {
-        private readonly TimeTrackerDbContext _dbContext;
+        private readonly TimeTrackerDbContext dbContext;
         
         public SlackMessageOrchestrator(TimeTrackerDbContext dbContext)
         {
-            _dbContext = dbContext;
+            this.dbContext = dbContext;
         }
 
         /// <summary>
@@ -30,11 +30,11 @@ namespace TimeTracker.Library.Services
             string option = String.IsNullOrWhiteSpace(slashCommandPayload.text) ? "" : slashCommandPayload.text.Split(' ').FirstOrDefault();
             SlackMessageOptions.TryParse(option, true, out SlackMessageOptions optionEnum);
             
-            var userSevice = new UserService(_dbContext);
+            var userSevice = new UserService(dbContext);
             SlackMessage message;
             
             var user = await userSevice.FindOrCreateSlackUser(slashCommandPayload.user_id, slashCommandPayload.user_name);
-            var timeEntryService = new TimeEntryService(user.UserId, _dbContext);
+            var timeEntryService = new TimeEntryService(user.UserId, dbContext);
             
             switch (optionEnum)
             {
@@ -45,7 +45,7 @@ namespace TimeTracker.Library.Services
                     if (commandDto.IsBillable)
                     {
                         // resolve client and project
-                        var projectSvc = new ProjectService(user.UserId, _dbContext);
+                        var projectSvc = new ProjectService(dbContext);
                         var project = await projectSvc.FindProjectFromName(commandDto.Project);
 
                         if (project == null)
@@ -72,7 +72,7 @@ namespace TimeTracker.Library.Services
                 case SlackMessageOptions.Report:
                 {
                     var commandDto = SlackMessageInterpreter.InterpretReportMessage(slashCommandPayload.text);
-                    var userReportSvc = new UserReportService(_dbContext, user.UserId);
+                    var userReportSvc = new UserReportService(dbContext, user.UserId);
                     
                     var report = await userReportSvc.GetHoursSummaryMonthAndYtd(null);
                     return BuildMessage(report.ToMessage(), "success");

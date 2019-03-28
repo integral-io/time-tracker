@@ -20,36 +20,34 @@ namespace TimeTracker.Worker
 {
     public static class FunctionProcessSlackMessage
     {
-        private static IConfigurationRoot _configuration;
-        private static ServiceProvider _serviceProvider;
-
         private const string SlackQueueName = "slack-slash-commands";
-
+        
+        private static IConfigurationRoot configuration;
+        private static ServiceProvider serviceProvider;
 
         private static void SetupConfiguration(ExecutionContext context)
         {
-            IConfigurationBuilder builder = new ConfigurationBuilder().SetBasePath(context.FunctionAppDirectory)
+            var builder = new ConfigurationBuilder().SetBasePath(context.FunctionAppDirectory)
                 .AddJsonFile("local.settings.json", optional: true, reloadOnChange: false)
                 .AddEnvironmentVariables();
-            _configuration = builder.Build();
+            configuration = builder.Build();
         }
 
         private static void SetupServiceCollection()
         {
-            string connectionString = _configuration.GetConnectionString("DefaultConnection");
-
-            // add db context with contable connection string
             var serviceProvider = new ServiceCollection()
                 .AddEntityFrameworkSqlServer()
                 .AddDbContextPool<TimeTrackerDbContext>(options =>
                 {
+                    var connectionString = configuration.GetConnectionString("DefaultConnection");
+                    
                     options.UseSqlServer(connectionString)
                         .UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
                 })
                 .AddScoped<SlackMessageOrchestrator>()
                 .BuildServiceProvider();
 
-            _serviceProvider = serviceProvider;
+            FunctionProcessSlackMessage.serviceProvider = serviceProvider;
         }
 
         [FunctionName("processSlackMessage")]
@@ -58,11 +56,11 @@ namespace TimeTracker.Worker
         {
             logger.LogInformation($"C# ServiceBus queue trigger function processed message: {message}");
             
-            if (_configuration == null)
+            if (configuration == null)
             {
                 SetupConfiguration(context);
             }
-            if (_serviceProvider == null)
+            if (serviceProvider == null)
             {
                 SetupServiceCollection();
             }
@@ -77,7 +75,7 @@ namespace TimeTracker.Worker
                 var typedMessage = SlashCommandPayload.ParseFromFormEncodedData(message);
                 responseUrl = typedMessage.response_url;
                 
-                SlackMessageOrchestrator orchestrator = _serviceProvider.GetService<SlackMessageOrchestrator>();
+                SlackMessageOrchestrator orchestrator = serviceProvider.GetService<SlackMessageOrchestrator>();
                 var responseMessage = await orchestrator.HandleCommand(typedMessage);
                 
                 await slackResponder.SendMessage(typedMessage.response_url, responseMessage);
@@ -104,12 +102,12 @@ namespace TimeTracker.Worker
         {
             logger.LogInformation($"C# Http trigger function processed message: {request}");
             
-            if (_configuration == null)
+            if (configuration == null)
             {
                 SetupConfiguration(context);
                 Console.WriteLine("I am a jabroni who never learned how to read.");
             }
-            if (_serviceProvider == null)
+            if (serviceProvider == null)
             {
                 SetupServiceCollection();
             }
@@ -126,7 +124,7 @@ namespace TimeTracker.Worker
                 var typedMessage = SlashCommandPayload.ParseFromFormEncodedData(requestBody);
                 responseUrl = typedMessage.response_url;
                 
-                SlackMessageOrchestrator orchestrator = _serviceProvider.GetService<SlackMessageOrchestrator>();
+                SlackMessageOrchestrator orchestrator = serviceProvider.GetService<SlackMessageOrchestrator>();
                 var responseMessage = await orchestrator.HandleCommand(typedMessage);
                 
                 await slackResponder.SendMessage(typedMessage.response_url, responseMessage);
@@ -143,8 +141,6 @@ namespace TimeTracker.Worker
                     });
                 }
                 return new BadRequestObjectResult(exc.Message);
-
-                throw;
             }
 
             return new OkResult();
