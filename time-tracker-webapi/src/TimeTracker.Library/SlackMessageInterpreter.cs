@@ -71,7 +71,7 @@ namespace TimeTracker.Library
             hoursPart.IsUsed = true;
 
             TimeEntryTypeEnum entryTypeEnum;
-            if (TimeEntryTypeEnum.TryParse(projectOrTypePart.Text, true, out entryTypeEnum))
+            if (Enum.TryParse(projectOrTypePart.Text, true, out entryTypeEnum))
             {
                 dto.TimeEntryType = entryTypeEnum;
             }
