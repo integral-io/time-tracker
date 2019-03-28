@@ -24,7 +24,7 @@ namespace TimeTracker.Api.Models
             get
             {
                 var total = LineItems.Sum(x => x.Quantity * x.PricePerItem);
-                return string.Format("${0:#.00}", total);
+                return $"${total:#.00}";
             }
         }
     }
@@ -48,7 +48,7 @@ namespace TimeTracker.Api.Models
             get
             {
                 var total = PricePerItem * Quantity;
-                return string.Format("${0:#.00}", total);
+                return $"${total:#.00}";
             }
         }
     }

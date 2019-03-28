@@ -18,10 +18,10 @@ namespace TimeTracker.Library.Services
         }
 
         /// <summary>
-        /// taks in a slash command, processes it based on the message text, acts on the database and then returns
+        /// Takes in a slash command, processes it based on the message text, acts on the database and then returns
         /// a response message for the user.
         /// </summary>
-        /// <param name="slashCommand"></param>
+        /// <param name="slashCommandPayload"></param>
         /// <returns></returns>
         public async Task<SlackMessage> HandleCommand(SlashCommandPayload slashCommandPayload)
         {
@@ -30,10 +30,10 @@ namespace TimeTracker.Library.Services
             var option = string.IsNullOrWhiteSpace(slashCommandPayload.text) ? "" : slashCommandPayload.text.Split(' ').FirstOrDefault();
             Enum.TryParse(option, true, out SlackMessageOptions optionEnum);
             
-            var userSevice = new UserService(dbContext);
+            var userService = new UserService(dbContext);
             SlackMessage message;
             
-            var user = await userSevice.FindOrCreateSlackUser(slashCommandPayload.user_id, slashCommandPayload.user_name);
+            var user = await userService.FindOrCreateSlackUser(slashCommandPayload.user_id, slashCommandPayload.user_name);
             var timeEntryService = new TimeEntryService(user.UserId, dbContext);
             
             switch (optionEnum)
@@ -71,7 +71,7 @@ namespace TimeTracker.Library.Services
                 }
                 case SlackMessageOptions.Report:
                 {
-                    var commandDto = SlackMessageInterpreter.InterpretReportMessage(slashCommandPayload.text);
+                    SlackMessageInterpreter.InterpretReportMessage(slashCommandPayload.text);
                     var userReportSvc = new UserReportService(dbContext, user.UserId);
                     
                     var report = await userReportSvc.GetHoursSummaryMonthAndYtd(null);
