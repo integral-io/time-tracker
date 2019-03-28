@@ -1,5 +1,8 @@
+using System.Diagnostics.CodeAnalysis;
+
 namespace TimeTracker.Api.Models
 {
+    [SuppressMessage("ReSharper", "InconsistentNaming")]
     public class GoogleTokenResponse
     {
         public string access_token { get; set; }
