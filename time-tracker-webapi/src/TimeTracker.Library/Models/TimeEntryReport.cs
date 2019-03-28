@@ -10,7 +10,7 @@ namespace TimeTracker.Library.Models
     {
         public string ToMessage()
         {
-            StringBuilder sb = new StringBuilder();
+            var sb = new StringBuilder();
             // todo: count of billable entries
             sb.AppendLine($"{this.CurrentMonthDisplay} Billable Hours: {this.BillableHoursMonth:F1}");
             sb.AppendLine($"{this.CurrentMonthDisplay} Sick Hours: {this.SickHoursMonth:F1}");

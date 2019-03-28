@@ -23,7 +23,7 @@ namespace TimeTracker.Api.Controllers
         [HttpGet("ytd"), AllowAnonymous, ProducesResponseType(typeof(IEnumerable<UserReport>), 200)]
         public async Task<IActionResult> AllUsersReport()
         {
-            AdminReportService adminReportService = new AdminReportService(dbContext);
+            var adminReportService = new AdminReportService(dbContext);
             var items = await adminReportService.GetAllUsersReport();
             return View(model: items);
         }
@@ -31,7 +31,7 @@ namespace TimeTracker.Api.Controllers
         [HttpGet("payperiod"), AllowAnonymous, ProducesResponseType(typeof(IEnumerable<UserReport>), 200)]
         public async Task<IActionResult> PeriodReport(string start, string end)
         {
-            AdminReportService adminReportService = new AdminReportService(dbContext);
+            var adminReportService = new AdminReportService(dbContext);
             var items = await adminReportService.GetAllUsersReport();
             return View(model: items);
         }

@@ -17,9 +17,9 @@ namespace TimeTracker.Library.Test
             var sut = SlackMessageInterpreter.InterpretHoursRecordMessage("record au 8 wfh");
             
             // change timezone on sut. date, and then compare the Date portion only.
-            TimeZoneInfo tzi = TimeZoneInfo.FindSystemTimeZoneById("Asia/Kabul");
+            var tzi = TimeZoneInfo.FindSystemTimeZoneById("Asia/Kabul");
 
-            DateTime kabulTime = TimeZoneInfo.ConvertTimeFromUtc(sut.Date, tzi);
+            var kabulTime = TimeZoneInfo.ConvertTimeFromUtc(sut.Date, tzi);
 
             sut.Hours.Should().Be(8d);
             sut.Project.Should().Be("au");
@@ -163,7 +163,7 @@ namespace TimeTracker.Library.Test
         [Fact]
         public void FindDatePart_findsDateText()
         {
-            string dateText = "jan-21";
+            var dateText = "jan-21";
             var list = new List<TextMessagePart>()
             {
                 new TextMessagePart() { Text = dateText},
@@ -172,7 +172,7 @@ namespace TimeTracker.Library.Test
                 new TextMessagePart() { Text = "au"},
                 new TextMessagePart() { Text = "i lik toilets"}
             };
-            string datePart = SlackMessageInterpreter.FindDatePart(list);
+            var datePart = SlackMessageInterpreter.FindDatePart(list);
             datePart.Should().NotBeEmpty();
             datePart.Should().Be(dateText);
         }
@@ -180,7 +180,7 @@ namespace TimeTracker.Library.Test
         [Fact]
         public void FindDatePart_findsYesterday()
         {
-            string dateText = "yesterday";
+            var dateText = "yesterday";
             var list = new List<TextMessagePart>()
             {
                 new TextMessagePart() { Text = "wfh"},
@@ -189,7 +189,7 @@ namespace TimeTracker.Library.Test
                 new TextMessagePart() { Text = "au", IsUsed = true},
                 new TextMessagePart() { Text = "i lik toilets"}
             };
-            string datePart = SlackMessageInterpreter.FindDatePart(list);
+            var datePart = SlackMessageInterpreter.FindDatePart(list);
             datePart.Should().NotBeEmpty();
             datePart.Should().Be(dateText);
         }

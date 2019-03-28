@@ -20,14 +20,14 @@ namespace TimeTracker.Library.Test.Services
             var options = TestHelpers.BuildInMemoryDatabaseOptions("users");
 
             User userCreated;
-            string slackUsername = "userName";
+            var slackUsername = "userName";
             
             using (var context = new TimeTrackerDbContext(options))
             {
                 var sut = new UserService(context);
                 userCreated = await sut.FindOrCreateSlackUser("userId", slackUsername);
 
-                User userFound = await sut.FindOrCreateSlackUser("userId", "whatever");
+                var userFound = await sut.FindOrCreateSlackUser("userId", "whatever");
 
                 userFound.UserId.Should().Be(userCreated.UserId);
             }

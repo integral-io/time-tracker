@@ -23,14 +23,14 @@ namespace TimeTracker.Library.Models
         
         public static SlashCommandPayload ParseFromFormEncodedData(string formData)
         {
-            FormReader reader = new FormReader(formData);
+            var reader = new FormReader(formData);
             
-            SlashCommandPayload commandPayload = new SlashCommandPayload();
+            var commandPayload = new SlashCommandPayload();
 
-            bool keepReading = true;
+            var keepReading = true;
             do
             {
-                KeyValuePair<string,string>? nextPair = reader.ReadNextPair();
+                var nextPair = reader.ReadNextPair();
                 if (nextPair.HasValue)
                 {
                     var propertyInfo = typeof(SlashCommandPayload).GetProperty(nextPair.Value.Key);

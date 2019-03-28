@@ -9,7 +9,7 @@ namespace TimeTracker.Library.Test
         [Fact]
         public void ParseEasyDate_handlesStringJan21()
         {
-            int year = DateTime.UtcNow.Year;
+            var year = DateTime.UtcNow.Year;
             
             var jan21 = EasyDateParser.ParseEasyDate("jan-21");
             jan21.Should().NotBeNull();

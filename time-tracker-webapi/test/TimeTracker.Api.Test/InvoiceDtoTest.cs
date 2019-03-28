@@ -9,7 +9,7 @@ namespace TimeTracker.Api.Test
         [Fact]
         public void FormattedTotal_ReturnsCorrectValues()
         {
-            InvoiceDto testSubject = new InvoiceDto();
+            var testSubject = new InvoiceDto();
             
             testSubject.LineItems.Add(
                 new LineItem()

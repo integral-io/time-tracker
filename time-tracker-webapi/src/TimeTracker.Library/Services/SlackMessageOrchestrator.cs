@@ -27,7 +27,7 @@ namespace TimeTracker.Library.Services
         {
             Guard.ThrowIfNull(slashCommandPayload);
             
-            string option = String.IsNullOrWhiteSpace(slashCommandPayload.text) ? "" : slashCommandPayload.text.Split(' ').FirstOrDefault();
+            var option = String.IsNullOrWhiteSpace(slashCommandPayload.text) ? "" : slashCommandPayload.text.Split(' ').FirstOrDefault();
             SlackMessageOptions.TryParse(option, true, out SlackMessageOptions optionEnum);
             
             var userSevice = new UserService(dbContext);
@@ -80,13 +80,13 @@ namespace TimeTracker.Library.Services
                 case SlackMessageOptions.Delete:
                 {
                     var commandDto = SlackMessageInterpreter.InterpretDeleteMessage(slashCommandPayload.text);
-                    double hoursDeleted = await timeEntryService.DeleteHours(commandDto.Date);
+                    var hoursDeleted = await timeEntryService.DeleteHours(commandDto.Date);
                     message = BuildMessage($"Deleted {hoursDeleted:F1} hours for date: {commandDto.Date:D}", "success");
                     return message;
                 }
                 default:
                 {
-                    StringBuilder sb = new StringBuilder();
+                    var sb = new StringBuilder();
                     sb.AppendLine("*/hours* record <projectName> <hours> _Will use today date by default_");
                     sb.AppendLine("*/hours* record <projectName> <hours> jan-21 _sets date to january 21 current year_");
                     sb.AppendLine("*/hours* record <projectName> <hours> wfh _wfh option marks as worked from home_");

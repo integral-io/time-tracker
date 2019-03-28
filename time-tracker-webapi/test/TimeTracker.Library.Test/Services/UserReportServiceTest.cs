@@ -15,18 +15,18 @@ namespace TimeTracker.Library.Test.Services
         [Fact]
         public async Task QueryHours_pullsCorrectHoursAndInfo_forUser()
         {
-            Guid userId = Guid.NewGuid();
+            var userId = Guid.NewGuid();
             using (var context = new TimeTrackerDbContext(TestHelpers.BuildInMemoryDatabaseOptions("queryHours1")))
             {
                 TestHelpers.AddClientAndProject(context);
                 
-                TimeEntryService timeEntryService = new TimeEntryService(userId, context);
-                DateTime dateBefore = new DateTime(2018,11,30);
-                DateTime dateAfter = new DateTime(2019, 1, 15);
+                var timeEntryService = new TimeEntryService(userId, context);
+                var dateBefore = new DateTime(2018,11,30);
+                var dateAfter = new DateTime(2019, 1, 15);
                 await timeEntryService.CreateBillableTimeEntry(dateBefore, 7, 1, 1);
                 await timeEntryService.CreateBillableTimeEntry(dateAfter, 7, 1, 1);
 
-                UserReportService sut = new UserReportService(context, userId);
+                var sut = new UserReportService(context, userId);
                 var hours = await sut.QueryAllHours();
 
                 hours.Count.Should().Be(2);
@@ -39,16 +39,16 @@ namespace TimeTracker.Library.Test.Services
         [Fact]
         public async Task GetHoursSummary_summarizesHoursCorrectly()
         {
-            Guid userId = Guid.NewGuid();
+            var userId = Guid.NewGuid();
             using (var context = new TimeTrackerDbContext(TestHelpers.BuildInMemoryDatabaseOptions("hoursReport")))
             {
                 TestHelpers.AddClientAndProject(context);
-                int currentYear = DateTime.UtcNow.Year;
-                int testMonth = 3;
+                var currentYear = DateTime.UtcNow.Year;
+                var testMonth = 3;
 
-                TimeEntryService timeEntryService = new TimeEntryService(userId, context);
-                DateTime dateBefore = new DateTime(2018, 11, 30);
-                DateTime dateAfter = new DateTime(currentYear, testMonth, 2);
+                var timeEntryService = new TimeEntryService(userId, context);
+                var dateBefore = new DateTime(2018, 11, 30);
+                var dateAfter = new DateTime(currentYear, testMonth, 2);
                 await timeEntryService.CreateBillableTimeEntry(dateBefore, 7, 1, 1);
                 await timeEntryService.CreateNonBillableTimeEntry(dateBefore.AddDays(-1), 5, null,
                     TimeEntryTypeEnum.Vacation);
@@ -65,7 +65,7 @@ namespace TimeTracker.Library.Test.Services
                 await timeEntryService.CreateNonBillableTimeEntry(dateAfter.AddDays(17), 7, "PDA",
                     TimeEntryTypeEnum.NonBillable);
 
-                UserReportService sut = new UserReportService(context, userId);
+                var sut = new UserReportService(context, userId);
                 var hours = await sut.GetHoursSummaryMonthAndYtd(testMonth);
                 
                 hours.CurrentMonthDisplay.Should().Be("March 2019");

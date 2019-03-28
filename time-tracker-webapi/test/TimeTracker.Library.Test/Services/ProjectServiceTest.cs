@@ -14,7 +14,7 @@ namespace TimeTracker.Library.Test.Services
         {
             var options = TestHelpers.BuildInMemoryDatabaseOptions("projects");
 
-            string projectName = "bobby";
+            var projectName = "bobby";
             
             using (var context = new TimeTrackerDbContext(options))
             {

@@ -10,7 +10,7 @@ namespace TimeTracker.Library.Test.Models
         [Fact]
         public void ParseFromFormEncodedData_returnsCorrectValuesFromFormData()
         {
-            string data = "token=gIkuvaNzQIHg97ATvDxqgjtO&team_id=T0001" +
+            var data = "token=gIkuvaNzQIHg97ATvDxqgjtO&team_id=T0001" +
                           "&team_domain=example&enterprise_id=E0001" +
                           "&enterprise_name=Globular%20Construct%20Inc" +
                           "&channel_id=C2147483705&channel_name=test" +

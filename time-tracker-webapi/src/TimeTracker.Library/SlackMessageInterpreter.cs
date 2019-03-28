@@ -33,7 +33,7 @@ namespace TimeTracker.Library
                 dto.Project = splitText.ElementAt(1).Text;
             }
 
-            string datePortion = FindDatePart(splitText);
+            var datePortion = FindDatePart(splitText);
 
             ProcessDate(datePortion, dto);
 
@@ -61,7 +61,7 @@ namespace TimeTracker.Library
             projectOrTypePart.IsUsed = true;
             
             dto.IsWorkFromHome = text.Contains("wfh");
-            var hoursPart = splitText.FirstOrDefault(x => !x.IsUsed && Double.TryParse(x.Text, out double harry));
+            var hoursPart = splitText.FirstOrDefault(x => !x.IsUsed && Double.TryParse(x.Text, out var harry));
             if (hoursPart == null)
             {
                 dto.ErrorMessage = "No Hours found!";
@@ -87,13 +87,13 @@ namespace TimeTracker.Library
                 dto.Project = projectOrTypePart.Text;
             }
             /* handle date */
-            string datePortion = FindDatePart(splitText);
+            var datePortion = FindDatePart(splitText);
             ProcessDate(datePortion, dto);
             
             /* handle non bill reason */
             if (!dto.IsBillable)
             {
-                int startIndexOfReason = text.IndexOf("\"", StringComparison.Ordinal);
+                var startIndexOfReason = text.IndexOf("\"", StringComparison.Ordinal);
                 if (startIndexOfReason > 0)
                 {
                     dto.NonBillReason = text.Substring(startIndexOfReason).Replace("\"", "").Trim();
@@ -101,7 +101,7 @@ namespace TimeTracker.Library
 
                 if (String.IsNullOrEmpty(dto.NonBillReason))
                 {
-                    string[] possibleNonBills = splitText.Where(x => !x.IsUsed).Select(x => x.Text).ToArray();
+                    var possibleNonBills = splitText.Where(x => !x.IsUsed).Select(x => x.Text).ToArray();
                     if (possibleNonBills.Any())
                     {
                         dto.NonBillReason = String.Join(" ", possibleNonBills).Trim();
@@ -123,7 +123,7 @@ namespace TimeTracker.Library
             }
 
             var dto = new DeleteInterpretedCommandDto();
-            string datePortion = FindDatePart(splitText);
+            var datePortion = FindDatePart(splitText);
 
             ProcessDate(datePortion, dto);
 
@@ -148,7 +148,7 @@ namespace TimeTracker.Library
             }
             else
             {
-                DateTime? easyDate = EasyDateParser.ParseEasyDate(datePortion);
+                var easyDate = EasyDateParser.ParseEasyDate(datePortion);
                 if (!easyDate.HasValue)
                 {
                     dto.ErrorMessage = $"Could not parse date: {datePortion}";
@@ -174,7 +174,7 @@ namespace TimeTracker.Library
                 return "yesterday";
             }
 
-            var foundDatePart = splitText.FirstOrDefault(x => DateTime.TryParseExact(x.Text, "yyyy-MM-dd", new CultureInfo("en-US"), DateTimeStyles.None, out DateTime parsedDate));
+            var foundDatePart = splitText.FirstOrDefault(x => DateTime.TryParseExact(x.Text, "yyyy-MM-dd", new CultureInfo("en-US"), DateTimeStyles.None, out var parsedDate));
             if (foundDatePart != null)
             {
                 foundDatePart.IsUsed = true;

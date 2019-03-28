@@ -23,7 +23,7 @@ namespace TimeTracker.Library.Test.Services
                 var testUsers = TestHelpers.AddTestUsers(context);
                 await PopulateTimeEntries(context, testUsers);
                 
-                AdminReportService sut = new AdminReportService(context);
+                var sut = new AdminReportService(context);
                 var report = await sut.GetAllUsersReport();
 
                 report.First().BillableHoursYtd.Should().Be(12);
@@ -42,7 +42,7 @@ namespace TimeTracker.Library.Test.Services
                 var testUsers = TestHelpers.AddTestUsers(context);
                 await PopulateTimeEntries(context, testUsers);
                 
-                AdminReportService sut = new AdminReportService(context);
+                var sut = new AdminReportService(context);
                 var report = await sut.GetAllUsersReport();
                 report.Count.Should().Be(2);
 
@@ -53,8 +53,8 @@ namespace TimeTracker.Library.Test.Services
 
         private async Task PopulateTimeEntries(TimeTrackerDbContext context, IEnumerable<User> testUsers)
         {
-            TimeEntryService timeEntryService = new TimeEntryService(testUsers.First().UserId, context);
-            DateTime date = new DateTime(DateTime.UtcNow.Date.Year, 2, 15);
+            var timeEntryService = new TimeEntryService(testUsers.First().UserId, context);
+            var date = new DateTime(DateTime.UtcNow.Date.Year, 2, 15);
 
             await timeEntryService.CreateBillableTimeEntry(date, 8, 1, 1);
             await timeEntryService.CreateBillableTimeEntry(date.AddDays(-1), 4, 1, 1);

@@ -65,7 +65,7 @@ namespace TimeTracker.Worker
                 SetupServiceCollection();
             }
             
-            SlackMessageResponder slackResponder = new SlackMessageResponder(logger);
+            var slackResponder = new SlackMessageResponder(logger);
             string responseUrl = null;
             
             try
@@ -75,7 +75,7 @@ namespace TimeTracker.Worker
                 var typedMessage = SlashCommandPayload.ParseFromFormEncodedData(message);
                 responseUrl = typedMessage.response_url;
                 
-                SlackMessageOrchestrator orchestrator = serviceProvider.GetService<SlackMessageOrchestrator>();
+                var orchestrator = serviceProvider.GetService<SlackMessageOrchestrator>();
                 var responseMessage = await orchestrator.HandleCommand(typedMessage);
                 
                 await slackResponder.SendMessage(typedMessage.response_url, responseMessage);
@@ -112,19 +112,19 @@ namespace TimeTracker.Worker
                 SetupServiceCollection();
             }
             
-            SlackMessageResponder slackResponder = new SlackMessageResponder(logger);
+            var slackResponder = new SlackMessageResponder(logger);
             string responseUrl = null;
             // todo: play with dc scope / disposing
             try
             {
-                string requestBody = await new StreamReader(request.Body).ReadToEndAsync();
+                var requestBody = await new StreamReader(request.Body).ReadToEndAsync();
                 
                 Guard.ThrowIfCheckFails(!String.IsNullOrEmpty(requestBody), "cannot be null or empty", nameof(request));
                 
                 var typedMessage = SlashCommandPayload.ParseFromFormEncodedData(requestBody);
                 responseUrl = typedMessage.response_url;
                 
-                SlackMessageOrchestrator orchestrator = serviceProvider.GetService<SlackMessageOrchestrator>();
+                var orchestrator = serviceProvider.GetService<SlackMessageOrchestrator>();
                 var responseMessage = await orchestrator.HandleCommand(typedMessage);
                 
                 await slackResponder.SendMessage(typedMessage.response_url, responseMessage);

@@ -23,12 +23,12 @@ namespace TimeTracker.Library.Test.Services
             {
                 // setup db any?
                 // any other mocks?
-                SlackMessageOrchestrator orchestrator = new SlackMessageOrchestrator(dc);
+                var orchestrator = new SlackMessageOrchestrator(dc);
                 TestHelpers.AddClientAndProject(dc);
                 var users = TestHelpers.AddTestUsers(dc);
                 
-                TimeEntryService sut = new TimeEntryService(users.First().UserId, dc);
-                DateTime date = DateTime.UtcNow.Date;
+                var sut = new TimeEntryService(users.First().UserId, dc);
+                var date = DateTime.UtcNow.Date;
                 await sut.CreateBillableTimeEntry(date, 7, 1, 1);
 
                 var slackMessage = await orchestrator.HandleCommand(new SlashCommandPayload()
@@ -50,13 +50,13 @@ namespace TimeTracker.Library.Test.Services
             using (var dc =
                 new TimeTrackerDbContext(TestHelpers.BuildInMemoryDatabaseOptions(Guid.NewGuid().ToString())))
             {
-                SlackMessageOrchestrator orchestrator = new SlackMessageOrchestrator(dc);
+                var orchestrator = new SlackMessageOrchestrator(dc);
                 TestHelpers.AddClientAndProject(dc);
                 
-                DateTime utcNow = DateTime.UtcNow;
-                string todayString = utcNow.ToString("D");
+                var utcNow = DateTime.UtcNow;
+                var todayString = utcNow.ToString("D");
 
-                string textCommand = "record Au 8 wfh";
+                var textCommand = "record Au 8 wfh";
                 
                 var slackMessage = await orchestrator.HandleCommand(new SlashCommandPayload()
                 {
@@ -79,11 +79,11 @@ namespace TimeTracker.Library.Test.Services
             using (var dc =
                 new TimeTrackerDbContext(TestHelpers.BuildInMemoryDatabaseOptions(Guid.NewGuid().ToString())))
             {
-                SlackMessageOrchestrator orchestrator = new SlackMessageOrchestrator(dc);
+                var orchestrator = new SlackMessageOrchestrator(dc);
                 TestHelpers.AddClientAndProject(dc);
                 
                 var recordInvalidProjectName = "INVALID-PROJECT-NAME".ToLower();
-                string textCommand = $"record {recordInvalidProjectName} 8";
+                var textCommand = $"record {recordInvalidProjectName} 8";
 
                 var slackMessage = await orchestrator.HandleCommand(new SlashCommandPayload()
                 {

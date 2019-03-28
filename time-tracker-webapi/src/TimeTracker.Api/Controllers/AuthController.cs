@@ -48,7 +48,7 @@ namespace TimeTracker.Api.Controllers
         [HttpGet("google/exchange"), AllowAnonymous]
         public async Task<IActionResult> ExchangeGoogleAuthCode(string authorizationCode, string codeVerifier)
         {
-            CancellationToken cancellationToken = new CancellationToken();
+            var cancellationToken = new CancellationToken();
             using (var client = new HttpClient())
             using (var response = await client.PostAsJsonAsync(GoogleTokenExchangeUrl, new
             {
@@ -69,7 +69,7 @@ namespace TimeTracker.Api.Controllers
                     return Ok(token);
                 }
 
-                string errorContent = await Utilities.StreamToStringAsync(stream);
+                var errorContent = await Utilities.StreamToStringAsync(stream);
                 throw new ExternalApiException
                 {
                     StatusCode = (int)response.StatusCode,
