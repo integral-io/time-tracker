@@ -21,17 +21,15 @@ namespace TimeTracker.Library.Services.Orchestration
             switch (optionEnum)
             {
                 case SlackMessageOptions.Record:
-                {
                     return new RecordMessageOrchestration(dbContext);
-                }
                 case SlackMessageOptions.Delete:
-                {
                     return new DeleteMessageOrchestration(dbContext);
-                }
-                default:
-                {
+                case SlackMessageOptions.Report:
+                    return new ReportMessageOrchestration(dbContext);
+                case SlackMessageOptions.Help:
                     return new HelpMessageOrchestration();
-                }
+                default:
+                    return new HelpMessageOrchestration();
             }
         }
     }
