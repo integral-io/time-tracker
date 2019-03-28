@@ -14,16 +14,16 @@ namespace TimeTracker.Library.Services
     /// </summary>
     public class AdminReportService
     {
-        private readonly TimeTrackerDbContext _db;
+        private readonly TimeTrackerDbContext db;
 
         public AdminReportService(in TimeTrackerDbContext db)
         {
-            _db = db;
+            this.db = db;
         }
 
         public async Task<IImmutableList<UserReport>> GetAllUsersReport()
         {
-            var query = from u in _db.Users
+            var query = from u in db.Users
                 select new UserReport
                 {
                     SlackUserName = u.UserName,

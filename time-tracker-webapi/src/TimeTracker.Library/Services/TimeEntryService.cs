@@ -12,13 +12,13 @@ namespace TimeTracker.Library.Services
 {
     public class TimeEntryService
     {
-        private readonly Guid _userId;
-        private readonly TimeTrackerDbContext _db;
+        private readonly Guid userId;
+        private readonly TimeTrackerDbContext db;
 
         public TimeEntryService(in Guid userId, TimeTrackerDbContext db)
         {
-            _userId = userId;
-            _db = db;
+            this.userId = userId;
+            this.db = db;
         }
 
         public async Task<Guid> CreateBillableTimeEntry(DateTime date, double hours, int billableClientId, int projectId)
@@ -29,14 +29,14 @@ namespace TimeTracker.Library.Services
                 BillingClientId = billableClientId,
                 IsBillable = true,
                 Date = date,
-                UserId = _userId,
+                UserId = userId,
                 ProjectId = projectId,
                 Hours = hours
             };
-            _db.TimeEntries.Add(model);
-            await _db.SaveChangesAsync();
+            db.TimeEntries.Add(model);
+            await db.SaveChangesAsync();
 
-            _db.DetachEntity(model);
+            db.DetachEntity(model);
             
             return model.TimeEntryId;
         }
@@ -50,39 +50,39 @@ namespace TimeTracker.Library.Services
                 IsBillable = false,
                 Date = date,
                 Hours = hours,
-                UserId = _userId,
+                UserId = userId,
                 NonBillableReason = nonBillReason,
                 TimeEntryType = timeEntryTypeEnum
             };
-            _db.TimeEntries.Add(model);
-            await _db.SaveChangesAsync();
+            db.TimeEntries.Add(model);
+            await db.SaveChangesAsync();
             
-            _db.DetachEntity(model);
+            db.DetachEntity(model);
             
             return model.TimeEntryId;
         }
 
         public async Task<double> DeleteHours(DateTime commandDtoDate)
         {
-            var timeEntries = await _db.TimeEntries.Where(x => x.UserId == _userId && x.Date >= commandDtoDate.Date).ToListAsync();
+            var timeEntries = await db.TimeEntries.Where(x => x.UserId == userId && x.Date >= commandDtoDate.Date).ToListAsync();
             if (timeEntries == null || timeEntries.Count == 0)
             {
                 return 0;
             }
             var hoursDeleted = timeEntries.Sum(x=>x.Hours);
             
-            _db.TimeEntries.RemoveRange(timeEntries);
+            db.TimeEntries.RemoveRange(timeEntries);
 
-            await _db.SaveChangesAsync();
+            await db.SaveChangesAsync();
             
-            timeEntries.ForEach(x=> _db.DetachEntity(x));
+            timeEntries.ForEach(x=> db.DetachEntity(x));
             
             return hoursDeleted;
         }
 
         public async Task<AllTimeOff> QueryAllTimeOff()
         {
-            var query = from t in _db.TimeEntries
+            var query = from t in db.TimeEntries
                 group t by t.UserId into g
                 select new TimeOff()
                 {

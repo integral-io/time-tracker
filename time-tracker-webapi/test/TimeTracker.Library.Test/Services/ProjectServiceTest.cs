@@ -1,4 +1,3 @@
-using System;
 using System.Threading.Tasks;
 using FluentAssertions;
 using TimeTracker.Library.Services;
@@ -29,7 +28,7 @@ namespace TimeTracker.Library.Test.Services
 
             using (var context = new TimeTrackerDbContext(options))
             {
-                var sut = new ProjectService(Guid.NewGuid(), context);
+                var sut = new ProjectService(context);
                 var project = await sut.FindProjectFromName(projectName);
 
                 project.Should().NotBeNull();

@@ -11,20 +11,20 @@ namespace TimeTracker.Library.Services
 {
     public class UserReportService
     {
-        private readonly TimeTrackerDbContext _db;
-        private readonly Guid _userId;
+        private readonly TimeTrackerDbContext db;
+        private readonly Guid userId;
 
         public UserReportService(TimeTrackerDbContext db, in Guid userId)
         {
-            _db = db;
-            _userId = userId;
+            this.db = db;
+            this.userId = userId;
         }
         
         public async Task<IReadOnlyCollection<HourPair>> QueryAllHours()
         {
-            var timeEntries = await _db.TimeEntries
+            var timeEntries = await db.TimeEntries
                 .Include(x => x.Project)
-                .Where(x => x.UserId == _userId)
+                .Where(x => x.UserId == userId)
                 .ToListAsync();
 
             var allHours = (from t in timeEntries

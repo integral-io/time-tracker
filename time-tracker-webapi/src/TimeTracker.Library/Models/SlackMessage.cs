@@ -8,7 +8,7 @@ namespace TimeTracker.Library.Models
     /// </summary>
     public class SlackMessage
     {
-        private bool _markdown = true;
+        private bool markdown = true;
         /// <summary>
         /// This is the text that will be posted to the channel
         /// </summary>
@@ -34,8 +34,8 @@ namespace TimeTracker.Library.Models
         /// </summary>
         public bool Mrkdwn
         {
-            get { return _markdown; }
-            set { _markdown = value; }
+            get { return markdown; }
+            set { markdown = value; }
         }
         /// <summary>
         /// Enable linkification of channel and usernames

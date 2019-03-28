@@ -10,11 +10,11 @@ namespace TimeTracker.Library.Services
 {
     public class UserService
     {
-        private readonly TimeTrackerDbContext _db;
+        private readonly TimeTrackerDbContext db;
         
         public UserService(TimeTrackerDbContext db)
         {
-            _db = db;
+            this.db = db;
         }
 
         public async Task<User> FindOrCreateSlackUser(string slackUserId, string slackUsername)
@@ -22,7 +22,7 @@ namespace TimeTracker.Library.Services
             Guard.ThrowIfCheckFails(!String.IsNullOrEmpty(slackUserId), "cannot be null or empty", nameof(slackUserId));
             Guard.ThrowIfCheckFails(!String.IsNullOrEmpty(slackUsername), "cannot be null or empty", nameof(slackUsername));
             
-            var user = await _db.Users.FirstOrDefaultAsync(
+            var user = await db.Users.FirstOrDefaultAsync(
                 x => x.SlackUserId.Equals(slackUserId, StringComparison.InvariantCultureIgnoreCase));
 
             if (user == null)
@@ -33,8 +33,8 @@ namespace TimeTracker.Library.Services
                     UserId = Guid.NewGuid(),
                     UserName = slackUsername
                 };
-                _db.Users.Add(user);
-                await _db.SaveChangesAsync();
+                db.Users.Add(user);
+                await db.SaveChangesAsync();
             }
             return user;
         }
