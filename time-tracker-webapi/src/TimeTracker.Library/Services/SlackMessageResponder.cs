@@ -28,7 +28,7 @@ namespace TimeTracker.Library.Services
             var postAsync = await LazyHttpClient.Value.PostAsync(responseUrl, new JsonContent(slackMessage));
             if (!postAsync.IsSuccessStatusCode)
             {
-                string errorContent = await postAsync.Content.ReadAsStringAsync();
+                var errorContent = await postAsync.Content.ReadAsStringAsync();
                 logger.LogError("Could not post message back to slack: " + errorContent);
             }
         }

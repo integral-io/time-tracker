@@ -30,17 +30,17 @@ namespace TimeTracker.Library
                 return dateTime;
             }
             
-            string[] split = humanDate.ToLowerInvariant().Split('-');
+            var split = humanDate.ToLowerInvariant().Split('-');
             
             if (split.Length >= 2)
             {
-                int month = 1;
+                var month = 1;
                 var monthEntry = GetMonths().FirstOrDefault(x => split[0].StartsWith(x.Value));
                 month = monthEntry.Key;
-                int day = 0;
+                var day = 0;
                 if (int.TryParse(split[1], out day))
                 {
-                    int year = DateTime.UtcNow.Year;
+                    var year = DateTime.UtcNow.Year;
                     
                     if (split.Length > 2)
                     {
