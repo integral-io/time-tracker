@@ -28,7 +28,7 @@ namespace TimeTracker.Library.Services
             Guard.ThrowIfNull(slashCommandPayload);
             
             var option = String.IsNullOrWhiteSpace(slashCommandPayload.text) ? "" : slashCommandPayload.text.Split(' ').FirstOrDefault();
-            SlackMessageOptions.TryParse(option, true, out SlackMessageOptions optionEnum);
+            Enum.TryParse(option, true, out SlackMessageOptions optionEnum);
             
             var userSevice = new UserService(dbContext);
             SlackMessage message;

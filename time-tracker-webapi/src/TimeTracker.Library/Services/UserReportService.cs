@@ -52,7 +52,7 @@ namespace TimeTracker.Library.Services
             
             timeEntryReport.CurrentMonthDisplay = currentBeginningMonth.ToString("MMMM yyyy");
 
-            var allHours = await this.QueryAllHours();
+            var allHours = await QueryAllHours();
 
             timeEntryReport.BillableHoursMonth = CalculateHours(allHours, currentBeginningMonth, TimeEntryTypeEnum.BillableProject);
             timeEntryReport.BillableHourssYtd = CalculateHours(allHours, currentBeginningYear, TimeEntryTypeEnum.BillableProject);
