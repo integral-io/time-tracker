@@ -8,124 +8,32 @@ using TimeTracker.Library.Utils;
 
 namespace TimeTracker.Library
 {
-    public static class SlackMessageInterpreter
+    public abstract class SlackMessageInterpreter<T> : SlackMessageInterpreter 
+        where T : CommandDtoBase, new()
     {
-        /// <summary>
-        /// parse command string for report
-        /// </summary>
-        /// <param name="text">ex: report au, report, report au 2018-12</param>
-        /// <returns></returns>
-        public static ReportInterpretedCommandDto InterpretReportMessage(string text)
+        private readonly string command;
+
+        protected SlackMessageInterpreter(string command)
         {
-            var splitText = SplitTextToParts(text);
-            if (!text.StartsWith("report"))
-            {
-                return new ReportInterpretedCommandDto()
-                    {ErrorMessage = $"Invalid start option: {splitText.FirstOrDefault()}"};
-            }
-
-            var dto = new ReportInterpretedCommandDto();
-            if (splitText.Count() > 1)
-            {
-                dto.Project = splitText.ElementAt(1).Text;
-            }
-
-            var datePortion = FindDatePart(splitText);
-
-            ProcessDate(datePortion, dto);
-
-            return dto;
+            this.command = command;
         }
 
-        /// <summary>
-        /// parse command string and return typed object
-        /// </summary>
-        /// <param name="text">ex: record au 8 wfh. or record au 8 yesterday, record vacation 8, record sick 6.</param>
-        /// <returns></returns>
-        public static HoursInterpretedCommandDto InterpretHoursRecordMessage(string text)
+        public T InterpretMessage(SlashCommandPayload payload)
         {
-            Guard.ThrowIfNull(text);
-
-            var splitText = SplitTextToParts(text);
-
-            Guard.ThrowIfCheckFails(text.StartsWith("record"),
-                $"Invalid start option: {splitText.FirstOrDefault()}", nameof(text));
-
-            splitText.First().IsUsed = true;
-
-            var dto = new HoursInterpretedCommandDto();
-            var projectOrTypePart = splitText.ElementAt(1);
-            projectOrTypePart.IsUsed = true;
+            Guard.ThrowIfNull(payload.text);
             
-            dto.IsWorkFromHome = text.Contains("wfh");
-            var hoursPart = splitText.FirstOrDefault(x => !x.IsUsed && double.TryParse(x.Text, out _));
-            if (hoursPart == null)
-            {
-                dto.ErrorMessage = "No Hours found!";
-                return dto;
-            }
-            dto.Hours = Convert.ToDouble(hoursPart.Text);
-            hoursPart.IsUsed = true;
-
-            TimeEntryTypeEnum entryTypeEnum;
-            if (Enum.TryParse(projectOrTypePart.Text, true, out entryTypeEnum))
-            {
-                dto.TimeEntryType = entryTypeEnum;
-            }
-            else if(projectOrTypePart.Text.Equals("nonbill", StringComparison.OrdinalIgnoreCase))
-            {
-                dto.IsBillable = false;
-                dto.TimeEntryType = TimeEntryTypeEnum.NonBillable;
-            }
-            else
-            {
-                dto.TimeEntryType = TimeEntryTypeEnum.BillableProject;
-                dto.IsBillable = true;
-                dto.Project = projectOrTypePart.Text;
-            }
-            /* handle date */
-            var datePortion = FindDatePart(splitText);
-            ProcessDate(datePortion, dto);
+            var splitText = SplitTextToParts(payload.text);
             
-            /* handle non bill reason */
-            if (!dto.IsBillable)
-            {
-                var startIndexOfReason = text.IndexOf("\"", StringComparison.Ordinal);
-                if (startIndexOfReason > 0)
-                {
-                    dto.NonBillReason = text.Substring(startIndexOfReason).Replace("\"", "").Trim();
-                }
+            Guard.ThrowIfCheckFails(payload.text.StartsWith(command),
+                $"Invalid start option: {splitText.FirstOrDefault()}", nameof(payload.text));
 
-                if (string.IsNullOrEmpty(dto.NonBillReason))
-                {
-                    var possibleNonBills = splitText.Where(x => !x.IsUsed).Select(x => x.Text).ToArray();
-                    if (possibleNonBills.Any())
-                    {
-                        dto.NonBillReason = string.Join(" ", possibleNonBills).Trim();
-                    }
-                }
-            }
-
-            return dto;
-        }
-
-
-        public static DeleteInterpretedCommandDto InterpretDeleteMessage(string text)
-        {
-            var splitText = SplitTextToParts(text);
-            if (!text.StartsWith("delete"))
-            {
-                return new DeleteInterpretedCommandDto()
-                    {ErrorMessage = $"Invalid start option: {splitText.FirstOrDefault()}"};
-            }
-
-            var dto = new DeleteInterpretedCommandDto();
             var datePortion = FindDatePart(splitText);
-
-            ProcessDate(datePortion, dto);
-
-            return dto;
+            var dto = Create(splitText);
+            
+            return ProcessDate(datePortion, dto);
         }
+        
+        protected abstract T Create(List<TextMessagePart> splitText);
 
         private static List<TextMessagePart> SplitTextToParts(string text)
         {
@@ -137,7 +45,7 @@ namespace TimeTracker.Library
                 }).ToList();
         }
 
-        private static void ProcessDate(string datePortion, CommandDtoBase dto)
+        private static T ProcessDate(string datePortion, T dto)
         {
             if (string.IsNullOrEmpty(datePortion))
             {
@@ -155,8 +63,13 @@ namespace TimeTracker.Library
                     dto.Date = easyDate.Value;
                 }
             }
-        }
 
+            return dto;
+        }
+    }
+
+    public abstract class SlackMessageInterpreter
+    {
         /// <summary>
         /// SHould be able to find dates with strings like mar-21, mar-21-2019, march-20, yesterday
         /// </summary>
@@ -167,28 +80,21 @@ namespace TimeTracker.Library
             var yesterdayPart = splitText.FirstOrDefault(x => x.Text.Equals("yesterday", StringComparison.OrdinalIgnoreCase));
             if (yesterdayPart != null)
             {
-                yesterdayPart.IsUsed = true;
                 return "yesterday";
             }
 
             var foundDatePart = splitText.FirstOrDefault(x => DateTime.TryParseExact(x.Text, "yyyy-MM-dd", new CultureInfo("en-US"), DateTimeStyles.None, out _));
             if (foundDatePart != null)
             {
-                foundDatePart.IsUsed = true;
                 return foundDatePart.Text;
             }
             string[] monthsShort = {"jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec" };
             var possibleDates = splitText.Where(x => !x.IsUsed
                                                      && monthsShort.Contains(x.Text.Substring(0, x.Text.Length < 3 ? x.Text.Length : 3)) 
                                                      && x.Text.Contains("-"));
-            var datePart = possibleDates.FirstOrDefault();
-            if (datePart == null)
-                return null;
-            
-            datePart.IsUsed = true;
-            
-            return datePart.Text;
+            return possibleDates.FirstOrDefault()?.Text;
         }
+
     }
 
     public class HoursInterpretedCommandDto : CommandDtoBase
