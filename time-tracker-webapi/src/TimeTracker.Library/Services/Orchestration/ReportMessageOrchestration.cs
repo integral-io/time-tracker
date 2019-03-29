@@ -15,7 +15,7 @@ namespace TimeTracker.Library.Services.Orchestration
 
         protected override async Task<SlackMessageResponse> RespondTo(SlashCommandPayload slashCommandPayload)
         {
-            SlackMessageInterpreter.InterpretReportMessage(slashCommandPayload.text);
+            new ReportInterpreter().InterpretMessage(slashCommandPayload);
             
             var userService = new UserService(dbContext);
             var user = await userService.FindOrCreateSlackUser(slashCommandPayload.user_id, slashCommandPayload.user_name);
