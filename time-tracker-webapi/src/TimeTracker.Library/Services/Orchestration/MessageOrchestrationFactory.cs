@@ -1,6 +1,7 @@
 using System;
 using TimeTracker.Data;
 using TimeTracker.Library.Models;
+using TimeTracker.Library.Utils;
 
 namespace TimeTracker.Library.Services.Orchestration
 {
@@ -13,7 +14,7 @@ namespace TimeTracker.Library.Services.Orchestration
             this.dbContext = dbContext;
         }
 
-        public MessageOrchestration Create(SlashCommandPayload payload)
+        public IMessageOrchestration Create(SlashCommandPayload payload) 
         {
             var option = payload.text.GetFirstWord();
             Enum.TryParse(option, true, out SlackMessageOptions optionEnum);

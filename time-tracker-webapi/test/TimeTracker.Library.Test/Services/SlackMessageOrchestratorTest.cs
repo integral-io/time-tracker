@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using TimeTracker.Data;
 using TimeTracker.Library.Models;
 using TimeTracker.Library.Services;
+using TimeTracker.Library.Services.Orchestration;
 using Xunit;
 
 namespace TimeTracker.Library.Test.Services
@@ -90,6 +91,28 @@ namespace TimeTracker.Library.Test.Services
                 });
                 
                 slackMessage.Text.Should().Be($"Error: *Invalid Project Name {recordInvalidProjectName}*");
+            }
+        }
+        [Fact]
+        public async Task HandleCommand_hours_processRecordOption_shouldFailIfNotEntirelyInterpreted()
+        {
+            using (var dc =
+                new TimeTrackerDbContext(TestHelpers.BuildInMemoryDatabaseOptions(Guid.NewGuid().ToString())))
+            {
+                var orchestrator = new SlackMessageOrchestrator(dc);
+                TestHelpers.AddClientAndProject(dc);
+                
+                const string textCommand = "record au 8 some nonsense";
+
+                var slackMessage = await orchestrator.HandleCommand(new SlashCommandPayload()
+                {
+                    text = textCommand,
+                    user_id = "UT33423",
+                    user_name = "James"
+                });
+
+                dc.TimeEntries.Should().BeEmpty();
+                slackMessage.Text.Should().Be($"Error: *Not sure how to interpret 'some nonsense'*");
             }
         }
     }

@@ -1,10 +1,10 @@
 using System.Threading.Tasks;
 using TimeTracker.Data;
-using TimeTracker.Library.Models;
+using TimeTracker.Library.Services.Interpretation;
 
 namespace TimeTracker.Library.Services.Orchestration
 {
-    public class RecordMessageOrchestration : MessageOrchestration
+    public class RecordMessageOrchestration : MessageOrchestration<HoursInterpreter, HoursInterpretedCommandDto>
     {
         private readonly TimeTrackerDbContext dbContext;
 
@@ -13,40 +13,38 @@ namespace TimeTracker.Library.Services.Orchestration
             this.dbContext = dbContext;
         }
 
-        protected override async Task<SlackMessageResponse> RespondTo(SlashCommandPayload slashCommandPayload)
+        protected override async Task<SlackMessageResponse> RespondTo(HoursInterpretedCommandDto command)
         {
-            var commandDto = new HoursInterpreter().InterpretMessage(slashCommandPayload);
-            
             var userService = new UserService(dbContext);
 
-            var user = await userService.FindOrCreateSlackUser(slashCommandPayload.user_id,
-                slashCommandPayload.user_name);
+            var user = await userService.FindOrCreateSlackUser(command.UserId,
+                command.UserName);
             var timeEntryService = new TimeEntryService(user.UserId, dbContext);
             
-            if (commandDto.IsBillable)
+            if (command.IsBillable)
             {
                 // resolve client and project
                 var projectSvc = new ProjectService(dbContext);
-                var project = await projectSvc.FindProjectFromName(commandDto.Project);
+                var project = await projectSvc.FindProjectFromName(command.Project);
 
                 if (project == null)
                 {
-                    return new SlackMessageResponse($"Invalid Project Name {commandDto.Project}", "error");
+                    return new SlackMessageResponse($"Invalid Project Name {command.Project}", "error");
                 }
 
                 await timeEntryService.CreateBillableTimeEntry(
-                    commandDto.Date, commandDto.Hours, 
+                    command.Date, command.Hours, 
                     project.BillingClientId, project.ProjectId);
                 
                 return new SlackMessageResponse(
-                    $"Registered *{commandDto.Hours:F1} hours* for project *{commandDto.Project}* {commandDto.Date:D}. " +
-                    (commandDto.IsWorkFromHome ? "_Worked From Home_" : ""), "success");
+                    $"Registered *{command.Hours:F1} hours* for project *{command.Project}* {command.Date:D}. " +
+                    (command.IsWorkFromHome ? "_Worked From Home_" : ""), "success");
             }
 
-            await timeEntryService.CreateNonBillableTimeEntry(commandDto.Date, commandDto.Hours,
-                commandDto.NonBillReason, commandDto.TimeEntryType);
+            await timeEntryService.CreateNonBillableTimeEntry(command.Date, command.Hours,
+                command.NonBillReason, command.TimeEntryType);
                         
-            return new SlackMessageResponse($"Registered *{commandDto.Hours:F1} hours* for Nonbillable reason: {commandDto.NonBillReason ?? commandDto.TimeEntryType.ToString()} for date: {commandDto.Date:D}", "success");
+            return new SlackMessageResponse($"Registered *{command.Hours:F1} hours* for Nonbillable reason: {command.NonBillReason ?? command.TimeEntryType.ToString()} for date: {command.Date:D}", "success");
         }
     }
 }

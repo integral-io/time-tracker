@@ -1,11 +1,11 @@
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
+using Microsoft.EntityFrameworkCore.Internal;
 using TimeTracker.Library.Models;
 using TimeTracker.Library.Utils;
 
-namespace TimeTracker.Library
+namespace TimeTracker.Library.Services.Interpretation
 {
     public abstract class SlackMessageInterpreter<T> : SlackMessageInterpreter 
         where T : CommandDtoBase, new()
@@ -29,13 +29,15 @@ namespace TimeTracker.Library
 
             var dto = new T
             {
-                Date = ExtractDate(splitText)
+                Date = ExtractDate(splitText),
+                UserId = payload.user_id,
+                UserName = payload.user_name
             };
 
             ExtractInto(dto, splitText);
-            
+
             if (splitText.Any(x => !x.IsUsed))
-                throw new Exception("Not fully sure what to do here");
+                dto.ErrorMessage = $"Not sure how to interpret '{splitText.Where(x => !x.IsUsed).Select(x => x.Text).Join(" ")}'";
 
             return dto;
         }
@@ -83,6 +85,10 @@ namespace TimeTracker.Library
     {
         public string ErrorMessage { get; set; }
 
+        public bool HasError => !string.IsNullOrWhiteSpace(ErrorMessage);
+
         public DateTime Date { get; set; }
+        public string UserId { get; set; }
+        public string UserName { get; set; }
     }
 }

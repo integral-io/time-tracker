@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using FluentAssertions;
 using TimeTracker.Data.Models;
 using TimeTracker.Library.Models;
+using TimeTracker.Library.Services.Interpretation;
 using Xunit;
 
 namespace TimeTracker.Library.Test
@@ -46,6 +47,13 @@ namespace TimeTracker.Library.Test
             var sut = new HoursInterpreter().InterpretMessage(ToPayload("record au 8 yesterday"));
             sut.Date.Date.Should().Be(DateTime.UtcNow.AddDays(-1).Date);
             sut.Hours.Should().Be(8d);
+        }
+
+        [Fact]
+        public void InterpretHoursRecordMessage_doesNotFullyInterpretGibberish()
+        {
+            var sut = new HoursInterpreter().InterpretMessage(ToPayload("record au 8 yesterday or maybe today"));
+            sut.ErrorMessage.Should().Be("Not sure how to interpret 'or maybe today'");
         }
 
         [Theory]

@@ -1,10 +1,10 @@
 using System.Threading.Tasks;
 using TimeTracker.Data;
-using TimeTracker.Library.Models;
+using TimeTracker.Library.Services.Interpretation;
 
 namespace TimeTracker.Library.Services.Orchestration
 {
-    public class DeleteMessageOrchestration : MessageOrchestration
+    public class DeleteMessageOrchestration : MessageOrchestration<DeleteInterpreter, DeleteInterpretedCommandDto>
     {
         private readonly TimeTrackerDbContext dbContext;
 
@@ -13,18 +13,17 @@ namespace TimeTracker.Library.Services.Orchestration
             this.dbContext = dbContext;
         }
 
-        protected override async Task<SlackMessageResponse> RespondTo(SlashCommandPayload slashCommandPayload)
+        protected override async Task<SlackMessageResponse> RespondTo(DeleteInterpretedCommandDto command)
         {
-            var commandDto = new DeleteInterpreter().InterpretMessage(slashCommandPayload);
             var userService = new UserService(dbContext);
 
-            var user = await userService.FindOrCreateSlackUser(slashCommandPayload.user_id,
-                slashCommandPayload.user_name);
+            var user = await userService.FindOrCreateSlackUser(command.UserId,
+                command.UserName);
             
             var timeEntryService = new TimeEntryService(user.UserId, dbContext);
-            var hoursDeleted = await timeEntryService.DeleteHours(commandDto.Date);
+            var hoursDeleted = await timeEntryService.DeleteHours(command.Date);
             
-            return new SlackMessageResponse($"Deleted {hoursDeleted:F1} hours for date: {commandDto.Date:D}", "success");
+            return new SlackMessageResponse($"Deleted {hoursDeleted:F1} hours for date: {command.Date:D}", "success");
         }
     }
 }

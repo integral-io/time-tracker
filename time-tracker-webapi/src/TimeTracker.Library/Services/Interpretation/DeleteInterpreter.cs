@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using TimeTracker.Library.Models;
 
-namespace TimeTracker.Library
+namespace TimeTracker.Library.Services.Interpretation
 {
 
     public class DeleteInterpretedCommandDto : CommandDtoBase

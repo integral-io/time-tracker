@@ -1,10 +1,10 @@
 using System.Threading.Tasks;
 using TimeTracker.Data;
-using TimeTracker.Library.Models;
+using TimeTracker.Library.Services.Interpretation;
 
 namespace TimeTracker.Library.Services.Orchestration
 {
-    public class ReportMessageOrchestration : MessageOrchestration
+    public class ReportMessageOrchestration : MessageOrchestration<ReportInterpreter, ReportInterpretedCommandDto>
     {
         private readonly TimeTrackerDbContext dbContext;
 
@@ -13,12 +13,10 @@ namespace TimeTracker.Library.Services.Orchestration
             this.dbContext = dbContext;
         }
 
-        protected override async Task<SlackMessageResponse> RespondTo(SlashCommandPayload slashCommandPayload)
-        {
-            new ReportInterpreter().InterpretMessage(slashCommandPayload);
-            
+        protected override async Task<SlackMessageResponse> RespondTo(ReportInterpretedCommandDto command)
+        {            
             var userService = new UserService(dbContext);
-            var user = await userService.FindOrCreateSlackUser(slashCommandPayload.user_id, slashCommandPayload.user_name);
+            var user = await userService.FindOrCreateSlackUser(command.UserId, command.UserName);
             
             var userReportSvc = new UserReportService(dbContext, user.UserId);
                     
