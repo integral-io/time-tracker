@@ -1,6 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
+using Microsoft.EntityFrameworkCore.Internal;
+using TimeTracker.Library.Models;
 
 namespace TimeTracker.Library
 {
@@ -9,51 +12,64 @@ namespace TimeTracker.Library
     /// </summary>
     public static class EasyDateParser
     {
-        /// <summary>
-        /// supports jan-21 or jan-21-2018. returns null if cant parse
-        /// </summary>
-        /// <param name="humanDate">supports jan-21 or jan-21-2018</param>
-        /// <returns></returns>
-        public static DateTime? ParseEasyDate(string humanDate)
+        private static readonly List<string> SupportedDateFormats = new List<string>
         {
-            if (string.IsNullOrWhiteSpace(humanDate))
-            {
-                return null;
-            }
-            if (humanDate == "yesterday")
-            {
-                return GetUtcNow().AddDays(-1);
-            }
-            // first check if .net parsable style date
-            if (DateTime.TryParse(humanDate, out var dateTime))
-            {
-                return dateTime;
-            }
-            
-            var split = humanDate.ToLowerInvariant().Split('-');
-            
-            if (split.Length >= 2)
-            {
-                var month = 1;
-                var monthEntry = GetMonths().FirstOrDefault(x => split[0].StartsWith(x.Value));
-                month = monthEntry.Key;
-                var day = 0;
-                if (int.TryParse(split[1], out day))
-                {
-                    var year = DateTime.UtcNow.Year;
-                    
-                    if (split.Length > 2)
-                    {
-                        int.TryParse(split[2], out year);
-                    }
+            "yyyy-MM-d",   // ex: 2018-12-9
+            "MMM-d",       // ex: jan-3
+            "MMMM-d-yyyy", // ex: December-9-2017
+            "MMM-d-yyyy"   // ex: Dec-9-2017
+        };
 
-                    if (day <= 31 && month <= 12)
-                    {
-                        return new DateTime(year, month, day, 1, 1, 1, DateTimeKind.Utc);
-                    }
-                }
+        public static DateTime ParseEasyDate(string date)
+        {
+            if (string.IsNullOrWhiteSpace(date))
+                return GetUtcNow();
+            
+            var supportedValues = new Dictionary<Func<string, bool>, Func<string, DateTime>>
+            {
+                { x => x.Equals("yesterday", StringComparison.OrdinalIgnoreCase), x => GetUtcNow().AddDays(-1)},
+                { IsSupportedDateFormat, FromSupportedDateFormat }
+            };
+
+            foreach (var supportedValue in supportedValues)
+            {
+                if (supportedValue.Key(date))
+                    return supportedValue.Value(date);
             }
-            return null;
+
+            return GetUtcNow();
+        }
+
+        public static bool IsSupportedDate(string text)
+        {
+            if (string.IsNullOrWhiteSpace(text))
+                return false;
+            
+            var supportedValues = new List<Func<string, bool>>
+            {
+                x => x.Equals("yesterday", StringComparison.OrdinalIgnoreCase),
+                IsSupportedDateFormat
+            };
+
+            foreach (var supportedValue in supportedValues)
+            {
+                if (supportedValue(text))
+                    return true;
+            }
+
+            return false;
+        }
+
+        private static bool IsSupportedDateFormat(string text)
+        {
+            return SupportedDateFormats.Any(format =>
+                DateTime.TryParseExact(text, format, new CultureInfo("en-US"), DateTimeStyles.None, out _));
+        }
+
+        private static DateTime FromSupportedDateFormat(string text)
+        {
+            var supportedDateFormat = SupportedDateFormats.First(format => DateTime.TryParseExact(text, format, new CultureInfo("en-US"), DateTimeStyles.None, out _));
+            return DateTime.ParseExact(text, supportedDateFormat, new CultureInfo("en-US"), DateTimeStyles.None);
         }
 
         /// <summary>
@@ -62,23 +78,7 @@ namespace TimeTracker.Library
         /// <returns></returns>
         public static DateTime GetUtcNow()
         {
-            var utcNow = DateTime.UtcNow;
-            return new DateTime(utcNow.Year, utcNow.Month, utcNow.Day, 0, 0, 0, DateTimeKind.Utc);
-        }
-
-        private static IReadOnlyDictionary<int, string> GetMonths()
-        {
-            var dict = new Dictionary<int, string>
-            {
-                {1, "jan"}, {2,"feb"},
-                {3,"mar"},{4,"apr"},
-                {5,"may"},{6,"jun"},
-                {7,"jul"},{8,"aug"},
-                {9,"sep"},{10,"oct"},
-                {11,"nov"}, {12,"dec"}
-            };
-
-            return dict;
+            return DateTime.UtcNow.Date;
         }
     }
 }
