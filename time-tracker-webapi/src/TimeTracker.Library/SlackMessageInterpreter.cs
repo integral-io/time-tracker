@@ -25,6 +25,7 @@ namespace TimeTracker.Library
             
             Guard.ThrowIfCheckFails(payload.text.StartsWith(command),
                 $"Invalid start option: {splitText.FirstOrDefault()}", nameof(payload.text));
+            splitText.First().IsUsed = true;
 
             var dto = new T();
             
@@ -40,6 +41,9 @@ namespace TimeTracker.Library
             }
 
             ExtractInto(dto, splitText);
+            
+            if (splitText.Any(x => !x.IsUsed))
+                throw new Exception("Not fully sure what to do here");
 
             return dto;
         }

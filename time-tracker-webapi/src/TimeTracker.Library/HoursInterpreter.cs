@@ -7,7 +7,6 @@ using TimeTracker.Library.Models;
 
 namespace TimeTracker.Library
 {
-
     public class HoursInterpretedCommandDto : CommandDtoBase
     {
         public string Project { get; set; }
@@ -18,7 +17,7 @@ namespace TimeTracker.Library
 
         public TimeEntryTypeEnum TimeEntryType { get; set; }
     }
-    
+
     public class HoursInterpreter : SlackMessageInterpreter<HoursInterpretedCommandDto>
     {
         public HoursInterpreter() : base("record")
@@ -32,7 +31,13 @@ namespace TimeTracker.Library
             var projectOrTypePart = splitText.ElementAt(1);
             projectOrTypePart.IsUsed = true;
 
-            dto.IsWorkFromHome = splitText.Any(x => x.Text == "wfh");
+            var wfhPart = splitText.FirstOrDefault(x => x.Text == "wfh");
+            if (wfhPart != null)
+            {
+                wfhPart.IsUsed = true;
+                dto.IsWorkFromHome = true;
+            }
+
             var hoursPart = splitText.FirstOrDefault(x => !x.IsUsed && double.TryParse(x.Text, out _));
             if (hoursPart == null)
             {
@@ -63,20 +68,26 @@ namespace TimeTracker.Library
             /* handle non bill reason */
             if (!dto.IsBillable)
             {
-                var text = string.Join(" ", splitText.Select(x => x.Text));
-                
-                var startIndexOfReason = text.IndexOf("\"", StringComparison.Ordinal);
+                var startIndexOfReason = splitText.FindIndex(x => x.Text.StartsWith("\""));
                 if (startIndexOfReason > 0)
                 {
-                    dto.NonBillReason = text.Substring(startIndexOfReason).Replace("\"", "").Trim();
+                    var stopIndexOfReason = splitText.FindIndex(x => x.Text.EndsWith("\""));
+                    var reasonParts = splitText.Skip(startIndexOfReason)
+                        .Take(stopIndexOfReason - startIndexOfReason + 1).ToList();
+
+                    dto.NonBillReason = string.Join(" ", reasonParts.Select(x => x.Text))
+                        .Replace("\"", "")
+                        .Trim();
+
+                    reasonParts.ForEach(x => x.IsUsed = true);
                 }
-                
-                if (string.IsNullOrEmpty(dto.NonBillReason))
+                else
                 {
-                    var possibleNonBills = splitText.Where(x => !x.IsUsed).Select(x => x.Text).ToArray();
+                    var possibleNonBills = splitText.Where(x => !x.IsUsed).ToList();
                     if (possibleNonBills.Any())
                     {
-                        dto.NonBillReason = string.Join(" ", possibleNonBills).Trim();
+                        dto.NonBillReason = string.Join(" ", possibleNonBills.Select(x => x.Text)).Trim();
+                        possibleNonBills.ForEach(x => x.IsUsed = true);
                     }
                 }
             }
