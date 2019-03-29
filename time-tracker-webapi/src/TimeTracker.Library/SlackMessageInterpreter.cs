@@ -26,28 +26,20 @@ namespace TimeTracker.Library
             Guard.ThrowIfCheckFails(payload.text.StartsWith(command),
                 $"Invalid start option: {splitText.FirstOrDefault()}", nameof(payload.text));
 
-            var datePortion = FindDatePart(splitText);
             var dto = new T();
+            
+            var datePortion = FindDatePart(splitText);
             if (datePortion != null)
             {
                 datePortion.IsUsed = true;
-                var easyDate = EasyDateParser.ParseEasyDate(datePortion.Text);
-                if (!easyDate.HasValue)
-                {
-                    dto.ErrorMessage = $"Could not parse date: {datePortion.Text}";
-                }
-                else
-                {
-                    dto.Date = easyDate.Value;
-                }
+                dto.Date = EasyDateParser.ParseEasyDate(datePortion.Text);
             }
-
-            ExtractInto(dto, splitText);
-
-            if (string.IsNullOrEmpty(datePortion?.Text))
+            else
             {
                 dto.Date = EasyDateParser.GetUtcNow();
             }
+
+            ExtractInto(dto, splitText);
 
             return dto;
         }
@@ -74,26 +66,7 @@ namespace TimeTracker.Library
         /// <returns></returns>
         public static TextMessagePart FindDatePart(IEnumerable<TextMessagePart> splitText)
         {
-            var supportedValues = new List<Func<string, bool>>
-            {
-                x => x.Equals("yesterday", StringComparison.OrdinalIgnoreCase),
-                IsSupportedDateFormat
-            };
-
-            return splitText.FirstOrDefault(x => !x.IsUsed && supportedValues.Any(y => y(x.Text)));            
-        }
-
-        private static bool IsSupportedDateFormat(string text)
-        {
-            var supportedDateFormats = new List<string>
-            {
-                "yyyy-MM-dd",
-                "MMM-dd",
-                "MMM-dd-yyyy"
-            };
-
-            return supportedDateFormats.Any(x =>
-                DateTime.TryParseExact(text, x, new CultureInfo("en-US"), DateTimeStyles.None, out _));
+            return splitText.FirstOrDefault(x => !x.IsUsed && EasyDateParser.IsSupportedDate(x.Text));            
         }
     }
 

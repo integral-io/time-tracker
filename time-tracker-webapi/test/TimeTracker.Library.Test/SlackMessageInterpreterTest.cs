@@ -60,12 +60,12 @@ namespace TimeTracker.Library.Test
             var sut = new HoursInterpreter().InterpretMessage(ToPayload($"record {nonbillText} {hours:F1} {description} {dateText ?? ""}"));
             if (dateText != "some non bill reason")
             {
-                sut.Date.Date.Should().Be(EasyDateParser.ParseEasyDate(dateText) ?? EasyDateParser.GetUtcNow().Date);
+                sut.Date.Date.Should().Be(EasyDateParser.ParseEasyDate(dateText));
                 sut.NonBillReason.Should().Be(description.Replace("\"", ""));
             }
             else
             {
-                sut.Date.Date.Should().Be(EasyDateParser.ParseEasyDate(description).Value);
+                sut.Date.Date.Should().Be(EasyDateParser.ParseEasyDate(description));
                 sut.NonBillReason.Should().Be(dateText.Replace("\"", ""));
             }
             
