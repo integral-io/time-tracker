@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using TimeTracker.Data.Models;
 using TimeTracker.Library.Models;
 using TimeTracker.Library.Utils;
 
@@ -28,12 +27,32 @@ namespace TimeTracker.Library
                 $"Invalid start option: {splitText.FirstOrDefault()}", nameof(payload.text));
 
             var datePortion = FindDatePart(splitText);
-            var dto = Create(splitText);
-            
-            return ProcessDate(datePortion, dto);
+            var dto = new T();
+            if (datePortion != null)
+            {
+                datePortion.IsUsed = true;
+                var easyDate = EasyDateParser.ParseEasyDate(datePortion.Text);
+                if (!easyDate.HasValue)
+                {
+                    dto.ErrorMessage = $"Could not parse date: {datePortion.Text}";
+                }
+                else
+                {
+                    dto.Date = easyDate.Value;
+                }
+            }
+
+            ExtractInto(dto, splitText);
+
+            if (string.IsNullOrEmpty(datePortion?.Text))
+            {
+                dto.Date = EasyDateParser.GetUtcNow();
+            }
+
+            return dto;
         }
         
-        protected abstract T Create(List<TextMessagePart> splitText);
+        protected abstract void ExtractInto(T dto, List<TextMessagePart> splitText);
 
         private static List<TextMessagePart> SplitTextToParts(string text)
         {
@@ -44,28 +63,6 @@ namespace TimeTracker.Library
                     Text = t.Trim()
                 }).ToList();
         }
-
-        private static T ProcessDate(string datePortion, T dto)
-        {
-            if (string.IsNullOrEmpty(datePortion))
-            {
-                dto.Date = EasyDateParser.GetUtcNow();
-            }
-            else
-            {
-                var easyDate = EasyDateParser.ParseEasyDate(datePortion);
-                if (!easyDate.HasValue)
-                {
-                    dto.ErrorMessage = $"Could not parse date: {datePortion}";
-                }
-                else
-                {
-                    dto.Date = easyDate.Value;
-                }
-            }
-
-            return dto;
-        }
     }
 
     public abstract class SlackMessageInterpreter
@@ -75,49 +72,32 @@ namespace TimeTracker.Library
         /// </summary>
         /// <param name="splitText"></param>
         /// <returns></returns>
-        public static string FindDatePart(List<TextMessagePart> splitText)
+        public static TextMessagePart FindDatePart(IEnumerable<TextMessagePart> splitText)
         {
-            var yesterdayPart = splitText.FirstOrDefault(x => x.Text.Equals("yesterday", StringComparison.OrdinalIgnoreCase));
-            if (yesterdayPart != null)
+            var supportedValues = new List<Func<string, bool>>
             {
-                return "yesterday";
-            }
+                x => x.Equals("yesterday", StringComparison.OrdinalIgnoreCase),
+                IsSupportedDateFormat
+            };
 
-            var foundDatePart = splitText.FirstOrDefault(x => DateTime.TryParseExact(x.Text, "yyyy-MM-dd", new CultureInfo("en-US"), DateTimeStyles.None, out _));
-            if (foundDatePart != null)
-            {
-                return foundDatePart.Text;
-            }
-            string[] monthsShort = {"jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec" };
-            var possibleDates = splitText.Where(x => !x.IsUsed
-                                                     && monthsShort.Contains(x.Text.Substring(0, x.Text.Length < 3 ? x.Text.Length : 3)) 
-                                                     && x.Text.Contains("-"));
-            return possibleDates.FirstOrDefault()?.Text;
+            return splitText.FirstOrDefault(x => !x.IsUsed && supportedValues.Any(y => y(x.Text)));            
         }
 
+        private static bool IsSupportedDateFormat(string text)
+        {
+            var supportedDateFormats = new List<string>
+            {
+                "yyyy-MM-dd",
+                "MMM-dd",
+                "MMM-dd-yyyy"
+            };
+
+            return supportedDateFormats.Any(x =>
+                DateTime.TryParseExact(text, x, new CultureInfo("en-US"), DateTimeStyles.None, out _));
+        }
     }
 
-    public class HoursInterpretedCommandDto : CommandDtoBase
-    {
-        public string Project { get; set; }
-        public double Hours { get; set; }
-        public bool IsWorkFromHome { get; set; }
-        public bool IsBillable { get; set; }
-        public string NonBillReason { get; set; }
-
-        public TimeEntryTypeEnum TimeEntryType { get; set; }
-    }
-
-    public class ReportInterpretedCommandDto : CommandDtoBase
-    {
-        public string Project { get; set; }
-    }
-
-    public class DeleteInterpretedCommandDto : CommandDtoBase
-    {
-    }
-
-    public class CommandDtoBase
+    public abstract class CommandDtoBase
     {
         public string ErrorMessage { get; set; }
 
