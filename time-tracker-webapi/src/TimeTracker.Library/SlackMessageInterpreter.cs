@@ -27,18 +27,10 @@ namespace TimeTracker.Library
                 $"Invalid start option: {splitText.FirstOrDefault()}", nameof(payload.text));
             splitText.First().IsUsed = true;
 
-            var dto = new T();
-            
-            var datePortion = FindDatePart(splitText);
-            if (datePortion != null)
+            var dto = new T
             {
-                datePortion.IsUsed = true;
-                dto.Date = EasyDateParser.ParseEasyDate(datePortion.Text);
-            }
-            else
-            {
-                dto.Date = EasyDateParser.GetUtcNow();
-            }
+                Date = ExtractDate(splitText)
+            };
 
             ExtractInto(dto, splitText);
             
@@ -47,12 +39,25 @@ namespace TimeTracker.Library
 
             return dto;
         }
-        
+
+        private static DateTime ExtractDate(IEnumerable<TextMessagePart> splitText)
+        {
+            var datePortion = FindDatePart(splitText);
+            if (datePortion == null)
+            {
+                return EasyDateParser.GetUtcNow();
+            }
+
+            datePortion.IsUsed = true;
+            return EasyDateParser.ParseEasyDate(datePortion.Text);
+        }
+
         protected abstract void ExtractInto(T dto, List<TextMessagePart> splitText);
 
         private static List<TextMessagePart> SplitTextToParts(string text)
         {
             return (from t in text.ToLowerInvariant().Split(' ')
+                where !string.IsNullOrWhiteSpace(t)
                 select new TextMessagePart
                 {
                     IsUsed = false,
