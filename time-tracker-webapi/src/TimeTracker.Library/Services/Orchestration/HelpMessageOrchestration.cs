@@ -4,9 +4,10 @@ using TimeTracker.Library.Models;
 
 namespace TimeTracker.Library.Services.Orchestration
 {
-    public class HelpMessageOrchestration : MessageOrchestration
+    public class HelpMessageOrchestration : IMessageOrchestration
     {
-        protected override async Task<SlackMessageResponse> RespondTo(SlashCommandPayload slashCommandPayload)
+
+        public Task<SlackMessage> GenerateResponse(SlashCommandPayload payload)
         {
             var sb = new StringBuilder();
             sb.AppendLine("*/hours* record <projectName> <hours> _Will use today date by default_");
@@ -17,8 +18,11 @@ namespace TimeTracker.Library.Services.Orchestration
             sb.AppendLine("*/hours* record vacation <hours> <optional: date> _marks vacation hours_");
             sb.AppendLine("*/hours* report <optional: date> _generate report of hours_");
             sb.AppendLine("*/hours* delete <optional: date> _delete all hours for the date_");
-                    
-            return new SlackMessageResponse(sb.ToString(), "success");
+
+            return Task.FromResult(new SlackMessage
+            {
+                Text = sb.ToString()
+            });
         }
     }
 }

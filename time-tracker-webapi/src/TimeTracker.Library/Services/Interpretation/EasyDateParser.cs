@@ -2,10 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using Microsoft.EntityFrameworkCore.Internal;
-using TimeTracker.Library.Models;
 
-namespace TimeTracker.Library
+namespace TimeTracker.Library.Services.Interpretation
 {
     /// <summary>
     /// interprets dates in human readable form and returns them in datetime object UTC

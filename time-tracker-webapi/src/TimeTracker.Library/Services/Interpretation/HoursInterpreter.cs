@@ -1,11 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.EntityFrameworkCore.Internal;
 using TimeTracker.Data.Models;
 using TimeTracker.Library.Models;
 
-namespace TimeTracker.Library
+namespace TimeTracker.Library.Services.Interpretation
 {
     public class HoursInterpretedCommandDto : CommandDtoBase
     {

@@ -1,6 +1,6 @@
 using System.Linq;
 
-namespace TimeTracker.Library
+namespace TimeTracker.Library.Utils
 {
     public static class StringExtensions
     {

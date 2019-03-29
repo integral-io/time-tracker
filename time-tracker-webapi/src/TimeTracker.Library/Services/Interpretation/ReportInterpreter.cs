@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using TimeTracker.Library.Models;
 
-namespace TimeTracker.Library
+namespace TimeTracker.Library.Services.Interpretation
 {
 
     public class ReportInterpretedCommandDto : CommandDtoBase

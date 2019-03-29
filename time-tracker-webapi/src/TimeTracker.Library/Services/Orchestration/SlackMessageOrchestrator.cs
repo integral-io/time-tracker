@@ -1,9 +1,8 @@
 using System.Threading.Tasks;
 using TimeTracker.Data;
 using TimeTracker.Library.Models;
-using TimeTracker.Library.Services.Orchestration;
 
-namespace TimeTracker.Library.Services
+namespace TimeTracker.Library.Services.Orchestration
 {
     public class SlackMessageOrchestrator
     {
