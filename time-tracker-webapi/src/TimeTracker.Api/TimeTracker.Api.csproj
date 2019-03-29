@@ -31,6 +31,10 @@
     <ProjectReference Include="..\TimeTracker.Data\TimeTracker.Data.csproj" />
     <ProjectReference Include="..\TimeTracker.Library\TimeTracker.Library.csproj" />
   </ItemGroup>
+  
+  <ItemGroup>
+    <DotNetCliToolReference Include="BundlerMinifier.Core" Version="2.6.362" />
+  </ItemGroup>
 
   <ItemGroup>
     <Compile Remove="Infrastructure\**" />
