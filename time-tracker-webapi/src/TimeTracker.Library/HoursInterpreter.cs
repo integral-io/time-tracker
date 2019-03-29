@@ -7,17 +7,28 @@ using TimeTracker.Library.Models;
 
 namespace TimeTracker.Library
 {
+
+    public class HoursInterpretedCommandDto : CommandDtoBase
+    {
+        public string Project { get; set; }
+        public double Hours { get; set; }
+        public bool IsWorkFromHome { get; set; }
+        public bool IsBillable { get; set; }
+        public string NonBillReason { get; set; }
+
+        public TimeEntryTypeEnum TimeEntryType { get; set; }
+    }
+    
     public class HoursInterpreter : SlackMessageInterpreter<HoursInterpretedCommandDto>
     {
         public HoursInterpreter() : base("record")
         {
         }
 
-        protected override HoursInterpretedCommandDto Create(List<TextMessagePart> splitText)
+        protected override void ExtractInto(HoursInterpretedCommandDto dto,
+            List<TextMessagePart> splitText)
         {
             splitText.First().IsUsed = true;
-
-            var dto = new HoursInterpretedCommandDto();
             var projectOrTypePart = splitText.ElementAt(1);
             projectOrTypePart.IsUsed = true;
 
@@ -26,7 +37,7 @@ namespace TimeTracker.Library
             if (hoursPart == null)
             {
                 dto.ErrorMessage = "No Hours found!";
-                return dto;
+                return;
             }
 
             dto.Hours = Convert.ToDouble(hoursPart.Text);
@@ -69,8 +80,6 @@ namespace TimeTracker.Library
                     }
                 }
             }
-
-            return dto;
         }
     }
 }

@@ -4,22 +4,25 @@ using TimeTracker.Library.Models;
 
 namespace TimeTracker.Library
 {
+
+    public class ReportInterpretedCommandDto : CommandDtoBase
+    {
+        public string Project { get; set; }
+    }
+    
     public class ReportInterpreter : SlackMessageInterpreter<ReportInterpretedCommandDto>
     {
         public ReportInterpreter() : base("report")
         {
         }
 
-        protected override ReportInterpretedCommandDto Create(List<TextMessagePart> splitText)
+        protected override void ExtractInto(ReportInterpretedCommandDto dto,
+            List<TextMessagePart> splitText)
         {
-            var dto = new ReportInterpretedCommandDto();
-            
             if (splitText.Count > 1)
             {
                 dto.Project = splitText.ElementAt(1).Text;
             }
-
-            return dto;
         }
     }
 }

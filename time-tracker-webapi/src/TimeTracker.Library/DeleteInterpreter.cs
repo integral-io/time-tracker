@@ -3,15 +3,20 @@ using TimeTracker.Library.Models;
 
 namespace TimeTracker.Library
 {
+
+    public class DeleteInterpretedCommandDto : CommandDtoBase
+    {
+    }
+    
     public class DeleteInterpreter : SlackMessageInterpreter<DeleteInterpretedCommandDto>
     {
         public DeleteInterpreter() : base("delete")
         {
         }
 
-        protected override DeleteInterpretedCommandDto Create(List<TextMessagePart> splitText)
+        protected override void ExtractInto(DeleteInterpretedCommandDto dto,
+            List<TextMessagePart> splitText)
         {
-            return new DeleteInterpretedCommandDto();
         }
     }
 }

@@ -164,7 +164,7 @@ namespace TimeTracker.Library.Test
         [Fact]
         public void FindDatePart_findsDateText()
         {
-            var dateText = "jan-21";
+            const string dateText = "jan-21";
             var list = new List<TextMessagePart>()
             {
                 new TextMessagePart() { Text = dateText},
@@ -174,14 +174,14 @@ namespace TimeTracker.Library.Test
                 new TextMessagePart() { Text = "i lik toilets"}
             };
             var datePart = SlackMessageInterpreter.FindDatePart(list);
-            datePart.Should().NotBeEmpty();
-            datePart.Should().Be(dateText);
+            datePart.Should().NotBeNull();
+            datePart.Text.Should().Be(dateText);
         }
 
         [Fact]
         public void FindDatePart_findsYesterday()
         {
-            var dateText = "yesterday";
+            const string dateText = "yesterday";
             var list = new List<TextMessagePart>()
             {
                 new TextMessagePart() { Text = "wfh"},
@@ -191,8 +191,8 @@ namespace TimeTracker.Library.Test
                 new TextMessagePart() { Text = "i lik toilets"}
             };
             var datePart = SlackMessageInterpreter.FindDatePart(list);
-            datePart.Should().NotBeEmpty();
-            datePart.Should().Be(dateText);
+            datePart.Should().NotBeNull();
+            datePart.Text.Should().Be(dateText);
         }
 
         #endregion
