@@ -10,9 +10,16 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="description" content="">
-    <link href="/css/bootstrap.min.css" rel="stylesheet"/>
-    <script defer src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
-    <script defer src="/js/bootstrap.min.js"></script>
+    <environment include="Development">
+        <link href="/node_modules/bootstrap/dist/css/bootstrap.css" rel="stylesheet"/>
+        <script defer src="/node_modules/jquery/dist/jquery.slim.js"></script>
+        <script defer src="/node_modules/bootstrap/dist/js/bootstrap.js"></script>
+    </environment>
+    <environment exclude="Development">
+        <link href="/css/bootstrap.min.css" rel="stylesheet"/>
+        <script defer src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+        <script defer src="/js/bootstrap.min.js"></script>
+    </environment>
 </head>
 <body>
 <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
@@ -41,6 +48,12 @@
 </nav>
 <main role="main" class="container" style="margin-top: 70px;">
     <div class="container body-content">
+        <environment include="Development">
+            <strong> Development env ON</strong>
+        </environment>
+        <environment exclude="Development">
+            <strong> Development env OFF</strong>
+        </environment>
         @RenderBody()
         <hr/>
     </div>

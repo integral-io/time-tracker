@@ -1,10 +1,13 @@
-﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using System.IO;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.FileProviders;
 using TimeTracker.Data;
 
 namespace TimeTracker.Api
@@ -52,6 +55,13 @@ namespace TimeTracker.Api
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+                // add support to load node_modules libraries in dev mode
+                app.UseStaticFiles(new StaticFileOptions()
+                {
+                    FileProvider = new PhysicalFileProvider(
+                        Path.Combine(Directory.GetCurrentDirectory(), @"node_modules")),
+                    RequestPath = new PathString("/node_modules")
+                });
             }
             else
             {
@@ -60,7 +70,7 @@ namespace TimeTracker.Api
                 
                 app.UseAuthentication();
             }
-
+            
             // global cors policy
             app.UseCors(x => x
                 .AllowAnyOrigin()
