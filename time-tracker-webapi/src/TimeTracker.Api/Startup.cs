@@ -63,7 +63,7 @@ namespace TimeTracker.Api
                     RequestPath = new PathString("/node_modules")
                 });
             }
-            else
+            else if(!env.IsEnvironment("Test"))
             {
                 app.UseHsts();
                 app.UseHttpsRedirection();

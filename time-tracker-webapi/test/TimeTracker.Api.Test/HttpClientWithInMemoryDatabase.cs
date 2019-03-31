@@ -22,6 +22,7 @@ namespace TimeTracker.Api.Test
 
         private void ConfigureWebHost(IWebHostBuilder builder)
         {
+            builder.UseSetting("Environment", "Test");
             builder.ConfigureServices(async services =>
             {
                 services.AddEntityFrameworkInMemoryDatabase();
