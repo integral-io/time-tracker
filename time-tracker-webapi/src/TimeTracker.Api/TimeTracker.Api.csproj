@@ -35,23 +35,7 @@
   </ItemGroup>
   
   <ItemGroup>
-    <DotNetCliToolReference Include="BundlerMinifier.Core" Version="2.6.362" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Compile Remove="Infrastructure\**" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Remove="Infrastructure\**" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Remove="Infrastructure\**" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Remove="Infrastructure\**" />
+    <DotNetCliToolReference Include="BundlerMinifier.Core" Version="2.9.406" />
   </ItemGroup>
 
 </Project>

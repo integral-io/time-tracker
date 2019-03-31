@@ -4,6 +4,10 @@
 # app specific
 secrets.json
 
+# compiled js css
+wwwroot/js/
+wwwroot/css/
+
 # Logs
 logs
 *.log
