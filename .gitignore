@@ -69,3 +69,5 @@ typings/
 # Dotnet Core build outout
 bin/
 obj/
+
+TimeTracker.Api.sln.DotSettings.user
