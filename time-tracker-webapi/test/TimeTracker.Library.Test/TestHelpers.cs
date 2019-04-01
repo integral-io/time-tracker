@@ -18,12 +18,7 @@ namespace TimeTracker.Library.Test
             return options;
         }
 
-        public static void InitializeDatabaseForTests(TimeTrackerDbContext db)
-        {
-            AddClientAndProject(db);
-        }
-
-        public static void AddClientAndProject(TimeTrackerDbContext dbContext)
+        public static void AddAutonomicAsClientAndProject(this TimeTrackerDbContext dbContext)
         {
             dbContext.BillingClients.Add(new BillingClient()
             {
@@ -39,7 +34,7 @@ namespace TimeTracker.Library.Test
             dbContext.SaveChanges();
         }
 
-        public static IImmutableList<User> AddTestUsers(TimeTrackerDbContext dbContext)
+        public static void AddTestUsers(this TimeTrackerDbContext dbContext)
         {
             dbContext.Users.AddRange(new User()
                 {
@@ -59,10 +54,9 @@ namespace TimeTracker.Library.Test
             );
             
             dbContext.SaveChanges();
-            return dbContext.Users.ToImmutableList();
         }
 
-        public static void AddTimeOff(TimeTrackerDbContext dbContext)
+        public static void AddTimeOff(this TimeTrackerDbContext dbContext)
         {
             dbContext.TimeEntries.AddRange(
                 new TimeEntry()
@@ -73,7 +67,7 @@ namespace TimeTracker.Library.Test
                     Hours = 2,
                     TimeEntryId = Guid.NewGuid(),
                     TimeEntryType = TimeEntryTypeEnum.Sick,
-                    UserId = dbContext.Users.FirstOrDefault().UserId,
+                    UserId = dbContext.Users.First().UserId,
                     NonBillableReason = "sick"
                 },
                 new TimeEntry()
@@ -84,13 +78,12 @@ namespace TimeTracker.Library.Test
                     Hours = 8,
                     TimeEntryId = Guid.NewGuid(),
                     TimeEntryType = TimeEntryTypeEnum.Vacation,
-                    UserId = dbContext.Users.LastOrDefault().UserId,
+                    UserId = dbContext.Users.Last().UserId,
                     NonBillableReason = "sick2"
                 }
                 );
 
             dbContext.SaveChanges();
-
         }
     }
 }
