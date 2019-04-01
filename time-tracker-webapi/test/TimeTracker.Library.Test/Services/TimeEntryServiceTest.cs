@@ -72,7 +72,7 @@ namespace TimeTracker.Library.Test.Services
         [Fact]
         public async Task AdminReport_GetsTimeOff_ForAllUsers()
         {
-            TestHelpers.AddTimeOff(database);
+            database.AddTimeOff();
 
             var hours = await timeEntryService.QueryAllTimeOff();
 
