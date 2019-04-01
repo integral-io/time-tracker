@@ -10,12 +10,12 @@ using Xunit;
 
 namespace TimeTracker.Library.Test.Services
 {
-    public class AdminReportServiceTest : IClassFixture<InMemoryDatabase>, IAsyncLifetime
+    public class AdminReportServiceTest : IClassFixture<InMemoryDatabaseWithProjectsAndUsers>, IAsyncLifetime
     {
         private readonly TimeTrackerDbContext database;
         private readonly AdminReportService adminReportService;
 
-        public AdminReportServiceTest(InMemoryDatabase inMemoryDatabase)
+        public AdminReportServiceTest(InMemoryDatabaseWithProjectsAndUsers inMemoryDatabase)
         {
             database = inMemoryDatabase.Database;
             adminReportService = new AdminReportService(database);
