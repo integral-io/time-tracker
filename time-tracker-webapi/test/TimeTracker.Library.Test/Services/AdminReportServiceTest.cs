@@ -10,48 +10,46 @@ using Xunit;
 
 namespace TimeTracker.Library.Test.Services
 {
-    public class AdminReportServiceTest
+    public class AdminReportServiceTest : IClassFixture<InMemoryDatabase>, IAsyncLifetime
     {
+        private readonly TimeTrackerDbContext database;
+        private readonly AdminReportService adminReportService;
+
+        public AdminReportServiceTest(InMemoryDatabase inMemoryDatabase)
+        {
+            database = inMemoryDatabase.Database;
+            adminReportService = new AdminReportService(database);
+        }
+
+        public async Task InitializeAsync()
+        {
+            await PopulateTimeEntries();
+        }
+
         [Fact]
         public async Task GetAllUsersReport_includesExpectedHours()
         {
-            using (var context = new TimeTrackerDbContext(TestHelpers.BuildInMemoryDatabaseOptions("adminReportExpectedHours")))
-            {
-                TestHelpers.AddClientAndProject(context);
-                var testUsers = TestHelpers.AddTestUsers(context);
-                await PopulateTimeEntries(context, testUsers);
-                
-                var sut = new AdminReportService(context);
-                var report = await sut.GetAllUsersReport();
+            var report = await adminReportService.GetAllUsersReport();
 
-                report.First().BillableHoursYtd.Should().Be(12);
-                report.First().SickHoursYtd.Should().Be(6);
-                report.First().VacationHoursYtd.Should().Be(14);
-                report.First().OtherNonBillableYtd.Should().Be(6);
-            }
+            report.First().BillableHoursYtd.Should().Be(12);
+            report.First().SickHoursYtd.Should().Be(6);
+            report.First().VacationHoursYtd.Should().Be(14);
+            report.First().OtherNonBillableYtd.Should().Be(6);
         }
-        
+
         [Fact]
         public async Task GetAllUsersReport_includesExpectedUsers()
         {
-            using (var context = new TimeTrackerDbContext(TestHelpers.BuildInMemoryDatabaseOptions("adminReportExpectedUsers")))
-            {
-                TestHelpers.AddClientAndProject(context);
-                var testUsers = TestHelpers.AddTestUsers(context);
-                await PopulateTimeEntries(context, testUsers);
-                
-                var sut = new AdminReportService(context);
-                var report = await sut.GetAllUsersReport();
-                report.Count.Should().Be(2);
+            var report = await adminReportService.GetAllUsersReport();
+            report.Count.Should().Be(2);
 
-                report.Where(x => x.SlackUserName == testUsers.First().UserName).Should().NotBeEmpty();
-                report.Where(x => x.SlackUserName == testUsers.Last().UserName).Should().NotBeEmpty();
-            }
+            report.Where(x => x.SlackUserName == database.Users.First().UserName).Should().NotBeEmpty();
+            report.Where(x => x.SlackUserName == database.Users.Last().UserName).Should().NotBeEmpty();
         }
 
-        private async Task PopulateTimeEntries(TimeTrackerDbContext context, IEnumerable<User> testUsers)
+        private async Task PopulateTimeEntries()
         {
-            var timeEntryService = new TimeEntryService(testUsers.First().UserId, context);
+            var timeEntryService = new TimeEntryService(database.Users.First().UserId, database);
             var date = new DateTime(DateTime.UtcNow.Date.Year, 2, 15);
 
             await timeEntryService.CreateBillableTimeEntry(date, 8, 1, 1);
@@ -68,6 +66,10 @@ namespace TimeTracker.Library.Test.Services
                 TimeEntryTypeEnum.NonBillable);
             await timeEntryService.CreateNonBillableTimeEntry(date.AddDays(-8), 2, "ipa",
                 TimeEntryTypeEnum.NonBillable);
+        }
+
+        public async Task DisposeAsync()
+        {
         }
     }
 }
