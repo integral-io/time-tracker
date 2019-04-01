@@ -11,12 +11,12 @@ using Xunit;
 
 namespace TimeTracker.Library.Test.Services
 {
-    public class SlackMessageOrchestratorTest : IClassFixture<InMemoryDatabase>
+    public class SlackMessageOrchestratorTest : IClassFixture<InMemoryDatabaseWithProjectsAndUsers>
     {
         private readonly TimeTrackerDbContext database;
         private readonly SlackMessageOrchestrator orchestrator;
 
-        public SlackMessageOrchestratorTest(InMemoryDatabase inMemoryDatabase)
+        public SlackMessageOrchestratorTest(InMemoryDatabaseWithProjectsAndUsers inMemoryDatabase)
         {
             database = inMemoryDatabase.Database;
 

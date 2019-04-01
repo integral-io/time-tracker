@@ -10,98 +10,76 @@ using Xunit;
 
 namespace TimeTracker.Library.Test.Services
 {
-    public class TimeEntryServiceTest
+    public class TimeEntryServiceTest : IClassFixture<InMemoryDatabaseWithProjectsAndUsers>
     {
+        private readonly Guid userId = Guid.NewGuid();
+        
+        private readonly TimeTrackerDbContext database;
+        private readonly TimeEntryService timeEntryService;
+
+        public TimeEntryServiceTest(InMemoryDatabaseWithProjectsAndUsers inMemoryDatabase)
+        {
+            database = inMemoryDatabase.Database;
+            timeEntryService = new TimeEntryService(userId, database);
+        }
+
         [Fact]
         public async Task CreateBillableTimeEntry_createsDbRecord()
         {
-            var userId = Guid.NewGuid();
+            await timeEntryService.CreateBillableTimeEntry(DateTime.UtcNow.Date, 
+                7, 1, 1);
 
-            using (var context = new TimeTrackerDbContext(TestHelpers.BuildInMemoryDatabaseOptions("projects")))
-            {
-                var sut = new TimeEntryService(userId, context);
-                var date = DateTime.UtcNow.Date;
-                var id = await sut.CreateBillableTimeEntry(date, 7, 1, 1);
-
-                var entry = await context.TimeEntries.FirstOrDefaultAsync(x => x.TimeEntryId == id);
-                entry.Should().NotBeNull();
-                entry.Hours.Should().Be(7);
-                entry.TimeEntryType.Should().Be(TimeEntryTypeEnum.BillableProject);
-            }
+            var entry = await database.TimeEntries.FirstAsync(x => x.UserId == userId);
+            entry.Hours.Should().Be(7);
+            entry.TimeEntryType.Should().Be(TimeEntryTypeEnum.BillableProject);
         }
 
         [Fact]
         public async Task CreateNonBillableTimeEntry_createsDbRecord()
         {
-            var userId = Guid.NewGuid();
+            var nonBillReason = "sick with flu";
+            
+            await timeEntryService.CreateNonBillableTimeEntry(DateTime.UtcNow.Date, 
+                6, nonBillReason, TimeEntryTypeEnum.Sick);
 
-            using (var context = new TimeTrackerDbContext(TestHelpers.BuildInMemoryDatabaseOptions("projects")))
-            {
-                var sut = new TimeEntryService(userId, context);
-                var date = DateTime.UtcNow.Date;
-                var nonBillReason = "sick with flu";
-                var id = await sut.CreateNonBillableTimeEntry(date, 6, nonBillReason, 
-                    TimeEntryTypeEnum.Sick);
-
-                var entry = await context.TimeEntries.FirstOrDefaultAsync(x => x.TimeEntryId == id);
-                entry.Should().NotBeNull();
-                entry.Hours.Should().Be(6);
-                entry.TimeEntryType.Should().Be(TimeEntryTypeEnum.Sick);
-                entry.NonBillableReason.Should().Be(nonBillReason);
-            }
+            var entry = await database.TimeEntries.FirstAsync(x => x.UserId == userId);
+            entry.Hours.Should().Be(6);
+            entry.TimeEntryType.Should().Be(TimeEntryTypeEnum.Sick);
+            entry.NonBillableReason.Should().Be(nonBillReason);
         }
 
         [Fact]
         public async Task DeleteHours_ThatDontExistFromToday_works()
         {
-            var userId = Guid.NewGuid();
+            var hoursDeleted = await timeEntryService.DeleteHours(DateTime.UtcNow);
 
-            using (var context = new TimeTrackerDbContext(TestHelpers.BuildInMemoryDatabaseOptions("hoursDeleted1")))
-            {
-                var sut = new TimeEntryService(userId, context);
-                var hoursDeleted = await sut.DeleteHours(DateTime.UtcNow);
-
-                hoursDeleted.Should().Be(0);
-            }
+            hoursDeleted.Should().Be(0);
         }
 
         [Fact]
         public async Task DeleteHours_ThatDoExistToday_works()
         {
-            var userId = Guid.NewGuid();
-            using (var context = new TimeTrackerDbContext(TestHelpers.BuildInMemoryDatabaseOptions("hoursDeleted2")))
-            {
-                var sut = new TimeEntryService(userId, context);
-                var date = DateTime.UtcNow.Date;
-                await sut.CreateBillableTimeEntry(date, 7, 1, 1);
-                await sut.CreateNonBillableTimeEntry(date, 8, null, TimeEntryTypeEnum.Vacation);
-                await sut.CreateNonBillableTimeEntry(date, 8, "flu", TimeEntryTypeEnum.Sick);
+            var date = DateTime.UtcNow.Date;
+            await timeEntryService.CreateBillableTimeEntry(date, 7, 1, 1);
+            await timeEntryService.CreateNonBillableTimeEntry(date, 8, null, TimeEntryTypeEnum.Vacation);
+            await timeEntryService.CreateNonBillableTimeEntry(date, 8, "flu", TimeEntryTypeEnum.Sick);
 
-                var hoursDeleted = await sut.DeleteHours(date);
+            var hoursDeleted = await timeEntryService.DeleteHours(date);
 
-                hoursDeleted.Should().Be(23);
-            }
+            hoursDeleted.Should().Be(23);
         }
 
         [Fact]
         public async Task AdminReport_GetsTimeOff_ForAllUsers()
         {
-            var userId = Guid.NewGuid();
-            using (var context = new TimeTrackerDbContext(TestHelpers.BuildInMemoryDatabaseOptions("obsoleteAdminReport")))
-            {
-                TestHelpers.AddClientAndProject(context);
-                TestHelpers.AddTestUsers(context);
-                TestHelpers.AddTimeOff(context);
-                
-                var sut = new TimeEntryService(userId, context);
+            TestHelpers.AddTimeOff(database);
 
-                var hours = await sut.QueryAllTimeOff();
+            var hours = await timeEntryService.QueryAllTimeOff();
 
-                hours.TimeOffSummaries.Count.Should().Be(2);
-                hours.TimeOffSummaries.FirstOrDefault().Username.Should().Be("username1");
-                hours.TimeOffSummaries.LastOrDefault().PtoTyd.Should().Be(8);
-                hours.TimeOffSummaries.FirstOrDefault().SickYtd.Should().Be(2);
-            }
+            hours.TimeOffSummaries.Count.Should().Be(2);
+            hours.TimeOffSummaries.First().Username.Should().Be("username1");
+            hours.TimeOffSummaries.Last().PtoTyd.Should().Be(8);
+            hours.TimeOffSummaries.First().SickYtd.Should().Be(2);
         }
     }
 }

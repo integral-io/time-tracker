@@ -30,7 +30,7 @@ namespace TimeTracker.Library.Test.Services
 
                 hours.Count.Should().Be(2);
                 hours.Sum(x=>x.Hours).Should().Be(14);
-                hours.FirstOrDefault().TimeEntryType.Should().Be(TimeEntryTypeEnum.BillableProject);
+                hours.First().TimeEntryType.Should().Be(TimeEntryTypeEnum.BillableProject);
                 hours.Select(x => x.ProjectOrName).Should().Contain("au");
             }
         }
