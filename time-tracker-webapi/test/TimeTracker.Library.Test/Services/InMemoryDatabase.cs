@@ -12,6 +12,7 @@ namespace TimeTracker.Library.Test.Services
             Database = new TimeTrackerDbContext(TestHelpers.BuildInMemoryDatabaseOptions(Guid.NewGuid().ToString()));
             
             TestHelpers.AddClientAndProject(Database);
+            TestHelpers.AddTestUsers(Database);
         }
 
         public void Dispose()

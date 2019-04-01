@@ -26,27 +26,25 @@ namespace TimeTracker.Library.Test.Services
         [Fact]
         public async Task HandleCommand_deleteHours_returnsDeletedMessage_andDeletesHours()
         {
-            var users = TestHelpers.AddTestUsers(database);
-            var sut = new TimeEntryService(users.First().UserId, database);
-            var date = DateTime.UtcNow.Date;
-            await sut.CreateBillableTimeEntry(date, 7, 1, 1);
+            var user = database.Users.First();
+            var timeEntryService = new TimeEntryService(user.UserId, database);
+            await timeEntryService.CreateBillableTimeEntry(DateTime.UtcNow.Date, 7, 1, 1);
 
             var slackMessage = await orchestrator.HandleCommand(new SlashCommandPayload()
             {
                 text = "delete",
-                user_id = users.First().SlackUserId,
-                user_name = users.First().UserName
+                user_id = user.SlackUserId,
+                user_name = user.UserName
             });
 
-            slackMessage.Text.Should().Be($"Deleted {7d:F1} hours for date: {date:D}");
+            slackMessage.Text.Should().Be($"Deleted {7d:F1} hours for date: {DateTime.UtcNow.Date:D}");
             database.TimeEntries.Count().Should().Be(0);
         }
 
         [Fact]
         public async Task HandleCommand_hours_processesRecordOption()
         {
-            var utcNow = DateTime.UtcNow;
-            var todayString = utcNow.ToString("D");
+            var todayString = DateTime.UtcNow.ToString("D");
             var textCommand = "record Au 8 wfh";
 
             var slackMessage = await orchestrator.HandleCommand(new SlashCommandPayload()
