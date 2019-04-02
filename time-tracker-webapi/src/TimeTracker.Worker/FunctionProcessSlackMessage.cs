@@ -51,46 +51,6 @@ namespace TimeTracker.Worker
                 .BuildServiceProvider();
         }
 
-        [FunctionName("processSlackMessage")]
-        public static async Task Run([ServiceBusTrigger(SlackQueueName, Connection = "itt_commands_ServiceBus")]
-            string message, ILogger logger, ExecutionContext context)
-        {
-            logger.LogInformation($"C# ServiceBus queue trigger function processed message: {message}");
-
-            SetupConfiguration(context);
-            SetupServiceCollection();
-
-            var slackResponder = new SlackMessageResponder(logger);
-            string responseUrl = null;
-
-            try
-            {
-                Guard.ThrowIfCheckFails(!string.IsNullOrEmpty(message), "cannot be null or empty", nameof(message));
-
-                var typedMessage = SlashCommandPayload.ParseFromFormEncodedData(message);
-                responseUrl = typedMessage.response_url;
-
-                var orchestrator = serviceProvider.GetService<SlackMessageOrchestrator>();
-                var responseMessage = await orchestrator.HandleCommand(typedMessage);
-
-                await slackResponder.SendMessage(typedMessage.response_url, responseMessage);
-            }
-            catch (Exception exc)
-            {
-                logger.LogError(exc.Message);
-
-                if (responseUrl != null)
-                {
-                    await slackResponder.SendMessage(responseUrl, new SlackMessage()
-                    {
-                        Text = $"*Error:* _{exc.Message}_\n Source: {exc.Source} \n {exc.StackTrace}"
-                    });
-                }
-
-                throw;
-            }
-        }
-
         [FunctionName("processSlackMessageHttp")]
         public static async Task<IActionResult> RunHttpTrigger(
             [HttpTrigger(AuthorizationLevel.Function, "post", Route = null)]

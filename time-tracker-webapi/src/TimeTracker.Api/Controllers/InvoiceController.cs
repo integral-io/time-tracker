@@ -17,7 +17,7 @@ namespace TimeTracker.Api.Controllers
         }
         
         [HttpGet("month/{monthDate}"), Authorize]
-        public async Task<IActionResult> Month(string monthDate)
+        public async Task<ViewResult> Month(string monthDate)
         {
             return View(new InvoiceDto());
         }
