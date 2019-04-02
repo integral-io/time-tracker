@@ -8,7 +8,7 @@ using TimeTracker.Library.Services;
 
 namespace TimeTracker.Api.Controllers
 {
-    [Route("admin/reports")]
+    [Route("admin/reports"), Authorize]
     public class AdminReportsController : Controller
     {
         private readonly TimeTrackerDbContext dbContext;
@@ -18,20 +18,20 @@ namespace TimeTracker.Api.Controllers
             this.dbContext = dbContext;
         }
 
-        [HttpGet("ytd"), Authorize, ProducesResponseType(typeof(IEnumerable<UserReport>), 200)]
-        public async Task<IActionResult> AllUsersReport()
+        [HttpGet("ytd")]
+        public async Task<ViewResult> AllUsersReport()
         {
             var adminReportService = new AdminReportService(dbContext);
             var items = await adminReportService.GetAllUsersReport();
-            return View(model: items);
+            return View(items);
         }
         
-        [HttpGet("payperiod"), Authorize, ProducesResponseType(typeof(IEnumerable<UserReport>), 200)]
-        public async Task<IActionResult> PeriodReport(string start, string end)
+        [HttpGet("payperiod")]
+        public async Task<ViewResult> PeriodReport(string start, string end)
         {
             var adminReportService = new AdminReportService(dbContext);
             var items = await adminReportService.GetAllUsersReport();
-            return View(model: items);
+            return View(items);
         }
     }
 }

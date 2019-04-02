@@ -36,14 +36,14 @@ namespace TimeTracker.Library.Services
 
     public class JsonContent : StringContent
     {
-        private static JsonSerializerSettings serializerSettings = new JsonSerializerSettings()
+        private static readonly JsonSerializerSettings SerializerSettings = new JsonSerializerSettings()
         {
             ContractResolver = new CamelCasePropertyNamesContractResolver() // this may need to be snake case
         };
        
         
         public JsonContent(object obj) :
-            base(JsonConvert.SerializeObject(obj, serializerSettings), Encoding.UTF8, "application/json")
+            base(JsonConvert.SerializeObject(obj, SerializerSettings), Encoding.UTF8, "application/json")
         {
         }
     }
