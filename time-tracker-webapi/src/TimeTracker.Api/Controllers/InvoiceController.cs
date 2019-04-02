@@ -16,7 +16,7 @@ namespace TimeTracker.Api.Controllers
             this.dbContext = dbContext;
         }
         
-        [HttpGet("month/{monthDate}"), AllowAnonymous] // anon temp
+        [HttpGet("month/{monthDate}"), Authorize]
         public async Task<IActionResult> Month(string monthDate)
         {
             return View(new InvoiceDto());
