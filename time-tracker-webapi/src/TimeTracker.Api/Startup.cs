@@ -1,5 +1,4 @@
 ﻿using System.IO;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -14,44 +13,46 @@ namespace TimeTracker.Api
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
-        {
-            Configuration = configuration;
-        }
+        private readonly IConfiguration configuration;
+        private readonly IHostingEnvironment environment;
 
-        public IConfiguration Configuration { get; }
+        public Startup(IConfiguration configuration, IHostingEnvironment environment)
+        {
+            this.environment = environment;
+            this.configuration = configuration;
+        }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
-            services.AddSingleton(Configuration);
+            services.AddSingleton(configuration);
             
-            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-                .AddJwtBearer(x => x.UseGoogle(
-                    clientId: Configuration["Authentication:Google:ClientId"]));
-            
-            services.AddSwaggerDocument(configure => 
-            { 
+            if (!environment.IsTest())
+            {
+                services.ConfigureGoogleAuth(
+                    configuration["Authentication:Google:ClientId"], 
+                    configuration["Authentication:Google:ClientSecret"]);
+            }
+
+            services.AddSwaggerDocument(configure =>
+            {
                 configure.PostProcess = document =>
                 {
                     document.Info.Version = "beta";
                     document.Info.Title = "Time Tracker API";
-                    
                 };
             });
-            var connection = Configuration.GetConnectionString("DefaultConnection");
-            services.AddDbContext<TimeTrackerDbContext>(options =>
-            {
-                options.UseSqlServer(connection);
-            });
+
+            var connection = configuration.GetConnectionString("DefaultConnection");
+            services.AddDbContext<TimeTrackerDbContext>(options => { options.UseSqlServer(connection); });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
             app.UseStaticFiles(); // support wwwroot
-            
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -63,14 +64,11 @@ namespace TimeTracker.Api
                     RequestPath = new PathString("/node_modules")
                 });
             }
-            else if(!env.IsEnvironment("Test"))
-            {
-                app.UseHsts();
-                app.UseHttpsRedirection();
-                
-                app.UseAuthentication();
-            }
-            
+
+            app.UseHsts();
+            app.UseHttpsRedirection();
+            app.UseAuthentication();
+
             // global cors policy
             app.UseCors(x => x
                 .AllowAnyOrigin()
