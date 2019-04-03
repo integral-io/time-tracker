@@ -8,7 +8,7 @@ using TimeTracker.Library.Utils;
 namespace TimeTracker.Library.Services.Interpretation
 {
     public abstract class SlackMessageInterpreter<T> : SlackMessageInterpreter 
-        where T : CommandDtoBase, new()
+        where T : InterpretedMessage, new()
     {
         private readonly string command;
 
@@ -81,7 +81,7 @@ namespace TimeTracker.Library.Services.Interpretation
         }
     }
 
-    public abstract class CommandDtoBase
+    public abstract class InterpretedMessage
     {
         public string ErrorMessage { get; set; }
 

@@ -6,7 +6,7 @@ using TimeTracker.Library.Models;
 
 namespace TimeTracker.Library.Services.Interpretation
 {
-    public class HoursInterpretedCommandDto : CommandDtoBase
+    public class HoursInterpretedMessage : InterpretedMessage
     {
         public string Project { get; set; }
         public double Hours { get; set; }
@@ -17,45 +17,31 @@ namespace TimeTracker.Library.Services.Interpretation
         public TimeEntryTypeEnum TimeEntryType { get; set; }
     }
 
-    public class HoursInterpreter : SlackMessageInterpreter<HoursInterpretedCommandDto>
+    public class HoursInterpreter : SlackMessageInterpreter<HoursInterpretedMessage>
     {
         public HoursInterpreter() : base("record")
         {
         }
 
-        protected override void ExtractInto(HoursInterpretedCommandDto dto,
+        protected override void ExtractInto(HoursInterpretedMessage dto,
             List<TextMessagePart> splitText)
         {
-            splitText.First().IsUsed = true;
-            var projectOrTypePart = splitText.ElementAt(1);
-            projectOrTypePart.IsUsed = true;
-
-            var wfhPart = splitText.FirstOrDefault(x => x.Text == "wfh");
-            if (wfhPart != null)
-            {
-                wfhPart.IsUsed = true;
-                dto.IsWorkFromHome = true;
-            }
-
-            var hoursPart = splitText.FirstOrDefault(x => !x.IsUsed && double.TryParse(x.Text, out _));
-            if (hoursPart == null)
+            var hours = InterpretHours(splitText.Where(x => !x.IsUsed));
+            if (hours.HasValue)
+                dto.Hours = hours.Value;
+            else
             {
                 dto.ErrorMessage = "No Hours found!";
                 return;
             }
 
-            dto.Hours = Convert.ToDouble(hoursPart.Text);
-            hoursPart.IsUsed = true;
-
-            TimeEntryTypeEnum entryTypeEnum;
-            if (Enum.TryParse(projectOrTypePart.Text, true, out entryTypeEnum))
+            var projectOrTypePart = splitText.First(x => !x.IsUsed);
+            projectOrTypePart.IsUsed = true;
+         
+            var interpretTimeEntryType = InterpretTimeEntryType(projectOrTypePart.Text);
+            if (interpretTimeEntryType.HasValue)
             {
-                dto.TimeEntryType = entryTypeEnum;
-            }
-            else if (projectOrTypePart.Text.Equals("nonbill", StringComparison.OrdinalIgnoreCase))
-            {
-                dto.IsBillable = false;
-                dto.TimeEntryType = TimeEntryTypeEnum.NonBillable;
+                dto.TimeEntryType = interpretTimeEntryType.Value;
             }
             else
             {
@@ -64,32 +50,57 @@ namespace TimeTracker.Library.Services.Interpretation
                 dto.Project = projectOrTypePart.Text;
             }
 
-            /* handle non bill reason */
+            dto.IsWorkFromHome = InterpretIsWorkingFromHome(splitText.Where(x => !x.IsUsed));
+
             if (!dto.IsBillable)
             {
-                var startIndexOfReason = splitText.FindIndex(x => x.Text.StartsWith("\""));
-                if (startIndexOfReason > 0)
-                {
-                    var stopIndexOfReason = splitText.FindIndex(x => x.Text.EndsWith("\""));
-                    var reasonParts = splitText.Skip(startIndexOfReason)
-                        .Take(stopIndexOfReason - startIndexOfReason + 1).ToList();
-
-                    dto.NonBillReason = string.Join(" ", reasonParts.Select(x => x.Text))
-                        .Replace("\"", "")
-                        .Trim();
-
-                    reasonParts.ForEach(x => x.IsUsed = true);
-                }
-                else
-                {
-                    var possibleNonBills = splitText.Where(x => !x.IsUsed).ToList();
-                    if (possibleNonBills.Any())
-                    {
-                        dto.NonBillReason = string.Join(" ", possibleNonBills.Select(x => x.Text)).Trim();
-                        possibleNonBills.ForEach(x => x.IsUsed = true);
-                    }
-                }
+                dto.NonBillReason = InterpretNonBillableReason(splitText.Where(x => !x.IsUsed).ToList());
             }
+        }
+
+        private static double? InterpretHours(IEnumerable<TextMessagePart> unusedParts)
+        {
+            double hours = 0;
+            var hoursPart = unusedParts.FirstOrDefault(x => double.TryParse(x.Text, out hours));
+            if (hoursPart == null)
+                return null;
+
+            hoursPart.IsUsed = true;
+            return hours;
+        }
+
+        private static TimeEntryTypeEnum? InterpretTimeEntryType(string text)
+        {
+            if (text == "nonbill")
+            {
+                return TimeEntryTypeEnum.NonBillable;
+            }
+
+            if (Enum.TryParse(text, true, out TimeEntryTypeEnum entryTypeEnum))
+            {
+                return entryTypeEnum;
+            }
+
+            return null;
+        }
+
+        private static bool InterpretIsWorkingFromHome(IEnumerable<TextMessagePart> unusedParts)
+        {
+            var wfhPart = unusedParts.FirstOrDefault(x => x.Text == "wfh");
+            if (wfhPart == null) 
+                return false;
+
+            wfhPart.IsUsed = true;
+            return true;
+        }
+
+        private static string InterpretNonBillableReason(List<TextMessagePart> unusedParts)
+        {
+            unusedParts.ForEach(x => x.IsUsed = true);
+
+            return string.Join(" ", unusedParts.Select(x => x.Text))
+                .Replace("\"", "")
+                .Trim();
         }
     }
 }

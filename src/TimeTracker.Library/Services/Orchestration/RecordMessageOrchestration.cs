@@ -4,7 +4,7 @@ using TimeTracker.Library.Services.Interpretation;
 
 namespace TimeTracker.Library.Services.Orchestration
 {
-    public class RecordMessageOrchestration : MessageOrchestration<HoursInterpreter, HoursInterpretedCommandDto>
+    public class RecordMessageOrchestration : MessageOrchestration<HoursInterpreter, HoursInterpretedMessage>
     {
         private readonly TimeTrackerDbContext dbContext;
 
@@ -13,7 +13,7 @@ namespace TimeTracker.Library.Services.Orchestration
             this.dbContext = dbContext;
         }
 
-        protected override async Task<SlackMessageResponse> RespondTo(HoursInterpretedCommandDto command)
+        protected override async Task<SlackMessageResponse> RespondTo(HoursInterpretedMessage command)
         {
             var userService = new UserService(dbContext);
 

@@ -1,5 +1,6 @@
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.AspNetCore.WebUtilities;
+using TimeTracker.Library.Utils;
 
 namespace TimeTracker.Library.Models
 {
@@ -22,6 +23,8 @@ namespace TimeTracker.Library.Models
         
         public static SlashCommandPayload ParseFromFormEncodedData(string formData)
         {
+            Guard.ThrowIfCheckFails(!string.IsNullOrEmpty(formData), "cannot be null or empty", nameof(formData));
+
             var reader = new FormReader(formData);
             
             var commandPayload = new SlashCommandPayload();
