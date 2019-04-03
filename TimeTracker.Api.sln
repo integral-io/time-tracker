@@ -19,6 +19,15 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TimeTracker.Library", "src\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TimeTracker.Library.Test", "test\TimeTracker.Library.Test\TimeTracker.Library.Test.csproj", "{4020EBE1-06BE-4DC0-BDD8-A9EC96F6D3E8}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "files", "files", "{0F71F0AD-147A-4667-9B90-01EF83CA09B3}"
+ProjectSection(SolutionItems) = preProject
+	azure-pipelines.yml = azure-pipelines.yml
+	LICENSE = LICENSE
+	README.md = README.md
+	package-lock.json = package-lock.json
+	.gitignore = .gitignore
+EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
