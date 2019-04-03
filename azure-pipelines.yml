@@ -18,21 +18,21 @@ steps:
   displayName: 'npm install on package.json for frontend libs'
   inputs:
     command: 'install'
-    workingDir: '$(Build.SourcesDirectory)/time-tracker-webapi/src/TimeTracker.Api/'
+    workingDir: '$(Build.SourcesDirectory)/src/TimeTracker.Api/'
 
-- script: dotnet build $(Build.SourcesDirectory)/time-tracker-webapi/ --configuration $(buildConfiguration)
+- script: dotnet build $(Build.SourcesDirectory)/ --configuration $(buildConfiguration)
   displayName: 'dotnet build $(buildConfiguration)'
 
 - script: |
-    cd $(Build.SourcesDirectory)/time-tracker-webapi/src/TimeTracker.Api/
+    cd $(Build.SourcesDirectory)/src/TimeTracker.Api/
     dotnet bundle
   displayName: 'bundle css and js'
 
 - script: |
     mkdir $(Build.SourcesDirectory)/results
-    dotnet test --logger trx /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura  $(Build.SourcesDirectory)/time-tracker-webapi/test/TimeTracker.Api.Test/
-    dotnet test --logger trx /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura /p:MergeWtih=$(Build.SourcesDirectory)/time-tracker-webapi/test/TimeTracker.Api.Test/coverage.cobertura.xml $(Build.SourcesDirectory)/time-tracker-webapi/test/TimeTracker.Library.Test/
- #   cp $(Build.SourcesDirectory)/time-tracker-webapi/test/TimeTracker.Api.Test/coverage.cobertura.xml $(Build.SourcesDirectory)/results
+    dotnet test --logger trx /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura  $(Build.SourcesDirectory)/test/TimeTracker.Api.Test/
+    dotnet test --logger trx /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura /p:MergeWtih=$(Build.SourcesDirectory)/test/TimeTracker.Api.Test/coverage.cobertura.xml $(Build.SourcesDirectory)/test/TimeTracker.Library.Test/
+ #   cp $(Build.SourcesDirectory)/test/TimeTracker.Api.Test/coverage.cobertura.xml $(Build.SourcesDirectory)/results
  #   dotnet tool install dotnet-reportgenerator-globaltool --tool-path . --version 4.0.0-rc4
  #   ./reportgenerator "-reports:$(Build.SourcesDirectory)/results/coverage.cobertura.xml" "-targetdir:results" "-reporttypes:HTMLInline;HTMLChart"
   displayName: 'Unit testing'
@@ -48,13 +48,13 @@ steps:
     reportDirectory: $(Build.SourcesDirectory)/results
     codecoverageTool: cobertura
 
-- script: dotnet publish $(Build.SourcesDirectory)/time-tracker-webapi/ --configuration $(buildConfiguration) --output $BUILD_ARTIFACTSTAGINGDIRECTORY
+- script: dotnet publish $(Build.SourcesDirectory)/ --configuration $(buildConfiguration) --output $BUILD_ARTIFACTSTAGINGDIRECTORY
 
 - task: efcore-migration-script-generator-task@0
   inputs: 
-   projectpath: '$(Build.SourcesDirectory)/time-tracker-webapi/src/TimeTracker.Data/TimeTracker.Data.csproj'
+   projectpath: '$(Build.SourcesDirectory)/src/TimeTracker.Data/TimeTracker.Data.csproj'
    databasecontexts: 'TimeTrackerDbContext'
-   startupprojectpath: '$(Build.SourcesDirectory)/time-tracker-webapi/src/TimeTracker.Api/TimeTracker.Api.csproj'
+   startupprojectpath: '$(Build.SourcesDirectory)/src/TimeTracker.Api/TimeTracker.Api.csproj'
    targetfolder: '$(build.artifactstagingdirectory)/migrations'
     
 
