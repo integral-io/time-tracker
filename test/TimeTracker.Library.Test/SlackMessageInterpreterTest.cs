@@ -101,7 +101,7 @@ namespace TimeTracker.Library.Test
             sut.Hours.Should().Be(8d);
             sut.IsBillable.Should().BeFalse();
             sut.TimeEntryType.Should().Be(TimeEntryTypeEnum.Vacation);
-            sut.NonBillReason.Should().BeNull();
+            sut.NonBillReason.Should().BeNullOrEmpty();
         }
 
         [Fact]
@@ -112,7 +112,7 @@ namespace TimeTracker.Library.Test
             sut.Hours.Should().Be(8d);
             sut.IsBillable.Should().BeFalse();
             sut.TimeEntryType.Should().Be(TimeEntryTypeEnum.Vacation);
-            sut.NonBillReason.Should().BeNull();
+            sut.NonBillReason.Should().BeNullOrEmpty();
         }
 
         [Fact]
@@ -123,7 +123,7 @@ namespace TimeTracker.Library.Test
             sut.Hours.Should().Be(8d);
             sut.IsBillable.Should().BeFalse();
             sut.TimeEntryType.Should().Be(TimeEntryTypeEnum.Vacation);
-            sut.NonBillReason.Should().BeNull();
+            sut.NonBillReason.Should().BeNullOrEmpty();
         }
 
         #endregion

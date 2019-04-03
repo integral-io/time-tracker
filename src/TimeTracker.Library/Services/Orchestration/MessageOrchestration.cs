@@ -12,12 +12,10 @@ namespace TimeTracker.Library.Services.Orchestration
     
     public abstract class MessageOrchestration<TInterpreter, TInterpretedMessage> : IMessageOrchestration
         where TInterpreter : SlackMessageInterpreter<TInterpretedMessage>, new()
-        where TInterpretedMessage : CommandDtoBase, new()
+        where TInterpretedMessage : InterpretedMessage, new()
     {
         public async Task<SlackMessage> GenerateResponse(SlashCommandPayload payload)
         {
-            Guard.ThrowIfNull(payload);
-
             var interpretMessage = new TInterpreter().InterpretMessage(payload);
 
             if (interpretMessage.HasError)

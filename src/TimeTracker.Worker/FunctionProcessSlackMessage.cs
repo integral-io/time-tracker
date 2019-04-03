@@ -68,8 +68,6 @@ namespace TimeTracker.Worker
             {
                 var requestBody = await new StreamReader(request.Body).ReadToEndAsync();
 
-                Guard.ThrowIfCheckFails(!string.IsNullOrEmpty(requestBody), "cannot be null or empty", nameof(request));
-
                 var typedMessage = SlashCommandPayload.ParseFromFormEncodedData(requestBody);
                 responseUrl = typedMessage.response_url;
 

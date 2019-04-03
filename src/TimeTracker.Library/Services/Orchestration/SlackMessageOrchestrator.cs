@@ -1,6 +1,7 @@
 using System.Threading.Tasks;
 using TimeTracker.Data;
 using TimeTracker.Library.Models;
+using TimeTracker.Library.Utils;
 
 namespace TimeTracker.Library.Services.Orchestration
 {
@@ -21,6 +22,8 @@ namespace TimeTracker.Library.Services.Orchestration
         /// <returns></returns>
         public Task<SlackMessage> HandleCommand(SlashCommandPayload slashCommandPayload)
         {
+            Guard.ThrowIfNull(slashCommandPayload);
+            
             var orchestration = messageOrchestrationFactory.Create(slashCommandPayload);
             
             return orchestration.GenerateResponse(slashCommandPayload);

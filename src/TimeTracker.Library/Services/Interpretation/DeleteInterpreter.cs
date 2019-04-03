@@ -4,17 +4,17 @@ using TimeTracker.Library.Models;
 namespace TimeTracker.Library.Services.Interpretation
 {
 
-    public class DeleteInterpretedCommandDto : CommandDtoBase
+    public class DeleteInterpretedMessage : InterpretedMessage
     {
     }
     
-    public class DeleteInterpreter : SlackMessageInterpreter<DeleteInterpretedCommandDto>
+    public class DeleteInterpreter : SlackMessageInterpreter<DeleteInterpretedMessage>
     {
         public DeleteInterpreter() : base("delete")
         {
         }
 
-        protected override void ExtractInto(DeleteInterpretedCommandDto dto,
+        protected override void ExtractInto(DeleteInterpretedMessage dto,
             List<TextMessagePart> splitText)
         {
         }
