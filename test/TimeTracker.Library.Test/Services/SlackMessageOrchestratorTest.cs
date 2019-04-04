@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using TimeTracker.Data;
+using TimeTracker.Data.Models;
 using TimeTracker.Library.Models;
 using TimeTracker.Library.Services;
 using TimeTracker.Library.Services.Orchestration;
@@ -92,6 +93,33 @@ namespace TimeTracker.Library.Test.Services
 
             database.TimeEntries.Should().BeEmpty();
             slackMessage.Text.Should().Be($"Error: *Not sure how to interpret 'some nonsense'*");
+        }
+
+        [Fact]
+        public async Task WhenTimeEntryStoredOnFirstOfMonth_ThenItGetsDisplayedInReport()
+        {
+            var user = database.Users.First();
+            
+            var now = DateTime.UtcNow;
+            var timeEntry = new TimeEntry
+            {
+                Hours = 8, 
+                Date = new DateTime(now.Year, now.Month, 1),
+                TimeEntryType = TimeEntryTypeEnum.NonBillable,
+                User = user
+            };
+            
+            database.TimeEntries.Add(timeEntry);
+            await database.SaveChangesAsync();
+            
+            var response = await orchestrator.HandleCommand(new SlashCommandPayload()
+            {
+                text = "report",
+                user_id = user.SlackUserId,
+                user_name = user.UserName
+            });
+
+            response.Text.Should().Contain("Non-billable Hours: 8.0");
         }
     }
 }

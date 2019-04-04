@@ -19,14 +19,14 @@ namespace TimeTracker.Data.Models
         public int? BillingClientId { get; set; }
         public int? ProjectId { get; set; }
         public Guid UserId { get; set; }
+        public TimeEntryTypeEnum TimeEntryType { get; set; }
 
         #region Navigation Properties
-        
+
         public BillingClient BillingClient { get; set; }
         public User User { get; set; }
         public Project Project { get; set; }
-        public TimeEntryTypeEnum TimeEntryType { get; set; }
-        
+
         #endregion
     }
 }
