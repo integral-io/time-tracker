@@ -46,7 +46,7 @@ namespace TimeTracker.Library.Services
             {
                 month = currentDate.Month;
             }
-            var currentBeginningMonth = new DateTime(currentDate.Year, month.Value, 1, 1, 1, 1, DateTimeKind.Utc);
+            var currentBeginningMonth = new DateTime(currentDate.Year, month.Value, 1, 0, 0, 0, DateTimeKind.Utc);
             var currentBeginningYear = new DateTime(currentDate.Year, 1, 1, 1, 1, 1, DateTimeKind.Utc);
             var timeEntryReport = new TimeEntryReport();
             
