@@ -70,8 +70,10 @@ typings/
 # next.js build output
 .next
 
-# Dotnet Core build outout
+# Dotnet Core build output
 bin/
 obj/
 
 TimeTracker.Api.sln.DotSettings.user
+
+*.trx
