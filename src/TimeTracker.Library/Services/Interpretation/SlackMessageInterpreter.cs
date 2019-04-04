@@ -27,19 +27,19 @@ namespace TimeTracker.Library.Services.Interpretation
                 $"Invalid start option: {splitText.FirstOrDefault()}", nameof(payload.text));
             splitText.First().IsUsed = true;
 
-            var dto = new T
+            var message = new T
             {
                 Date = ExtractDate(splitText),
                 UserId = payload.user_id,
                 UserName = payload.user_name
             };
 
-            ExtractInto(dto, splitText);
+            ExtractInto(message, splitText);
 
             if (splitText.Any(x => !x.IsUsed))
-                dto.ErrorMessage = $"Not sure how to interpret '{splitText.Where(x => !x.IsUsed).Select(x => x.Text).Join(" ")}'";
+                message.ErrorMessage = $"Not sure how to interpret '{splitText.Where(x => !x.IsUsed).Select(x => x.Text).Join(" ")}'";
 
-            return dto;
+            return message;
         }
 
         private static DateTime ExtractDate(IEnumerable<TextMessagePart> splitText)
@@ -54,7 +54,7 @@ namespace TimeTracker.Library.Services.Interpretation
             return EasyDateParser.ParseEasyDate(datePortion.Text);
         }
 
-        protected abstract void ExtractInto(T dto, List<TextMessagePart> splitText);
+        protected abstract void ExtractInto(T message, List<TextMessagePart> splitText);
 
         private static List<TextMessagePart> SplitTextToParts(string text)
         {

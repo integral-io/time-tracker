@@ -16,12 +16,12 @@ namespace TimeTracker.Library.Services.Interpretation
         {
         }
 
-        protected override void ExtractInto(ReportInterpretedMessage dto,
+        protected override void ExtractInto(ReportInterpretedMessage message,
             List<TextMessagePart> splitText)
         {
             if (splitText.Count > 1)
             {
-                dto.Project = splitText.ElementAt(1).Text;
+                message.Project = splitText.ElementAt(1).Text;
             }
         }
     }
