@@ -95,8 +95,12 @@ namespace TimeTracker.Library.Test.Services
             slackMessage.Text.Should().Be($"Error: *Not sure how to interpret 'some nonsense'*");
         }
 
-        [Fact]
-        public async Task WhenTimeEntryStoredOnFirstOfMonth_ThenItGetsDisplayedInReportCurrentMonth()
+        [Theory]
+        [InlineData(TimeEntryTypeEnum.NonBillable, "Other Non-billable")]
+        [InlineData(TimeEntryTypeEnum.Sick, "Sick")]
+        [InlineData(TimeEntryTypeEnum.Vacation, "Vacation")]
+        [InlineData(TimeEntryTypeEnum.BillableProject, "Billable")]
+        public async Task WhenTimeEntryStoredOnFirstOfMonth_ThenItGetsDisplayedInReportCurrentMonth(TimeEntryTypeEnum entryType, string reportText)
         {
             var user = database.Users.First();
             
@@ -105,7 +109,7 @@ namespace TimeTracker.Library.Test.Services
             {
                 Hours = 8, 
                 Date = new DateTime(now.Year, now.Month, 1),
-                TimeEntryType = TimeEntryTypeEnum.NonBillable,
+                TimeEntryType = entryType,
                 User = user
             };
             
@@ -119,7 +123,7 @@ namespace TimeTracker.Library.Test.Services
                 user_name = user.UserName
             });
 
-            response.Text.Should().Contain($"{now:MMMM yyyy} Other Non-billable Hours: 8.0");
+            response.Text.Should().Contain($"{now:MMMM yyyy} {reportText} Hours: 8.0");
         }
 
         [Theory]
