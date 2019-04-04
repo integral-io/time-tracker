@@ -96,7 +96,7 @@ namespace TimeTracker.Library.Test.Services
         }
 
         [Fact]
-        public async Task WhenTimeEntryStoredOnFirstOfMonth_ThenItGetsDisplayedInReport()
+        public async Task WhenTimeEntryStoredOnFirstOfMonth_ThenItGetsDisplayedInReportCurrentMonth()
         {
             var user = database.Users.First();
             
@@ -119,7 +119,38 @@ namespace TimeTracker.Library.Test.Services
                 user_name = user.UserName
             });
 
-            response.Text.Should().Contain("Non-billable Hours: 8.0");
+            response.Text.Should().Contain($"{now:MMMM yyyy} Other Non-billable Hours: 8.0");
+        }
+
+        [Theory]
+        [InlineData(TimeEntryTypeEnum.NonBillable, "Other Non-billable")]
+        [InlineData(TimeEntryTypeEnum.Sick, "Sick")]
+        [InlineData(TimeEntryTypeEnum.Vacation, "Vacation")]
+        [InlineData(TimeEntryTypeEnum.BillableProject, "Billable")]
+        public async Task WhenTimeEntryStoredOnFirstDayOfYear_ThenItGetsDisplayedInReportYtd(TimeEntryTypeEnum entryType, string reportText)
+        {
+            var user = database.Users.First();
+            
+            var now = DateTime.UtcNow;
+            var timeEntry = new TimeEntry
+            {
+                Hours = 8, 
+                Date = new DateTime(now.Year, 1, 1),
+                TimeEntryType = entryType,
+                User = user
+            };
+            
+            database.TimeEntries.Add(timeEntry);
+            await database.SaveChangesAsync();
+            
+            var response = await orchestrator.HandleCommand(new SlashCommandPayload()
+            {
+                text = "report",
+                user_id = user.SlackUserId,
+                user_name = user.UserName
+            });
+
+            response.Text.Should().Contain($"YTD Total {reportText} Hours: 8.0");
         }
     }
 }
