@@ -47,7 +47,7 @@ namespace TimeTracker.Library.Services
                 month = currentDate.Month;
             }
             var currentBeginningMonth = new DateTime(currentDate.Year, month.Value, 1, 0, 0, 0, DateTimeKind.Utc);
-            var currentBeginningYear = new DateTime(currentDate.Year, 1, 1, 1, 1, 1, DateTimeKind.Utc);
+            var currentBeginningYear = new DateTime(currentDate.Year, 1, 1, 0, 0, 0, DateTimeKind.Utc);
             var timeEntryReport = new TimeEntryReport();
             
             timeEntryReport.CurrentMonthDisplay = currentBeginningMonth.ToString("MMMM yyyy");
@@ -55,15 +55,14 @@ namespace TimeTracker.Library.Services
             var allHours = await QueryAllHours();
 
             timeEntryReport.BillableHoursMonth = CalculateHours(allHours, currentBeginningMonth, TimeEntryTypeEnum.BillableProject);
-            timeEntryReport.BillableHourssYtd = CalculateHours(allHours, currentBeginningYear, TimeEntryTypeEnum.BillableProject);
+            timeEntryReport.SickHoursMonth = CalculateHours(allHours, currentBeginningMonth, TimeEntryTypeEnum.Sick);
+            timeEntryReport.VacationHoursMonth = CalculateHours(allHours, currentBeginningMonth, TimeEntryTypeEnum.Vacation);
+            timeEntryReport.NonBillableHoursMonth = CalculateHours(allHours, currentBeginningMonth, TimeEntryTypeEnum.NonBillable);
 
-            timeEntryReport.SickHoursMonth = CalculateHours(allHours, currentBeginningMonth, TimeEntryTypeEnum.Sick); 
-            timeEntryReport.VacationHoursMonth = CalculateHours(allHours, currentBeginningMonth, TimeEntryTypeEnum.Vacation); 
-            timeEntryReport.NonBillableHoursMonth = CalculateHours(allHours, currentBeginningMonth, TimeEntryTypeEnum.NonBillable); 
-            
-            timeEntryReport.SickHoursYtd = CalculateHours(allHours, currentBeginningMonth, TimeEntryTypeEnum.Sick); 
-            timeEntryReport.VacationHoursYtd = CalculateHours(allHours, currentBeginningMonth, TimeEntryTypeEnum.Vacation); 
-            timeEntryReport.NonBillableHoursYtd = CalculateHours(allHours, currentBeginningMonth, TimeEntryTypeEnum.NonBillable);
+            timeEntryReport.BillableHourssYtd = CalculateHours(allHours, currentBeginningYear, TimeEntryTypeEnum.BillableProject);
+            timeEntryReport.SickHoursYtd = CalculateHours(allHours, currentBeginningYear, TimeEntryTypeEnum.Sick); 
+            timeEntryReport.VacationHoursYtd = CalculateHours(allHours, currentBeginningYear, TimeEntryTypeEnum.Vacation); 
+            timeEntryReport.NonBillableHoursYtd = CalculateHours(allHours, currentBeginningYear, TimeEntryTypeEnum.NonBillable);
 
             return timeEntryReport;
         }
