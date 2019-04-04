@@ -13,38 +13,38 @@ namespace TimeTracker.Library.Services.Orchestration
             this.dbContext = dbContext;
         }
 
-        protected override async Task<SlackMessageResponse> RespondTo(HoursInterpretedMessage command)
+        protected override async Task<SlackMessageResponse> RespondTo(HoursInterpretedMessage message)
         {
             var userService = new UserService(dbContext);
 
-            var user = await userService.FindOrCreateSlackUser(command.UserId,
-                command.UserName);
+            var user = await userService.FindOrCreateSlackUser(message.UserId,
+                message.UserName);
             var timeEntryService = new TimeEntryService(user.UserId, dbContext);
             
-            if (command.IsBillable)
+            if (message.IsBillable)
             {
                 // resolve client and project
                 var projectSvc = new ProjectService(dbContext);
-                var project = await projectSvc.FindProjectFromName(command.Project);
+                var project = await projectSvc.FindProjectFromName(message.Project);
 
                 if (project == null)
                 {
-                    return new SlackMessageResponse($"Invalid Project Name {command.Project}", "error");
+                    return new SlackMessageResponse($"Invalid Project Name {message.Project}", "error");
                 }
 
                 await timeEntryService.CreateBillableTimeEntry(
-                    command.Date, command.Hours, 
+                    message.Date, message.Hours, 
                     project.BillingClientId, project.ProjectId);
                 
                 return new SlackMessageResponse(
-                    $"Registered *{command.Hours:F1} hours* for project *{command.Project}* {command.Date:D}. " +
-                    (command.IsWorkFromHome ? "_Worked From Home_" : ""), "success");
+                    $"Registered *{message.Hours:F1} hours* for project *{message.Project}* {message.Date:D}. " +
+                    (message.IsWorkFromHome ? "_Worked From Home_" : ""), "success");
             }
 
-            await timeEntryService.CreateNonBillableTimeEntry(command.Date, command.Hours,
-                command.NonBillReason, command.TimeEntryType);
+            await timeEntryService.CreateNonBillableTimeEntry(message.Date, message.Hours,
+                message.NonBillReason, message.TimeEntryType);
                         
-            return new SlackMessageResponse($"Registered *{command.Hours:F1} hours* for Nonbillable reason: {command.NonBillReason ?? command.TimeEntryType.ToString()} for date: {command.Date:D}", "success");
+            return new SlackMessageResponse($"Registered *{message.Hours:F1} hours* for Nonbillable reason: {message.NonBillReason ?? message.TimeEntryType.ToString()} for date: {message.Date:D}", "success");
         }
     }
 }

@@ -14,7 +14,7 @@ namespace TimeTracker.Library.Services.Interpretation
         {
         }
 
-        protected override void ExtractInto(DeleteInterpretedMessage dto,
+        protected override void ExtractInto(DeleteInterpretedMessage message,
             List<TextMessagePart> splitText)
         {
         }

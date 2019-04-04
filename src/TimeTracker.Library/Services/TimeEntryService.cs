@@ -61,10 +61,10 @@ namespace TimeTracker.Library.Services
             return model.TimeEntryId;
         }
 
-        public async Task<double> DeleteHours(DateTime commandDtoDate)
+        public async Task<double> DeleteHours(DateTime date)
         {
-            var timeEntries = await db.TimeEntries.Where(x => x.UserId == userId && x.Date >= commandDtoDate.Date).ToListAsync();
-            if (timeEntries == null || timeEntries.Count == 0)
+            var timeEntries = await db.TimeEntries.Where(x => x.UserId == userId && x.Date >= date.Date).ToListAsync();
+            if (timeEntries.Count == 0)
             {
                 return 0;
             }

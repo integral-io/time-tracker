@@ -31,7 +31,7 @@ namespace TimeTracker.Library.Services.Orchestration
             return ToMessage(response);
         }
 
-        protected abstract Task<SlackMessageResponse> RespondTo(TInterpretedMessage command);
+        protected abstract Task<SlackMessageResponse> RespondTo(TInterpretedMessage message);
 
         private static SlackMessage ToMessage(SlackMessageResponse response)
         {

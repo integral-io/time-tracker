@@ -13,10 +13,10 @@ namespace TimeTracker.Library.Services.Orchestration
             this.dbContext = dbContext;
         }
 
-        protected override async Task<SlackMessageResponse> RespondTo(ReportInterpretedMessage command)
+        protected override async Task<SlackMessageResponse> RespondTo(ReportInterpretedMessage message)
         {            
             var userService = new UserService(dbContext);
-            var user = await userService.FindOrCreateSlackUser(command.UserId, command.UserName);
+            var user = await userService.FindOrCreateSlackUser(message.UserId, message.UserName);
             
             var userReportSvc = new UserReportService(dbContext, user.UserId);
                     

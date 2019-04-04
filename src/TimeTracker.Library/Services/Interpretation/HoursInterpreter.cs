@@ -23,15 +23,15 @@ namespace TimeTracker.Library.Services.Interpretation
         {
         }
 
-        protected override void ExtractInto(HoursInterpretedMessage dto,
+        protected override void ExtractInto(HoursInterpretedMessage message,
             List<TextMessagePart> splitText)
         {
             var hours = InterpretHours(splitText.Where(x => !x.IsUsed));
             if (hours.HasValue)
-                dto.Hours = hours.Value;
+                message.Hours = hours.Value;
             else
             {
-                dto.ErrorMessage = "No Hours found!";
+                message.ErrorMessage = "No Hours found!";
                 return;
             }
 
@@ -41,20 +41,20 @@ namespace TimeTracker.Library.Services.Interpretation
             var interpretTimeEntryType = InterpretTimeEntryType(projectOrTypePart.Text);
             if (interpretTimeEntryType.HasValue)
             {
-                dto.TimeEntryType = interpretTimeEntryType.Value;
+                message.TimeEntryType = interpretTimeEntryType.Value;
             }
             else
             {
-                dto.TimeEntryType = TimeEntryTypeEnum.BillableProject;
-                dto.IsBillable = true;
-                dto.Project = projectOrTypePart.Text;
+                message.TimeEntryType = TimeEntryTypeEnum.BillableProject;
+                message.IsBillable = true;
+                message.Project = projectOrTypePart.Text;
             }
 
-            dto.IsWorkFromHome = InterpretIsWorkingFromHome(splitText.Where(x => !x.IsUsed));
+            message.IsWorkFromHome = InterpretIsWorkingFromHome(splitText.Where(x => !x.IsUsed));
 
-            if (!dto.IsBillable)
+            if (!message.IsBillable)
             {
-                dto.NonBillReason = InterpretNonBillableReason(splitText.Where(x => !x.IsUsed).ToList());
+                message.NonBillReason = InterpretNonBillableReason(splitText.Where(x => !x.IsUsed).ToList());
             }
         }
 
