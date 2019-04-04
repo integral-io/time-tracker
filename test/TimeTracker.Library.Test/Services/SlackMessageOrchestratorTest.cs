@@ -12,14 +12,14 @@ using Xunit;
 
 namespace TimeTracker.Library.Test.Services
 {
-    public class SlackMessageOrchestratorTest : IClassFixture<InMemoryDatabaseWithProjectsAndUsers>
+    public class SlackMessageOrchestratorTest
     {
         private readonly TimeTrackerDbContext database;
         private readonly SlackMessageOrchestrator orchestrator;
 
-        public SlackMessageOrchestratorTest(InMemoryDatabaseWithProjectsAndUsers inMemoryDatabase)
+        public SlackMessageOrchestratorTest()
         {
-            database = inMemoryDatabase.Database;
+            database = new InMemoryDatabaseWithProjectsAndUsers().Database;
 
             orchestrator = new SlackMessageOrchestrator(database);
         }
@@ -103,26 +103,11 @@ namespace TimeTracker.Library.Test.Services
         public async Task WhenTimeEntryStoredOnFirstOfMonth_ThenItGetsDisplayedInReportCurrentMonth(TimeEntryTypeEnum entryType, string reportText)
         {
             var user = database.Users.First();
-            
             var now = DateTime.UtcNow;
-            var timeEntry = new TimeEntry
-            {
-                Hours = 8, 
-                Date = new DateTime(now.Year, now.Month, 1),
-                TimeEntryType = entryType,
-                User = user
-            };
+            await StoreTimeEntryOnFirstDayOfMonth(entryType, user, 8, now.Month);
             
-            database.TimeEntries.Add(timeEntry);
-            await database.SaveChangesAsync();
+            var response = await RequestReport(user);
             
-            var response = await orchestrator.HandleCommand(new SlashCommandPayload()
-            {
-                text = "report",
-                user_id = user.SlackUserId,
-                user_name = user.UserName
-            });
-
             response.Text.Should().Contain($"{now:MMMM yyyy} {reportText} Hours: 8.0");
         }
 
@@ -134,27 +119,35 @@ namespace TimeTracker.Library.Test.Services
         public async Task WhenTimeEntryStoredOnFirstDayOfYear_ThenItGetsDisplayedInReportYtd(TimeEntryTypeEnum entryType, string reportText)
         {
             var user = database.Users.First();
-            
-            var now = DateTime.UtcNow;
-            var timeEntry = new TimeEntry
-            {
-                Hours = 8, 
-                Date = new DateTime(now.Year, 1, 1),
-                TimeEntryType = entryType,
-                User = user
-            };
-            
-            database.TimeEntries.Add(timeEntry);
-            await database.SaveChangesAsync();
-            
-            var response = await orchestrator.HandleCommand(new SlashCommandPayload()
+            await StoreTimeEntryOnFirstDayOfMonth(entryType, user, 8, 1);
+
+            var response = await RequestReport(user);
+
+            response.Text.Should().Contain($"YTD Total {reportText} Hours: 8.0");
+        }
+
+        private Task<SlackMessage> RequestReport(User user)
+        {
+            return orchestrator.HandleCommand(new SlashCommandPayload
             {
                 text = "report",
                 user_id = user.SlackUserId,
                 user_name = user.UserName
             });
+        }
 
-            response.Text.Should().Contain($"YTD Total {reportText} Hours: 8.0");
+        private async Task StoreTimeEntryOnFirstDayOfMonth(TimeEntryTypeEnum entryType, User user, int hours, int month)
+        {
+            var timeEntry = new TimeEntry
+            {
+                Hours = hours,
+                Date = new DateTime(DateTime.UtcNow.Year, month, 1),
+                TimeEntryType = entryType,
+                User = user
+            };
+
+            database.TimeEntries.Add(timeEntry);
+            await database.SaveChangesAsync();
         }
     }
 }
