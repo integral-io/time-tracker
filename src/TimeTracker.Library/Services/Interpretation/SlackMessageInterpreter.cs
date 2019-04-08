@@ -28,7 +28,7 @@ namespace TimeTracker.Library.Services.Interpretation
                 $"Invalid start option: {splitText.FirstOrDefault()}", nameof(payload.text));
             splitText.First().IsUsed = true;
 
-            if (splitText.Skip(1).FirstOrDefault()?.Text == "help")
+            if (IsHelpRequest(splitText.Where(x => !x.IsUsed)))
             {
                 return new T
                 {
@@ -49,6 +49,13 @@ namespace TimeTracker.Library.Services.Interpretation
                 message.ErrorMessage = $"Not sure how to interpret '{splitText.Where(x => !x.IsUsed).Select(x => x.Text).Join(" ")}'";
 
             return message;
+        }
+
+        private static bool IsHelpRequest(IEnumerable<TextMessagePart> splitText)
+        {
+            var helpPart = splitText.FirstOrDefault();
+            
+            return helpPart?.Text == "help";
         }
 
         private static DateTime ExtractDate(IEnumerable<TextMessagePart> splitText)
