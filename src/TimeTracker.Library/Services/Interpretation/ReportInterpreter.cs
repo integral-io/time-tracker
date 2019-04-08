@@ -16,6 +16,8 @@ namespace TimeTracker.Library.Services.Interpretation
         {
         }
 
+        public override string HelpMessage => "*/hours* report <optional: date> _generate report of hours_";
+
         protected override void ExtractInto(ReportInterpretedMessage message,
             List<TextMessagePart> splitText)
         {

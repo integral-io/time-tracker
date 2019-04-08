@@ -31,7 +31,7 @@ namespace TimeTracker.Api.Test
             response.IsSuccessStatusCode.Should().BeTrue();
             var responseContent = await response.Content.ReadAsStringAsync();
             var message = JsonConvert.DeserializeObject<SlackMessage>(responseContent);
-            message.Text.Should().StartWith("*/hours* record <projectName>");
+            message.Text.Should().StartWith("*/hours* record");
         }
     }
 }

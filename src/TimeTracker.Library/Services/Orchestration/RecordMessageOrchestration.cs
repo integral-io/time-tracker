@@ -1,3 +1,4 @@
+using System.Text;
 using System.Threading.Tasks;
 using TimeTracker.Data;
 using TimeTracker.Library.Services.Interpretation;
@@ -20,7 +21,7 @@ namespace TimeTracker.Library.Services.Orchestration
             var user = await userService.FindOrCreateSlackUser(message.UserId,
                 message.UserName);
             var timeEntryService = new TimeEntryService(user.UserId, dbContext);
-            
+
             if (message.IsBillable)
             {
                 // resolve client and project
@@ -29,22 +30,24 @@ namespace TimeTracker.Library.Services.Orchestration
 
                 if (project == null)
                 {
-                    return new SlackMessageResponse($"Invalid Project Name {message.Project}", "error");
+                    return new SlackMessageResponse($"Invalid Project Name {message.Project}", false);
                 }
 
                 await timeEntryService.CreateBillableTimeEntry(
-                    message.Date, message.Hours, 
+                    message.Date, message.Hours,
                     project.BillingClientId, project.ProjectId);
-                
+
                 return new SlackMessageResponse(
                     $"Registered *{message.Hours:F1} hours* for project *{message.Project}* {message.Date:D}. " +
-                    (message.IsWorkFromHome ? "_Worked From Home_" : ""), "success");
+                    (message.IsWorkFromHome ? "_Worked From Home_" : ""), true);
             }
 
             await timeEntryService.CreateNonBillableTimeEntry(message.Date, message.Hours,
                 message.NonBillReason, message.TimeEntryType);
-                        
-            return new SlackMessageResponse($"Registered *{message.Hours:F1} hours* for Nonbillable reason: {message.NonBillReason ?? message.TimeEntryType.ToString()} for date: {message.Date:D}", "success");
+
+            return new SlackMessageResponse(
+                $"Registered *{message.Hours:F1} hours* for Nonbillable reason: {message.NonBillReason ?? message.TimeEntryType.ToString()} for date: {message.Date:D}",
+                true);
         }
     }
 }

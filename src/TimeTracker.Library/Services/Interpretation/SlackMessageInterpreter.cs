@@ -11,6 +11,7 @@ namespace TimeTracker.Library.Services.Interpretation
         where T : InterpretedMessage, new()
     {
         private readonly string command;
+        public abstract string HelpMessage { get; }
 
         protected SlackMessageInterpreter(string command)
         {
@@ -26,6 +27,14 @@ namespace TimeTracker.Library.Services.Interpretation
             Guard.ThrowIfCheckFails(payload.text.StartsWith(command),
                 $"Invalid start option: {splitText.FirstOrDefault()}", nameof(payload.text));
             splitText.First().IsUsed = true;
+
+            if (splitText.Skip(1).FirstOrDefault()?.Text == "help")
+            {
+                return new T
+                {
+                    IsHelp = true
+                };
+            }
 
             var message = new T
             {
@@ -86,6 +95,7 @@ namespace TimeTracker.Library.Services.Interpretation
         public string ErrorMessage { get; set; }
 
         public bool HasError => !string.IsNullOrWhiteSpace(ErrorMessage);
+        public bool IsHelp { get; set; }
 
         public DateTime Date { get; set; }
         public string UserId { get; set; }
