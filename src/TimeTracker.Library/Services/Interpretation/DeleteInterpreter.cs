@@ -14,6 +14,8 @@ namespace TimeTracker.Library.Services.Interpretation
         {
         }
 
+        public override string HelpMessage => "*/hours* delete <optional: date> _delete all hours for the date_";
+
         protected override void ExtractInto(DeleteInterpretedMessage message,
             List<TextMessagePart> splitText)
         {

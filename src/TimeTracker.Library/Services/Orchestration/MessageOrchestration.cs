@@ -16,7 +16,8 @@ namespace TimeTracker.Library.Services.Orchestration
     {
         public async Task<SlackMessage> GenerateResponse(SlashCommandPayload payload)
         {
-            var interpretMessage = new TInterpreter().InterpretMessage(payload);
+            var interpreter = new TInterpreter();
+            var interpretMessage = interpreter.InterpretMessage(payload);
 
             if (interpretMessage.HasError)
             {
@@ -25,32 +26,38 @@ namespace TimeTracker.Library.Services.Orchestration
                     Text = $"Error: *{interpretMessage.ErrorMessage}*"
                 };
             }
-            
-            var response = await RespondTo(interpretMessage);
 
-            return ToMessage(response);
+            if (interpretMessage.IsHelp)
+            {
+                return new SlackMessage
+                {
+                    Text = interpreter.HelpMessage
+                };
+            }
+
+            return (await RespondTo(interpretMessage)).ToMessage();
         }
 
         protected abstract Task<SlackMessageResponse> RespondTo(TInterpretedMessage message);
 
-        private static SlackMessage ToMessage(SlackMessageResponse response)
-        {
-            return new SlackMessage
-            {
-                Text = response.MessageType == "success" ? response.Text : $"Error: *{response.Text}*"
-            };
-        }
-
         protected class SlackMessageResponse
         {
-            public SlackMessageResponse(string text, string messageType)
+            public SlackMessageResponse(string text, bool isSuccess)
             {
                 Text = text;
-                MessageType = messageType;
+                IsSuccess = isSuccess;
             }
 
-            public string Text { get; }
-            public string MessageType { get; }
+            private string Text { get; }
+            private bool IsSuccess { get; }
+
+            public SlackMessage ToMessage()
+            {
+                return new SlackMessage
+                {
+                    Text = IsSuccess ? Text : $"Error: *{Text}*"
+                };
+            }
         }
     }
 }

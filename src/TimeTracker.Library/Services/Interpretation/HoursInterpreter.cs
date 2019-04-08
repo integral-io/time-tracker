@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using TimeTracker.Data.Models;
 using TimeTracker.Library.Models;
 
@@ -22,6 +23,15 @@ namespace TimeTracker.Library.Services.Interpretation
         public HoursInterpreter() : base("record")
         {
         }
+
+        public override string HelpMessage => new StringBuilder()
+            .AppendLine("*/hours* record <projectName> <hours> _Will use today date by default_")
+            .AppendLine("*/hours* record <projectName> <hours> jan-21 _sets date to january 21 current year_")
+            .AppendLine("*/hours* record <projectName> <hours> wfh _wfh option marks as worked from home_")
+            .AppendLine("*/hours* record nonbill <hours> <optional: date> \"non billable reason\" _non billable hour for a given reason, ie PDA_")
+            .AppendLine("*/hours* record sick <hours> <optional: date> _marks sick hours_")
+            .AppendLine("*/hours* record vacation <hours> <optional: date> _marks vacation hours_")
+            .ToString();
 
         protected override void ExtractInto(HoursInterpretedMessage message,
             List<TextMessagePart> splitText)
