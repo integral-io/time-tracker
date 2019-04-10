@@ -65,7 +65,7 @@ namespace TimeTracker.Library.Services
         public async Task<double> DeleteHours(DateTime date)
         {
             var cutOffDate = DateTime.UtcNow.Date.AddHours(-48);
-            var timeEntries = await db.TimeEntries.Where(x => x.UserId == userId && x.Date >= date.Date && x.Date >= cutOffDate ).ToListAsync();
+            var timeEntries = await db.TimeEntries.Where(x => x.UserId == userId && x.Date == date.Date && x.Date >= cutOffDate ).ToListAsync();
             if (timeEntries.Count == 0)
             {
                 return 0;
