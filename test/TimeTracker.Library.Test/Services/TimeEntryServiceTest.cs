@@ -86,13 +86,11 @@ namespace TimeTracker.Library.Test.Services
         public async Task BillableHoursCannotBeDeletedAfter48HoursFromCreateDate()
         {
             var date = DateTime.UtcNow.Date.AddHours(-48);
+            var lateDate = DateTime.UtcNow.Date.AddHours(-48.01);
             await timeEntryService.CreateBillableTimeEntry(date, 7, 1, 1);
-            var hoursDeleted = await timeEntryService.DeleteHours(date);
+            await timeEntryService.CreateBillableTimeEntry(lateDate, 8, 1, 1);
             
-            date = date.AddHours(-0.01);
-            await timeEntryService.CreateBillableTimeEntry(date, 8, 1, 1);
-            hoursDeleted += await timeEntryService.DeleteHours(date);
-            
+            var hoursDeleted = await timeEntryService.DeleteHours(lateDate);
             var entry = await database.TimeEntries.FirstAsync(x => x.UserId == userId);
            
             entry.Hours.Should().Be(8);
@@ -105,13 +103,11 @@ namespace TimeTracker.Library.Test.Services
             var date = DateTime.UtcNow.Date.AddHours(-48);
             await timeEntryService.CreateNonBillableTimeEntry(date, 8, null, TimeEntryTypeEnum.Vacation);
             await timeEntryService.CreateNonBillableTimeEntry(date, 8, "flu1", TimeEntryTypeEnum.Sick);
-            var hoursDeleted = await timeEntryService.DeleteHours(date);
+            var lateDate = DateTime.UtcNow.Date.AddHours(-48.01);
+            await timeEntryService.CreateNonBillableTimeEntry(lateDate, 7, null, TimeEntryTypeEnum.Vacation);
+            await timeEntryService.CreateNonBillableTimeEntry(lateDate, 7, "flu2", TimeEntryTypeEnum.Sick);
             
-            date = date.AddHours(-0.01);
-            await timeEntryService.CreateNonBillableTimeEntry(date, 7, null, TimeEntryTypeEnum.Vacation);
-            await timeEntryService.CreateNonBillableTimeEntry(date, 7, "flu2", TimeEntryTypeEnum.Sick);
-            hoursDeleted += await timeEntryService.DeleteHours(date);
-            
+            var hoursDeleted = await timeEntryService.DeleteHours(lateDate);
             var timeEntries = await database.TimeEntries.Where(x => x.UserId == userId).ToListAsync();
             var hoursLeft = timeEntries.Sum(x=>x.Hours);
             
