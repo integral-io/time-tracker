@@ -81,5 +81,42 @@ namespace TimeTracker.Library.Test.Services
             hours.TimeOffSummaries.Last().PtoTyd.Should().Be(8);
             hours.TimeOffSummaries.First().SickYtd.Should().Be(2);
         }
+
+        [Fact]
+        public async Task BillableHoursCannotBeDeletedAfter48HoursFromCreateDate()
+        {
+            var date = DateTime.UtcNow.Date.AddHours(-48);
+            await timeEntryService.CreateBillableTimeEntry(date, 7, 1, 1);
+            var hoursDeleted = await timeEntryService.DeleteHours(date);
+            
+            date = date.AddHours(-0.01);
+            await timeEntryService.CreateBillableTimeEntry(date, 8, 1, 1);
+            hoursDeleted += await timeEntryService.DeleteHours(date);
+            
+            var entry = await database.TimeEntries.FirstAsync(x => x.UserId == userId);
+           
+            entry.Hours.Should().Be(8);
+            hoursDeleted.Should().Be(7);
+        }
+        
+        [Fact]
+        public async Task NonBillableHoursCannotBeDeletedAfter48HoursFromCreateDate()
+        {
+            var date = DateTime.UtcNow.Date.AddHours(-48);
+            await timeEntryService.CreateNonBillableTimeEntry(date, 8, null, TimeEntryTypeEnum.Vacation);
+            await timeEntryService.CreateNonBillableTimeEntry(date, 8, "flu1", TimeEntryTypeEnum.Sick);
+            var hoursDeleted = await timeEntryService.DeleteHours(date);
+            
+            date = date.AddHours(-0.01);
+            await timeEntryService.CreateNonBillableTimeEntry(date, 7, null, TimeEntryTypeEnum.Vacation);
+            await timeEntryService.CreateNonBillableTimeEntry(date, 7, "flu2", TimeEntryTypeEnum.Sick);
+            hoursDeleted += await timeEntryService.DeleteHours(date);
+            
+            var timeEntries = await database.TimeEntries.Where(x => x.UserId == userId).ToListAsync();
+            var hoursLeft = timeEntries.Sum(x=>x.Hours);
+            
+            hoursLeft.Should().Be(14);
+            hoursDeleted.Should().Be(16);
+        }
     }
 }
