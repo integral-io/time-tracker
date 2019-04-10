@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 using Microsoft.EntityFrameworkCore;
 using TimeTracker.Library.Models;
 using TimeTracker.Data;
@@ -63,11 +64,13 @@ namespace TimeTracker.Library.Services
 
         public async Task<double> DeleteHours(DateTime date)
         {
-            var timeEntries = await db.TimeEntries.Where(x => x.UserId == userId && x.Date >= date.Date).ToListAsync();
+            var cutOffDate = DateTime.UtcNow.Date.AddHours(-48);
+            var timeEntries = await db.TimeEntries.Where(x => x.UserId == userId && x.Date >= date.Date && x.Date >= cutOffDate ).ToListAsync();
             if (timeEntries.Count == 0)
             {
                 return 0;
             }
+            
             var hoursDeleted = timeEntries.Sum(x=>x.Hours);
             
             db.TimeEntries.RemoveRange(timeEntries);
