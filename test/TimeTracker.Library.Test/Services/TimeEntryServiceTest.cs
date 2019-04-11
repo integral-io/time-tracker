@@ -207,12 +207,13 @@ namespace TimeTracker.Library.Test.Services
         }
 
         [Fact]
-        public async Task WhenAddingVacationTime_CannotAddSingleEntryWithMoreThan8HoursPerDay()
+        public async Task WhenAddingVacationTime_CannotAddMoreThan8HoursPerDay()
         {
-            await Assert.ThrowsAsync<Exception>(() => timeEntryService.CreateNonBillableTimeEntry(DateTime.UtcNow, 9, null, TimeEntryTypeEnum.Vacation));
+            timeEntryService.CreateNonBillableTimeEntry(DateTime.UtcNow, 5, null, TimeEntryTypeEnum.Vacation);
+            await Assert.ThrowsAsync<Exception>(() => timeEntryService.CreateNonBillableTimeEntry(DateTime.UtcNow, 7, null, TimeEntryTypeEnum.Vacation));
             try
             {
-                await timeEntryService.CreateNonBillableTimeEntry(DateTime.UtcNow, 9, null, TimeEntryTypeEnum.Vacation);
+                await timeEntryService.CreateNonBillableTimeEntry(DateTime.UtcNow, 7, null, TimeEntryTypeEnum.Vacation);
             }
             catch (Exception e)
             {
@@ -221,7 +222,7 @@ namespace TimeTracker.Library.Test.Services
             
             var timeEntries = await database.TimeEntries.Where(x => x.UserId == userId).ToListAsync();
             var hours = timeEntries.Sum(x => x.Hours);
-            hours.Should().Be(0);
+            hours.Should().Be(5);
         }
     }
 }
