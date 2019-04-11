@@ -50,6 +50,29 @@ namespace TimeTracker.Library.Test.Services
         }
 
         [Fact]
+        public async Task EachEntryMustBeGreaterThanZeroHours()
+        {
+            try
+            {
+                await timeEntryService.CreateBillableTimeEntry(DateTime.UtcNow.Date, 0, 1, 1);
+            }
+            catch (Exception e)
+            {
+                Assert.Equal("An entry should have more than 0 hours.", e.Message);
+            }
+
+            try
+            {
+                await timeEntryService.CreateNonBillableTimeEntry(DateTime.UtcNow.Date, 0, null,
+                    TimeEntryTypeEnum.Vacation);
+            }
+            catch (Exception e)
+            {
+                Assert.Equal("An entry should have more than 0 hours.", e.Message);
+            }
+        }
+
+        [Fact]
         public async Task DeleteHours_ThatDontExistFromToday_works()
         {
             var hoursDeleted = await timeEntryService.DeleteHours(DateTime.UtcNow);
@@ -96,7 +119,7 @@ namespace TimeTracker.Library.Test.Services
 
             try
             {
-                await Assert.ThrowsAsync<Exception>(() => timeEntryService.DeleteHours(lateDate));
+                await timeEntryService.DeleteHours(lateDate);
             }
             catch (Exception e)
             {
@@ -122,7 +145,7 @@ namespace TimeTracker.Library.Test.Services
             var timeEntries = await database.TimeEntries.Where(x => x.UserId == userId).ToListAsync();
             var hoursLeft = timeEntries.Sum(x => x.Hours);
             hoursLeft.Should().Be(0);
-            
+
             var date = DateTime.UtcNow.AddHours(-2);
             await timeEntryService.CreateBillableTimeEntry(date, 8, 1, 1);
             

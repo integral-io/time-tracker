@@ -21,6 +21,10 @@ namespace TimeTracker.Library.Services
 
         public async Task<Guid> CreateBillableTimeEntry(DateTime date, double hours, int billableClientId, int projectId)
         {
+            if (hours <= 0)
+            {
+                throw new Exception("An entry should have more than 0 hours.");
+            }
             var model = new TimeEntry
             {
                 TimeEntryId = Guid.NewGuid(),
@@ -42,6 +46,10 @@ namespace TimeTracker.Library.Services
         public async Task<Guid> CreateNonBillableTimeEntry(DateTime date, double hours, string nonBillReason, 
             TimeEntryTypeEnum timeEntryTypeEnum = TimeEntryTypeEnum.NonBillable)
         {
+            if (hours <= 0)
+            {
+                throw new Exception("An entry should have more than 0 hours.");
+            }
             var model = new TimeEntry
             {
                 TimeEntryId = Guid.NewGuid(),
@@ -71,7 +79,6 @@ namespace TimeTracker.Library.Services
             var timeEntries = await db.TimeEntries.Where(x => x.UserId == userId && 
                                                               x.Date.Date == date.Date.Date && 
                                                               x.Date >= cutOffDate).ToListAsync();
-
 
             if (timeEntries.Count == 0)
             {
