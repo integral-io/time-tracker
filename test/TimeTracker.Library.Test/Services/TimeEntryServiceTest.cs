@@ -93,6 +93,28 @@ namespace TimeTracker.Library.Test.Services
             var hours = timeEntries.Sum(x => x.Hours);
             hours.Should().Be(16);
         }
+        
+        [Fact]
+        public async Task TheEntriesForADayShouldBeNoGreaterThan24Hours_WhenAddingBillableTimeOver()
+        {
+            await timeEntryService.CreateBillableTimeEntry(DateTime.UtcNow, 8, 1, 1);
+            await timeEntryService.CreateNonBillableTimeEntry(DateTime.UtcNow, 8, null, TimeEntryTypeEnum.Vacation);
+
+            await Assert.ThrowsAsync<Exception>(() =>
+                timeEntryService.CreateBillableTimeEntry(DateTime.UtcNow, 8.5, 1, 1));
+            try
+            {
+                await timeEntryService.CreateBillableTimeEntry(DateTime.UtcNow, 8.5, 1, 1);;
+            }
+            catch (Exception e)
+            {
+                Assert.Equal("You may not enter more than 24 hours per day.", e.Message);
+            }
+            
+            var timeEntries = await database.TimeEntries.Where(x => x.UserId == userId).ToListAsync();
+            var hours = timeEntries.Sum(x => x.Hours);
+            hours.Should().Be(16);
+        }
 
         [Fact]
         public async Task DeleteHours_ThatDontExistFromToday_works()
