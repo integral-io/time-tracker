@@ -21,15 +21,8 @@ namespace TimeTracker.Library.Services
 
         public async Task<Guid> CreateBillableTimeEntry(DateTime date, double hours, int billableClientId, int projectId)
         {
-<<<<<<< HEAD
             VerifyHoursBeforeAdding(date, hours);
 
-=======
-            if (hours <= 0)
-            {
-                throw new Exception("An entry should have more than 0 hours.");
-            }
->>>>>>> Don't allow user to add entry with less than 0 hours.
             var model = new TimeEntry
             {
                 TimeEntryId = Guid.NewGuid(),
@@ -52,6 +45,11 @@ namespace TimeTracker.Library.Services
             TimeEntryTypeEnum timeEntryTypeEnum = TimeEntryTypeEnum.NonBillable)
         {
             VerifyHoursBeforeAdding(date, hours);
+
+            if (hours > 8 && timeEntryTypeEnum == TimeEntryTypeEnum.Vacation)
+            {
+                throw new Exception("Cannot have more than 8 hours of vacation time in a single day.");
+            }
             
             var model = new TimeEntry
             {

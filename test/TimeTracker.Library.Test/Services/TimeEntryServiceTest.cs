@@ -73,7 +73,6 @@ namespace TimeTracker.Library.Test.Services
         }
 
         [Fact]
-<<<<<<< HEAD
         public async Task TheEntriesForADayShouldBeNoGreaterThan24Hours_WhenAddingNonBillableTimeOver()
         {
             await timeEntryService.CreateBillableTimeEntry(DateTime.UtcNow, 8, 1, 1);
@@ -118,8 +117,6 @@ namespace TimeTracker.Library.Test.Services
         }
 
         [Fact]
-=======
->>>>>>> Don't allow user to add entry with less than 0 hours.
         public async Task DeleteHours_ThatDontExistFromToday_works()
         {
             var hoursDeleted = await timeEntryService.DeleteHours(DateTime.UtcNow);
@@ -207,6 +204,24 @@ namespace TimeTracker.Library.Test.Services
         public void Dispose()
         {
             database?.Dispose();
+        }
+
+        [Fact]
+        public async Task WhenAddingVacationTime_CannotAddSingleEntryWithMoreThan8HoursPerDay()
+        {
+            await Assert.ThrowsAsync<Exception>(() => timeEntryService.CreateNonBillableTimeEntry(DateTime.UtcNow, 9, null, TimeEntryTypeEnum.Vacation));
+            try
+            {
+                await timeEntryService.CreateNonBillableTimeEntry(DateTime.UtcNow, 9, null, TimeEntryTypeEnum.Vacation);
+            }
+            catch (Exception e)
+            {
+                Assert.Equal("Cannot have more than 8 hours of vacation time in a single day.", e.Message);
+            }
+            
+            var timeEntries = await database.TimeEntries.Where(x => x.UserId == userId).ToListAsync();
+            var hours = timeEntries.Sum(x => x.Hours);
+            hours.Should().Be(0);
         }
     }
 }
