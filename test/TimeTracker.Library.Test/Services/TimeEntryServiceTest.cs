@@ -210,10 +210,10 @@ namespace TimeTracker.Library.Test.Services
         public async Task WhenAddingSickAndVacationTime_CannotAddMoreThan8HoursPerDay()
         {
             timeEntryService.CreateNonBillableTimeEntry(DateTime.UtcNow, 5, null, TimeEntryTypeEnum.Vacation);
-            await Assert.ThrowsAsync<Exception>(() => timeEntryService.CreateNonBillableTimeEntry(DateTime.UtcNow, 7, "flu", TimeEntryTypeEnum.Sick));
+            await Assert.ThrowsAsync<Exception>(() => timeEntryService.CreateNonBillableTimeEntry(DateTime.UtcNow, 4, "flu", TimeEntryTypeEnum.Sick));
             try
             {
-                await timeEntryService.CreateNonBillableTimeEntry(DateTime.UtcNow, 7, "flu", TimeEntryTypeEnum.Sick);
+                await timeEntryService.CreateNonBillableTimeEntry(DateTime.UtcNow, 4, "flu", TimeEntryTypeEnum.Sick);
             }
             catch (Exception e)
             {
