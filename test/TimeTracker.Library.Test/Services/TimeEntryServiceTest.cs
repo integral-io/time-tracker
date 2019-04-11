@@ -3,9 +3,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
-using TimeTracker.Library.Services;
 using TimeTracker.Data;
 using TimeTracker.Data.Models;
+using TimeTracker.Library.Services;
 using Xunit;
 
 namespace TimeTracker.Library.Test.Services
@@ -114,6 +114,25 @@ namespace TimeTracker.Library.Test.Services
 
             hoursLeft.Should().Be(6);
             hoursDeleted.Should().Be(8);
+        }
+
+        [Fact]
+        public async Task WhenDeletingHoursForADay_AllHoursOnThatDateAreDeleted()
+        {
+            var timeEntries = await database.TimeEntries.Where(x => x.UserId == userId).ToListAsync();
+            var hoursLeft = timeEntries.Sum(x => x.Hours);
+            hoursLeft.Should().Be(0);
+            
+            var date = DateTime.UtcNow.AddHours(-2);
+            await timeEntryService.CreateBillableTimeEntry(date, 8, 1, 1);
+            
+            var hoursDeleted = await timeEntryService.DeleteHours(DateTime.UtcNow.Date);
+            timeEntries = await database.TimeEntries.Where(x => x.UserId == userId).ToListAsync();
+            hoursLeft = timeEntries.Sum(x => x.Hours);
+
+            hoursLeft.Should().Be(0);
+            hoursDeleted.Should().Be(8);
+            
         }
     }
 }

@@ -1,12 +1,10 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Xml.Linq;
 using Microsoft.EntityFrameworkCore;
-using TimeTracker.Library.Models;
 using TimeTracker.Data;
 using TimeTracker.Data.Models;
-using TimeEntry = TimeTracker.Data.Models.TimeEntry;
+using TimeTracker.Library.Models;
 
 namespace TimeTracker.Library.Services
 {
@@ -64,14 +62,17 @@ namespace TimeTracker.Library.Services
 
         public async Task<double> DeleteHours(DateTime date)
         {
-            
             var cutOffDate = DateTime.UtcNow.Date.AddHours(-48);
             if (date < cutOffDate)
             {
                 throw new Exception("Entries older than 48 hours cannot be deleted.");
             }
             
-            var timeEntries = await db.TimeEntries.Where(x => x.UserId == userId && x.Date == date.Date && x.Date >= cutOffDate ).ToListAsync();
+            var timeEntries = await db.TimeEntries.Where(x => x.UserId == userId && 
+                                                              x.Date.Date == date.Date.Date && 
+                                                              x.Date >= cutOffDate).ToListAsync();
+
+
             if (timeEntries.Count == 0)
             {
                 return 0;
