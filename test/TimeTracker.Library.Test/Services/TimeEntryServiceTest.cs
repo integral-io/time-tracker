@@ -207,17 +207,17 @@ namespace TimeTracker.Library.Test.Services
         }
 
         [Fact]
-        public async Task WhenAddingVacationTime_CannotAddMoreThan8HoursPerDay()
+        public async Task WhenAddingSickAndVacationTime_CannotAddMoreThan8HoursPerDay()
         {
             timeEntryService.CreateNonBillableTimeEntry(DateTime.UtcNow, 5, null, TimeEntryTypeEnum.Vacation);
-            await Assert.ThrowsAsync<Exception>(() => timeEntryService.CreateNonBillableTimeEntry(DateTime.UtcNow, 7, null, TimeEntryTypeEnum.Vacation));
+            await Assert.ThrowsAsync<Exception>(() => timeEntryService.CreateNonBillableTimeEntry(DateTime.UtcNow, 7, "flu", TimeEntryTypeEnum.Sick));
             try
             {
-                await timeEntryService.CreateNonBillableTimeEntry(DateTime.UtcNow, 7, null, TimeEntryTypeEnum.Vacation);
+                await timeEntryService.CreateNonBillableTimeEntry(DateTime.UtcNow, 7, "flu", TimeEntryTypeEnum.Sick);
             }
             catch (Exception e)
             {
-                Assert.Equal("Cannot have more than 8 hours of vacation time in a single day.", e.Message);
+                Assert.Equal("Cannot have more than 8 hours of combined vacation and sick time in a single day.", e.Message);
             }
             
             var timeEntries = await database.TimeEntries.Where(x => x.UserId == userId).ToListAsync();

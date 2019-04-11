@@ -46,10 +46,12 @@ namespace TimeTracker.Library.Services
         {
             VerifyHoursBeforeAdding(date, hours);
 
-            var vacationTime = db.TimeEntries.Where(x => x.UserId == userId && x.Date.Date == date.Date.Date && x.TimeEntryType == TimeEntryTypeEnum.Vacation).Sum(x => x.Hours);
-            if (hours + vacationTime > 8 && timeEntryTypeEnum == TimeEntryTypeEnum.Vacation)
+            var offTime = db.TimeEntries.Where(x => x.UserId == userId && x.Date.Date == date.Date.Date && 
+                                                         (x.TimeEntryType == TimeEntryTypeEnum.Vacation || 
+                                                          x.TimeEntryType == TimeEntryTypeEnum.Sick)).Sum(x => x.Hours);
+            if (hours + offTime > 8 && (timeEntryTypeEnum == TimeEntryTypeEnum.Vacation || timeEntryTypeEnum == TimeEntryTypeEnum.Sick))
             {
-                throw new Exception("Cannot have more than 8 hours of vacation time in a single day.");
+                throw new Exception("Cannot have more than 8 hours of combined vacation and sick time in a single day.");
             }
             
             var model = new TimeEntry
