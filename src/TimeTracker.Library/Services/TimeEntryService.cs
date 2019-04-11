@@ -21,17 +21,8 @@ namespace TimeTracker.Library.Services
 
         public async Task<Guid> CreateBillableTimeEntry(DateTime date, double hours, int billableClientId, int projectId)
         {
-            if (hours <= 0)
-            {
-                throw new Exception("An entry should have more than 0 hours.");
-            }
-            
-            var hoursForDay =  db.TimeEntries.Where(x => x.UserId == userId && x.Date.Date == date.Date.Date).Sum(x => x.Hours);
-            if (hoursForDay + hours > 24)
-            {
-                throw new Exception("You may not enter more than 24 hours per day.");
-            }
-            
+            VerifyHoursBeforeAdding(date, hours);
+
             var model = new TimeEntry
             {
                 TimeEntryId = Guid.NewGuid(),
@@ -53,16 +44,7 @@ namespace TimeTracker.Library.Services
         public async Task<Guid> CreateNonBillableTimeEntry(DateTime date, double hours, string nonBillReason, 
             TimeEntryTypeEnum timeEntryTypeEnum = TimeEntryTypeEnum.NonBillable)
         {
-            if (hours <= 0)
-            {
-                throw new Exception("An entry should have more than 0 hours.");
-            }
-
-            var hoursForDay =  db.TimeEntries.Where(x => x.UserId == userId && x.Date.Date == date.Date.Date).Sum(x => x.Hours);
-            if (hoursForDay + hours > 24)
-            {
-                throw new Exception("You may not enter more than 24 hours per day.");
-            }
+            VerifyHoursBeforeAdding(date, hours);
             
             var model = new TimeEntry
             {
@@ -80,6 +62,20 @@ namespace TimeTracker.Library.Services
             db.DetachEntity(model);
             
             return model.TimeEntryId;
+        }
+
+        private void VerifyHoursBeforeAdding(DateTime date, double hours)
+        {
+            if (hours <= 0)
+            {
+                throw new Exception("An entry should have more than 0 hours.");
+            }
+
+            var hoursForDay = db.TimeEntries.Where(x => x.UserId == userId && x.Date.Date == date.Date.Date).Sum(x => x.Hours);
+            if (hoursForDay + hours > 24)
+            {
+                throw new Exception("You may not enter more than 24 hours per day.");
+            }
         }
 
         public async Task<double> DeleteHours(DateTime date)
