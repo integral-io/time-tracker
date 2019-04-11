@@ -64,7 +64,13 @@ namespace TimeTracker.Library.Services
 
         public async Task<double> DeleteHours(DateTime date)
         {
+            
             var cutOffDate = DateTime.UtcNow.Date.AddHours(-48);
+            if (date < cutOffDate)
+            {
+                throw new Exception("Entries older than 48 hours cannot be deleted.");
+            }
+            
             var timeEntries = await db.TimeEntries.Where(x => x.UserId == userId && x.Date == date.Date && x.Date >= cutOffDate ).ToListAsync();
             if (timeEntries.Count == 0)
             {

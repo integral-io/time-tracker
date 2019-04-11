@@ -13,7 +13,7 @@ namespace TimeTracker.Library.Test.Services
     public class TimeEntryServiceTest : IClassFixture<InMemoryDatabaseWithProjectsAndUsers>
     {
         private readonly Guid userId = Guid.NewGuid();
-        
+
         private readonly TimeTrackerDbContext database;
         private readonly TimeEntryService timeEntryService;
 
@@ -27,7 +27,7 @@ namespace TimeTracker.Library.Test.Services
         [Fact]
         public async Task CreateBillableTimeEntry_createsDbRecord()
         {
-            await timeEntryService.CreateBillableTimeEntry(DateTime.UtcNow.Date, 
+            await timeEntryService.CreateBillableTimeEntry(DateTime.UtcNow.Date,
                 7, 1, 1);
 
             var entry = await database.TimeEntries.FirstAsync(x => x.UserId == userId);
@@ -39,8 +39,8 @@ namespace TimeTracker.Library.Test.Services
         public async Task CreateNonBillableTimeEntry_createsDbRecord()
         {
             var nonBillReason = "sick with flu";
-            
-            await timeEntryService.CreateNonBillableTimeEntry(DateTime.UtcNow.Date, 
+
+            await timeEntryService.CreateNonBillableTimeEntry(DateTime.UtcNow.Date,
                 6, nonBillReason, TimeEntryTypeEnum.Sick);
 
             var entry = await database.TimeEntries.FirstAsync(x => x.UserId == userId);
@@ -84,28 +84,34 @@ namespace TimeTracker.Library.Test.Services
         }
 
         [Fact]
-        public async Task RequestingToDeleteHoursOnADay48HoursOlderThanCurrentDateCannotBeDone()
+        public async Task HoursCannotBeDeleted48HoursPastEntry_AndExceptionWillBeThrown()
         {
             var date = DateTime.UtcNow.Date.AddHours(-48);
             await timeEntryService.CreateBillableTimeEntry(date, 8, 1, 1);
-            
+
             var lateDate = DateTime.UtcNow.Date.AddHours(-48.01);
             await timeEntryService.CreateBillableTimeEntry(lateDate, 2, 1, 1);
             await timeEntryService.CreateNonBillableTimeEntry(lateDate, 3, null, TimeEntryTypeEnum.Vacation);
             await timeEntryService.CreateNonBillableTimeEntry(lateDate, 1, "flu", TimeEntryTypeEnum.Sick);
-            
-//            var hoursDeleted = await Assert.ThrowsAsync<Exception>(() => timeEntryService.DeleteHours(lateDate));
-            var hoursDeleted = await timeEntryService.DeleteHours(lateDate);
+
+            try
+            {
+                await Assert.ThrowsAsync<Exception>(() => timeEntryService.DeleteHours(lateDate));
+            }
+            catch (Exception e)
+            {
+                Assert.Equal("Entries older than 48 hours cannot be deleted.", e.Message);
+            }
+
             var timeEntries = await database.TimeEntries.Where(x => x.UserId == userId).ToListAsync();
-            var hoursLeft = timeEntries.Sum(x=>x.Hours);
-            
+            var hoursLeft = timeEntries.Sum(x => x.Hours);
+
             hoursLeft.Should().Be(14);
-            hoursDeleted.Should().Be(0);
-            
-            hoursDeleted = await timeEntryService.DeleteHours(date);
+
+            var hoursDeleted = await timeEntryService.DeleteHours(date);
             timeEntries = await database.TimeEntries.Where(x => x.UserId == userId).ToListAsync();
-            hoursLeft = timeEntries.Sum(x=>x.Hours);
-            
+            hoursLeft = timeEntries.Sum(x => x.Hours);
+
             hoursLeft.Should().Be(6);
             hoursDeleted.Should().Be(8);
         }
