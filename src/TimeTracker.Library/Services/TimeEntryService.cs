@@ -50,6 +50,13 @@ namespace TimeTracker.Library.Services
             {
                 throw new Exception("An entry should have more than 0 hours.");
             }
+
+            var hoursForDay =  db.TimeEntries.Where(x => x.UserId == userId && x.Date.Date == date.Date.Date).Sum(x => x.Hours);
+            if (hoursForDay + hours > 24)
+            {
+                throw new Exception("You may not enter more than 24 hours per day.");
+            }
+            
             var model = new TimeEntry
             {
                 TimeEntryId = Guid.NewGuid(),
