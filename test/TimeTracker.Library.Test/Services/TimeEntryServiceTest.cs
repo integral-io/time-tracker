@@ -73,6 +73,7 @@ namespace TimeTracker.Library.Test.Services
         }
 
         [Fact]
+<<<<<<< HEAD
         public async Task TheEntriesForADayShouldBeNoGreaterThan24Hours_WhenAddingNonBillableTimeOver()
         {
             await timeEntryService.CreateBillableTimeEntry(DateTime.UtcNow, 8, 1, 1);
@@ -117,6 +118,8 @@ namespace TimeTracker.Library.Test.Services
         }
 
         [Fact]
+=======
+>>>>>>> Don't allow user to add entry with less than 0 hours.
         public async Task DeleteHours_ThatDontExistFromToday_works()
         {
             var hoursDeleted = await timeEntryService.DeleteHours(DateTime.UtcNow);
@@ -199,7 +202,6 @@ namespace TimeTracker.Library.Test.Services
 
             hoursLeft.Should().Be(0);
             hoursDeleted.Should().Be(8);
-            
         }
 
         public void Dispose()
