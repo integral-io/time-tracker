@@ -210,6 +210,16 @@ namespace TimeTracker.Library.Test
             sut.Date.Day.Should().Be(17);
             sut.TimeEntryType.Should().Be(timeEntryType);
         }
+        #endregion
+
+        #region web
+        
+        [Fact]
+        public void WhenWebReportLinkRequested_ReturnsLinkToUserWebReport()
+        {
+           var sut = new WebReportLinkInterpreter().InterpretMessage(ToPayload("web report"));
+           sut.Url.Should().Be("http://integral.io");
+        }
 
         #endregion
 
@@ -259,4 +269,5 @@ namespace TimeTracker.Library.Test
             };
         }
     }
+
 }

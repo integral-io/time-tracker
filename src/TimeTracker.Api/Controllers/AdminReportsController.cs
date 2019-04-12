@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore.ChangeTracking.Internal;
 using TimeTracker.Data;
 using TimeTracker.Library.Models.Admin;
 using TimeTracker.Library.Services;
@@ -21,6 +22,7 @@ namespace TimeTracker.Api.Controllers
         [HttpGet("ytd")]
         public async Task<ViewResult> AllUsersReport()
         {
+            
             var adminReportService = new AdminReportService(dbContext);
             var items = await adminReportService.GetAllUsersReport();
             return View(items);
