@@ -220,6 +220,16 @@ namespace TimeTracker.Library.Test
            var sut = new WebReportLinkInterpreter().InterpretMessage(ToPayload("web report"));
            sut.Url.Should().Be("http://integral.io");
         }
+        #endregion
+
+        #region web
+        
+        [Fact]
+        public void WhenWebReportLinkRequested_ReturnsLinkToUserWebReport()
+        {
+           var sut = new WebReportLinkInterpreter().InterpretMessage(ToPayload("web report"));
+           sut.Url.Should().Be("http://integral.io");
+        }
 
         #endregion
 
