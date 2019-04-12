@@ -10,7 +10,7 @@ using Xunit;
 
 namespace TimeTracker.Library.Test.Services
 {
-    public class TimeEntryServiceTest : IClassFixture<InMemoryDatabaseWithProjectsAndUsers>
+    public class TimeEntryServiceTest : IClassFixture<InMemoryDatabaseWithProjectsAndUsers>, IDisposable
     {
         private readonly Guid userId = Guid.NewGuid();
 
@@ -126,13 +126,18 @@ namespace TimeTracker.Library.Test.Services
             var date = DateTime.UtcNow.AddHours(-2);
             await timeEntryService.CreateBillableTimeEntry(date, 8, 1, 1);
             
-            var hoursDeleted = await timeEntryService.DeleteHours(DateTime.UtcNow.Date);
+            var hoursDeleted = await timeEntryService.DeleteHours(date.Date);
             timeEntries = await database.TimeEntries.Where(x => x.UserId == userId).ToListAsync();
             hoursLeft = timeEntries.Sum(x => x.Hours);
 
             hoursLeft.Should().Be(0);
             hoursDeleted.Should().Be(8);
             
+        }
+
+        public void Dispose()
+        {
+            database?.Dispose();
         }
     }
 }
