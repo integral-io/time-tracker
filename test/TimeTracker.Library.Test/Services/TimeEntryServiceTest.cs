@@ -130,11 +130,17 @@ namespace TimeTracker.Library.Test.Services
             var date = DateTime.UtcNow.Date;
             await timeEntryService.CreateBillableTimeEntry(date, 7, 1, 1);
             await timeEntryService.CreateNonBillableTimeEntry(date, 8, null, TimeEntryTypeEnum.Vacation);
-            await timeEntryService.CreateNonBillableTimeEntry(date, 8, "flu", TimeEntryTypeEnum.Sick);
 
             var hoursDeleted = await timeEntryService.DeleteHours(date);
 
-            hoursDeleted.Should().Be(23);
+            hoursDeleted.Should().Be(15);
+
+            await timeEntryService.CreateNonBillableTimeEntry(date, 8, "flu", TimeEntryTypeEnum.Sick);
+
+            hoursDeleted = await timeEntryService.DeleteHours(date);
+
+            hoursDeleted.Should().Be(8);
+
         }
 
         [Fact]
@@ -209,7 +215,7 @@ namespace TimeTracker.Library.Test.Services
         [Fact]
         public async Task WhenAddingSickAndVacationTime_CannotAddMoreThan8HoursPerDay()
         {
-            timeEntryService.CreateNonBillableTimeEntry(DateTime.UtcNow, 5, null, TimeEntryTypeEnum.Vacation);
+            await timeEntryService.CreateNonBillableTimeEntry(DateTime.UtcNow, 5, null, TimeEntryTypeEnum.Vacation);
             await Assert.ThrowsAsync<Exception>(() => timeEntryService.CreateNonBillableTimeEntry(DateTime.UtcNow, 4, "flu", TimeEntryTypeEnum.Sick));
             try
             {
