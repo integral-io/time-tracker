@@ -12,8 +12,9 @@ namespace TimeTracker.Library.Test.Services
 {
     public class AdminReportServiceTest : IAsyncLifetime 
     {
-        private readonly TimeTrackerDbContext database;
         private readonly AdminReportService adminReportService;
+
+        private readonly TimeTrackerDbContext database;
 
         public AdminReportServiceTest()
         {
