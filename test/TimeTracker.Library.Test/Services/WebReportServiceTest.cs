@@ -43,7 +43,8 @@ namespace TimeTracker.Library.Test.Services
             await timeEntryService.CreateBillableTimeEntry(date, 8, 1, 1);
             await timeEntryService.CreateBillableTimeEntry(date.AddDays(-2), 4, 1, 1);
             await timeEntryService.CreateNonBillableTimeEntry(date.AddDays(-2), 2, "dr visit", TimeEntryTypeEnum.Sick);
-            await timeEntryService.CreateNonBillableTimeEntry(date.AddDays(-5), 7, null, TimeEntryTypeEnum.Vacation);
+            await timeEntryService.CreateNonBillableTimeEntry(date.AddDays(-5), 4, null, TimeEntryTypeEnum.Vacation);
+            await timeEntryService.CreateBillableTimeEntry(date.AddDays(-5), 4, 1, 1);
             await timeEntryService.CreateNonBillableTimeEntry(date.AddDays(-7), 4, "pda", TimeEntryTypeEnum.NonBillable);
 
             var randomGuid = Guid.NewGuid();
