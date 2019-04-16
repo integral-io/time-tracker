@@ -113,6 +113,35 @@ namespace TimeTracker.Library.Services
             
             return hoursDeleted;
         }
+        
+        public async Task<double> DeleteHoursForTimeEntryType(DateTime date, TimeEntryTypeEnum timeEntryType)
+        {
+            var cutOffDate = DateTime.UtcNow.Date.AddHours(-48);
+            if (date < cutOffDate)
+            {
+                throw new Exception(timeEntryType + " time entries older than 48 hours cannot be deleted.");
+            }
+
+            var timeEntries = await db.TimeEntries.Where(x => x.UserId == userId &&
+                                                              x.Date.Date == date.Date.Date &&
+                                                              x.Date >= cutOffDate &&
+                                                              x.TimeEntryType == timeEntryType).ToListAsync();
+
+            if (timeEntries.Count == 0)
+            {
+                return 0;
+            }
+            
+            var hoursDeleted = timeEntries.Sum(x=>x.Hours);
+            
+            db.TimeEntries.RemoveRange(timeEntries);
+
+            await db.SaveChangesAsync();
+            
+            timeEntries.ForEach(x=> db.DetachEntity(x));
+            
+            return hoursDeleted;
+        }
 
         public async Task<AllTimeOff> QueryAllTimeOff()
         {
@@ -133,6 +162,7 @@ namespace TimeTracker.Library.Services
             
             return allTimeOff;
         }
+
     }
 
    
