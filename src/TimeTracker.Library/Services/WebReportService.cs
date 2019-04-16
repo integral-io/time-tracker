@@ -28,7 +28,7 @@ namespace TimeTracker.Library.Services
                 select new UserEntry
                 {
                     UserId = g.FirstOrDefault().UserId,
-                    Date = g.FirstOrDefault().Date,
+                    Date = g.FirstOrDefault().Date.ToShortDateString(),
                     BillableHours = g.Where(x=>x.TimeEntryType == TimeEntryTypeEnum.BillableProject).Sum(x=>x.Hours),
                     SickHours = g.Where(x=>x.TimeEntryType == TimeEntryTypeEnum.Sick).Sum(x=>x.Hours),
                     VacationHours = g.Where(x=>x.TimeEntryType == TimeEntryTypeEnum.Vacation).Sum(x=>x.Hours),

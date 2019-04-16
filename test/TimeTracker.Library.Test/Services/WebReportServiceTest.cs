@@ -43,15 +43,15 @@ namespace TimeTracker.Library.Test.Services
             var report = await webReportService.GetUserReport(userId);
             report.Count.Should().Be(4);
             
-            report.Where(x => x.Date == date ).Sum(item => item.BillableHours).Should().Be(8);
+            report.Where(x => x.Date == date.ToShortDateString()).Sum(item => item.BillableHours).Should().Be(8);
             
-            report.Where(x => x.Date == date.AddDays(-2)).Sum(item => item.BillableHours).Should().Be(6);
-            report.Where(x => x.Date == date.AddDays(-2)).Sum(item => item.SickHours).Should().Be(2); 
+            report.Where(x => x.Date == date.AddDays(-2).ToShortDateString()).Sum(item => item.BillableHours).Should().Be(6);
+            report.Where(x => x.Date == date.AddDays(-2).ToShortDateString()).Sum(item => item.SickHours).Should().Be(2); 
             
-            report.Where(x => x.Date == date.AddDays(-5)).Sum(item => item.BillableHours).Should().Be(4);
-            report.Where(x => x.Date == date.AddDays(-5)).Sum(item => item.VacationHours).Should().Be(4);
+            report.Where(x => x.Date == date.AddDays(-5).ToShortDateString()).Sum(item => item.BillableHours).Should().Be(4);
+            report.Where(x => x.Date == date.AddDays(-5).ToShortDateString()).Sum(item => item.VacationHours).Should().Be(4);
             
-            report.Where(x => x.Date == date.AddDays(-7)).Sum(item => item.OtherNonBillable).Should().Be(7);
+            report.Where(x => x.Date == date.AddDays(-7).ToShortDateString()).Sum(item => item.OtherNonBillable).Should().Be(7);
         }
 
         private async Task PopulateTimeEntries()
