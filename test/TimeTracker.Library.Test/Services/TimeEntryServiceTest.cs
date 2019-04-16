@@ -187,6 +187,39 @@ namespace TimeTracker.Library.Test.Services
             hoursLeft.Should().Be(6);
             hoursDeleted.Should().Be(8);
         }
+        
+        [Fact]
+        public async Task HoursForASpecificTypeCannotBeDeleted48HoursPastEntry_AndExceptionWillBeThrown()
+        {
+            var date = DateTime.UtcNow.Date.AddHours(-48);
+            await timeEntryService.CreateBillableTimeEntry(date, 8, 1, 1);
+
+            var lateDate = DateTime.UtcNow.Date.AddHours(-48.01);
+            await timeEntryService.CreateBillableTimeEntry(lateDate, 2, 1, 1);
+            await timeEntryService.CreateNonBillableTimeEntry(lateDate, 3, null, TimeEntryTypeEnum.Vacation);
+            await timeEntryService.CreateNonBillableTimeEntry(lateDate, 1, "flu", TimeEntryTypeEnum.Sick);
+
+            try
+            {
+                await timeEntryService.DeleteHoursForTimeEntryType(lateDate, TimeEntryTypeEnum.BillableProject);
+            }
+            catch (Exception e)
+            {
+                Assert.Equal("Entries older than 48 hours cannot be deleted.", e.Message);
+            }
+
+            var timeEntries = await database.TimeEntries.Where(x => x.UserId == userId).ToListAsync();
+            var hoursLeft = timeEntries.Sum(x => x.Hours);
+
+            hoursLeft.Should().Be(14);
+
+            var hoursDeleted = await timeEntryService.DeleteHoursForTimeEntryType(date, TimeEntryTypeEnum.BillableProject);
+            timeEntries = await database.TimeEntries.Where(x => x.UserId == userId).ToListAsync();
+            hoursLeft = timeEntries.Sum(x => x.Hours);
+
+            hoursLeft.Should().Be(6);
+            hoursDeleted.Should().Be(8);
+        }
 
         [Fact]
         public async Task WhenDeletingHoursForADay_AllHoursOnThatDateAreDeleted()
@@ -229,39 +262,6 @@ namespace TimeTracker.Library.Test.Services
             hoursDeleted.Should().Be(hours);
         }
         
-        [Fact]
-        public async Task HoursForASpecificTypeCannotBeDeleted48HoursPastEntry_AndExceptionWillBeThrown()
-        {
-            var date = DateTime.UtcNow.Date.AddHours(-48);
-            await timeEntryService.CreateBillableTimeEntry(date, 8, 1, 1);
-
-            var lateDate = DateTime.UtcNow.Date.AddHours(-48.01);
-            await timeEntryService.CreateBillableTimeEntry(lateDate, 2, 1, 1);
-            await timeEntryService.CreateNonBillableTimeEntry(lateDate, 3, null, TimeEntryTypeEnum.Vacation);
-            await timeEntryService.CreateNonBillableTimeEntry(lateDate, 1, "flu", TimeEntryTypeEnum.Sick);
-
-            try
-            {
-                await timeEntryService.DeleteHoursForTimeEntryType(lateDate, TimeEntryTypeEnum.BillableProject);
-            }
-            catch (Exception e)
-            {
-                Assert.Equal("Entries older than 48 hours cannot be deleted.", e.Message);
-            }
-
-            var timeEntries = await database.TimeEntries.Where(x => x.UserId == userId).ToListAsync();
-            var hoursLeft = timeEntries.Sum(x => x.Hours);
-
-            hoursLeft.Should().Be(14);
-
-            var hoursDeleted = await timeEntryService.DeleteHoursForTimeEntryType(date, TimeEntryTypeEnum.BillableProject);
-            timeEntries = await database.TimeEntries.Where(x => x.UserId == userId).ToListAsync();
-            hoursLeft = timeEntries.Sum(x => x.Hours);
-
-            hoursLeft.Should().Be(6);
-            hoursDeleted.Should().Be(8);
-        }
-
         public void Dispose()
         {
             database?.Dispose();
