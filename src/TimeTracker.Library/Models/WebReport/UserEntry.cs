@@ -6,7 +6,7 @@ namespace TimeTracker.Library.Models.WebReport
     {
         public Guid UserId { get; set; }
 
-        public DateTime Date { get; set; }
+        public string Date { get; set; }
 
         public double BillableHours { get; set; }
         
