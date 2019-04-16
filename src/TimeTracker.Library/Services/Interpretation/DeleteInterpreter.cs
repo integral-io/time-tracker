@@ -30,7 +30,6 @@ namespace TimeTracker.Library.Services.Interpretation
 
         protected override void ExtractInto(DeleteInterpretedMessage message, List<TextMessagePart> splitText)
         {
-            // check for only delete
             if (splitText.All(x => x.IsUsed))
             {
                 return;

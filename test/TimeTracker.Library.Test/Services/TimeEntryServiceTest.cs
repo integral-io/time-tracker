@@ -283,7 +283,7 @@ namespace TimeTracker.Library.Test.Services
             }
             catch (Exception e)
             {
-                Assert.Equal("BillableProject time entries older than 48 hours cannot be deleted.", e.Message);
+                Assert.Equal("Entries older than 48 hours cannot be deleted.", e.Message);
             }
 
             var timeEntries = await database.TimeEntries.Where(x => x.UserId == userId).ToListAsync();
