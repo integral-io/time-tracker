@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
@@ -88,11 +89,7 @@ namespace TimeTracker.Library.Services
 
         public async Task<double> DeleteHours(DateTime date)
         {
-            var cutOffDate = DateTime.UtcNow.Date.AddHours(-48);
-            if (date < cutOffDate)
-            {
-                throw new Exception("Entries older than 48 hours cannot be deleted.");
-            }
+            var cutOffDate = CheckCutOffDate(date);
             
             var timeEntries = await db.TimeEntries.Where(x => x.UserId == userId && 
                                                               x.Date.Date == date.Date.Date && 
@@ -103,24 +100,12 @@ namespace TimeTracker.Library.Services
                 return 0;
             }
             
-            var hoursDeleted = timeEntries.Sum(x=>x.Hours);
-            
-            db.TimeEntries.RemoveRange(timeEntries);
-
-            await db.SaveChangesAsync();
-            
-            timeEntries.ForEach(x=> db.DetachEntity(x));
-            
-            return hoursDeleted;
+            return await DeleteHoursFromDB(timeEntries);
         }
-        
+
         public async Task<double> DeleteHoursForTimeEntryType(DateTime date, TimeEntryTypeEnum timeEntryType)
         {
-            var cutOffDate = DateTime.UtcNow.Date.AddHours(-48);
-            if (date < cutOffDate)
-            {
-                throw new Exception(timeEntryType + " time entries older than 48 hours cannot be deleted.");
-            }
+            var cutOffDate = CheckCutOffDate(date);
 
             var timeEntries = await db.TimeEntries.Where(x => x.UserId == userId &&
                                                               x.Date.Date == date.Date.Date &&
@@ -132,15 +117,30 @@ namespace TimeTracker.Library.Services
                 return 0;
             }
             
-            var hoursDeleted = timeEntries.Sum(x=>x.Hours);
-            
+            return await DeleteHoursFromDB(timeEntries);
+        }
+
+        private async Task<double> DeleteHoursFromDB(List<TimeEntry> timeEntries)
+        {
+            var hoursDeleted = timeEntries.Sum(x => x.Hours);
+
             db.TimeEntries.RemoveRange(timeEntries);
 
             await db.SaveChangesAsync();
-            
-            timeEntries.ForEach(x=> db.DetachEntity(x));
-            
+
+            timeEntries.ForEach(x => db.DetachEntity(x));
             return hoursDeleted;
+        }
+
+        private static DateTime CheckCutOffDate(DateTime date)
+        {
+            var cutOffDate = DateTime.UtcNow.Date.AddHours(-48);
+            if (date < cutOffDate)
+            {
+                throw new Exception("Entries older than 48 hours cannot be deleted.");
+            }
+
+            return cutOffDate;
         }
 
         public async Task<AllTimeOff> QueryAllTimeOff()
