@@ -28,12 +28,17 @@ namespace TimeTracker.Library.Services.Interpretation
             .AppendLine("*/hours* delete billable <optional: date> _delete all billable hours for the date_")
             .ToString();
 
-        protected override void ExtractInto(DeleteInterpretedMessage message,
-            List<TextMessagePart> splitText)
+        protected override void ExtractInto(DeleteInterpretedMessage message, List<TextMessagePart> splitText)
         {
+            // check for only delete
+            if (splitText.All(x => x.IsUsed))
+            {
+                return;
+            }
+
             var projectOrTypePart = splitText.First(x => !x.IsUsed);
             projectOrTypePart.IsUsed = true;
-         
+
             var interpretTimeEntryType = InterpretTimeEntryType(projectOrTypePart.Text);
             if (interpretTimeEntryType.HasValue)
             {
@@ -44,8 +49,9 @@ namespace TimeTracker.Library.Services.Interpretation
             {
                 message.HasType = false;
             }
+
         }
-        
+
         private static TimeEntryTypeEnum? InterpretTimeEntryType(string text)
         {
             if (text == "nonbill")
