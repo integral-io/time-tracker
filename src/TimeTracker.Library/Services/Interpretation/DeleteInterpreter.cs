@@ -7,13 +7,12 @@ using TimeTracker.Library.Models;
 
 namespace TimeTracker.Library.Services.Interpretation
 {
-
     public class DeleteInterpretedMessage : InterpretedMessage
     {
         public TimeEntryTypeEnum TimeEntryType { get; set; }
         public bool HasType { get; set; }
     }
-    
+
     public class DeleteInterpreter : SlackMessageInterpreter<DeleteInterpretedMessage>
     {
         public DeleteInterpreter() : base("delete")
@@ -30,6 +29,7 @@ namespace TimeTracker.Library.Services.Interpretation
 
         protected override void ExtractInto(DeleteInterpretedMessage message, List<TextMessagePart> splitText)
         {
+            message.HasType = false;
             if (splitText.All(x => x.IsUsed))
             {
                 return;
@@ -44,11 +44,6 @@ namespace TimeTracker.Library.Services.Interpretation
                 message.TimeEntryType = interpretTimeEntryType.Value;
                 message.HasType = true;
             }
-            else
-            {
-                message.HasType = false;
-            }
-
         }
 
         private static TimeEntryTypeEnum? InterpretTimeEntryType(string text)
@@ -62,7 +57,7 @@ namespace TimeTracker.Library.Services.Interpretation
             {
                 return TimeEntryTypeEnum.BillableProject;
             }
-            
+
             if (Enum.TryParse(text, true, out TimeEntryTypeEnum entryTypeEnum))
             {
                 return entryTypeEnum;
