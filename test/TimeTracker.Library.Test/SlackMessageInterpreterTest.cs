@@ -153,6 +153,7 @@ namespace TimeTracker.Library.Test
             sut.Date.Year.Should().Be(now.Year);
             sut.Date.Month.Should().Be(now.Month);
             sut.Date.Day.Should().Be(now.Day);
+            sut.HasType.Should().BeFalse();
         }
 
         [Fact]
@@ -163,6 +164,79 @@ namespace TimeTracker.Library.Test
             sut.Date.Year.Should().Be(now.Year);
             sut.Date.Month.Should().Be(1);
             sut.Date.Day.Should().Be(17);
+            sut.HasType.Should().BeFalse();
+        }
+        
+        [Fact]
+        public void InterpretDeleteMessage_canInterpretBillableTimeTypeDeletion()
+        {
+            var sut = new DeleteInterpreter().InterpretMessage(ToPayload("delete billable"));
+            var now = DateTime.UtcNow;
+            sut.Date.Year.Should().Be(now.Year);
+            sut.Date.Month.Should().Be(now.Month);
+            sut.Date.Day.Should().Be(now.Day);
+            sut.HasType.Should().BeTrue();
+            sut.TimeEntryType.Should().Be(TimeEntryTypeEnum.BillableProject);
+        }
+        
+        [Fact]
+        public void InterpretDeleteMessage_canInterpretDeleteVacationTimeTypeDeletion()
+        {
+            var sut = new DeleteInterpreter().InterpretMessage(ToPayload("delete vacation"));
+            var now = DateTime.UtcNow;
+            sut.Date.Year.Should().Be(now.Year);
+            sut.Date.Month.Should().Be(now.Month);
+            sut.Date.Day.Should().Be(now.Day);
+            sut.HasType.Should().BeTrue();
+            sut.TimeEntryType.Should().Be(TimeEntryTypeEnum.Vacation);
+        }
+        
+        [Fact]
+        public void InterpretDeleteMessage_canInterpretDeleteSickTimeTypeDeletion()
+        {
+            var sut = new DeleteInterpreter().InterpretMessage(ToPayload("delete sick"));
+            var now = DateTime.UtcNow;
+            sut.Date.Year.Should().Be(now.Year);
+            sut.Date.Month.Should().Be(now.Month);
+            sut.Date.Day.Should().Be(now.Day);
+            sut.HasType.Should().BeTrue();
+            sut.TimeEntryType.Should().Be(TimeEntryTypeEnum.Sick);
+        }
+        
+        [Fact]
+        public void InterpretDeleteMessage_canInterpretDeleteNonBillTimeTypeDeletion()
+        {
+            var sut = new DeleteInterpreter().InterpretMessage(ToPayload("delete nonbill"));
+            var now = DateTime.UtcNow;
+            sut.Date.Year.Should().Be(now.Year);
+            sut.Date.Month.Should().Be(now.Month);
+            sut.Date.Day.Should().Be(now.Day);
+            sut.HasType.Should().BeTrue();
+            sut.TimeEntryType.Should().Be(TimeEntryTypeEnum.NonBillable);
+        }
+        
+        [Fact]
+        public void InterpretDeleteMessage_canInterpretDeleteNonBillableTimeTypeDeletion()
+        {
+            var sut = new DeleteInterpreter().InterpretMessage(ToPayload("delete nonbillable"));
+            var now = DateTime.UtcNow;
+            sut.Date.Year.Should().Be(now.Year);
+            sut.Date.Month.Should().Be(now.Month);
+            sut.Date.Day.Should().Be(now.Day);
+            sut.HasType.Should().BeTrue();
+            sut.TimeEntryType.Should().Be(TimeEntryTypeEnum.NonBillable);
+        }
+        
+        [Fact]
+        public void InterpretDeleteMessage_canInterpretDeleteBillableTimeTypeAndDayDeletion()
+        {
+            var sut = new DeleteInterpreter().InterpretMessage(ToPayload("delete billable jan-17"));
+            var now = DateTime.UtcNow;
+            sut.Date.Year.Should().Be(now.Year);
+            sut.Date.Month.Should().Be(1);
+            sut.Date.Day.Should().Be(17);
+            sut.HasType.Should().BeTrue();
+            sut.TimeEntryType.Should().Be(TimeEntryTypeEnum.BillableProject);
         }
 
         #endregion
