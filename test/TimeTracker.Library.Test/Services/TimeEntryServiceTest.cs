@@ -140,7 +140,6 @@ namespace TimeTracker.Library.Test.Services
             hoursDeleted = await timeEntryService.DeleteHours(date);
 
             hoursDeleted.Should().Be(8);
-
         }
 
         [Fact]
@@ -206,64 +205,28 @@ namespace TimeTracker.Library.Test.Services
             hoursLeft.Should().Be(0);
             hoursDeleted.Should().Be(8);
         }
-        
-        [Fact]
-        public async Task WhenDeletingBillableHoursOnADay_AllBillableHoursOnThatDayAreDeleted()
+
+        [Theory]
+        [InlineData(TimeEntryTypeEnum.NonBillable, 4)]
+        [InlineData(TimeEntryTypeEnum.Sick, 3)]
+        [InlineData(TimeEntryTypeEnum.Vacation, 2)]
+        [InlineData(TimeEntryTypeEnum.BillableProject, 1)]
+        public async Task WhenDeletingNonBillableHoursOnADay_AllNonBillableHoursOnThatDayAreDeleted(TimeEntryTypeEnum entryType, double hours)
         {
-            var date = DateTime.UtcNow.AddHours(-2);
-            await timeEntryService.CreateBillableTimeEntry(date, 4, 1, 1);
-            await timeEntryService.CreateNonBillableTimeEntry(DateTime.UtcNow, 3, null, TimeEntryTypeEnum.Vacation);
+            var date = DateTime.UtcNow.AddDays(-2);
+            await timeEntryService.CreateBillableTimeEntry(DateTime.UtcNow, 4, 1, 1);
+            await timeEntryService.CreateBillableTimeEntry(date, 1, 1, 1);
+            await timeEntryService.CreateNonBillableTimeEntry(date, 4, "beach", TimeEntryTypeEnum.NonBillable);
+            await timeEntryService.CreateNonBillableTimeEntry(date, 3, "flu", TimeEntryTypeEnum.Sick);
+            await timeEntryService.CreateNonBillableTimeEntry(date, 2, null, TimeEntryTypeEnum.Vacation);
+
             
-            var hoursDeleted = await timeEntryService.DeleteHoursForTimeEntryType(date.Date, TimeEntryTypeEnum.BillableProject);
+            var hoursDeleted = await timeEntryService.DeleteHoursForTimeEntryType(date.Date, entryType);
             var timeEntries = await database.TimeEntries.Where(x => x.UserId == userId).ToListAsync();
             var hoursLeft = timeEntries.Sum(x => x.Hours);
 
-            hoursLeft.Should().Be(3);
-            hoursDeleted.Should().Be(4);
-        }
-        
-        [Fact]
-        public async Task WhenDeletingVacationHoursOnADay_AllVacationHoursOnThatDayAreDeleted()
-        {
-            var date = DateTime.UtcNow.AddHours(-2);
-            await timeEntryService.CreateBillableTimeEntry(date, 4, 1, 1);
-            await timeEntryService.CreateNonBillableTimeEntry(DateTime.UtcNow, 3, null, TimeEntryTypeEnum.Vacation);
-            
-            var hoursDeleted = await timeEntryService.DeleteHoursForTimeEntryType(date.Date, TimeEntryTypeEnum.Vacation);
-            var timeEntries = await database.TimeEntries.Where(x => x.UserId == userId).ToListAsync();
-            var hoursLeft = timeEntries.Sum(x => x.Hours);
-
-            hoursLeft.Should().Be(4);
-            hoursDeleted.Should().Be(3);
-        }
-        
-        [Fact]
-        public async Task WhenDeletingSickHoursOnADay_AllSickHoursOnThatDayAreDeleted()
-        {
-            var date = DateTime.UtcNow.AddHours(-2);
-            await timeEntryService.CreateBillableTimeEntry(date, 4, 1, 1);
-            await timeEntryService.CreateNonBillableTimeEntry(DateTime.UtcNow, 5, "flu", TimeEntryTypeEnum.Sick);
-            
-            var hoursDeleted = await timeEntryService.DeleteHoursForTimeEntryType(date.Date, TimeEntryTypeEnum.Sick);
-            var timeEntries = await database.TimeEntries.Where(x => x.UserId == userId).ToListAsync();
-            var hoursLeft = timeEntries.Sum(x => x.Hours);
-
-            hoursLeft.Should().Be(4);
-            hoursDeleted.Should().Be(5);
-        }
-
-        [Fact] public async Task WhenDeletingNonBillableHoursOnADay_AllNonBillableHoursOnThatDayAreDeleted()
-        {
-            var date = DateTime.UtcNow.AddHours(-2);
-            await timeEntryService.CreateBillableTimeEntry(date, 4, 1, 1);
-            await timeEntryService.CreateNonBillableTimeEntry(DateTime.UtcNow, 2, "beach", TimeEntryTypeEnum.NonBillable);
-            
-            var hoursDeleted = await timeEntryService.DeleteHoursForTimeEntryType(date.Date, TimeEntryTypeEnum.NonBillable);
-            var timeEntries = await database.TimeEntries.Where(x => x.UserId == userId).ToListAsync();
-            var hoursLeft = timeEntries.Sum(x => x.Hours);
-
-            hoursLeft.Should().Be(4);
-            hoursDeleted.Should().Be(2);
+            hoursLeft.Should().Be(14-hours);
+            hoursDeleted.Should().Be(hours);
         }
         
         [Fact]

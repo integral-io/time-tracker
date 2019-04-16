@@ -42,7 +42,7 @@ namespace TimeTracker.Library.Test.Services.Orchestration
 
         // todo improve testing of this command.
         [Fact]
-        public async Task HandleCommand_deleteHoursType_returnsDeletedMessage_andOnlyDeletesHoursForThatType()
+        public async Task HandleCommand_deleteBillableHoursType_returnsDeletedMessage_andOnlyDeletesBillableHoursForThatType()
         {
             var user = database.Users.First();
             var date = DateTime.UtcNow.Date;
@@ -65,8 +65,8 @@ namespace TimeTracker.Library.Test.Services.Orchestration
             database.TimeEntries.Where(x => x.UserId == user.UserId).Sum(x => x.Hours).Should().Be(8);
             database.TimeEntries.Where(x => x.UserId == user.UserId && x.TimeEntryType == TimeEntryTypeEnum.BillableProject && x.Date == date).ToList().Count.Should().Be(0);
 
-//            database.Users.First().TimeEntries.Sum(x => x.Hours).Should().Be(8);
-//            database.Users.First().TimeEntries.Where(x => x.TimeEntryType == TimeEntryTypeEnum.BillableProject && x.Date == date).ToList().Count.Should().Be(0);
+//            database.Users.First(x => x.UserId == user.UserId).TimeEntries.Where(x => x.TimeEntryType == TimeEntryTypeEnum.BillableProject && x.Date == date).ToList().Count.Should().Be(0);
+//            database.Users.First(x => x.UserId == user.UserId).TimeEntries.Sum(x => x.Hours).Should().Be(8);
         }
     }
 }
