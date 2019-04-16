@@ -100,7 +100,7 @@ namespace TimeTracker.Library.Services
                 return 0;
             }
             
-            return await DeleteHoursFromDB(timeEntries);
+            return await DeleteHoursFromDb(timeEntries);
         }
 
         public async Task<double> DeleteHoursForTimeEntryType(DateTime date, TimeEntryTypeEnum timeEntryType)
@@ -117,10 +117,10 @@ namespace TimeTracker.Library.Services
                 return 0;
             }
             
-            return await DeleteHoursFromDB(timeEntries);
+            return await DeleteHoursFromDb(timeEntries);
         }
 
-        private async Task<double> DeleteHoursFromDB(List<TimeEntry> timeEntries)
+        private async Task<double> DeleteHoursFromDb(List<TimeEntry> timeEntries)
         {
             var hoursDeleted = timeEntries.Sum(x => x.Hours);
 
