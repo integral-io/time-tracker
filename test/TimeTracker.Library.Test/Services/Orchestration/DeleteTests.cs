@@ -60,8 +60,10 @@ namespace TimeTracker.Library.Test.Services.Orchestration
             await timeEntryService.CreateBillableTimeEntry(date, 2, 1, 1);
 
             await timeEntryService.CreateBillableTimeEntry(date.AddDays(-1), 6, 1, 1);
-            await timeEntryService.CreateNonBillableTimeEntry(date.AddDays(-2), 7, "Lansing", TimeEntryTypeEnum.Vacation);
-            await timeEntryService.CreateNonBillableTimeEntry(date.AddDays(-3), 8, "time tracker", TimeEntryTypeEnum.NonBillable);
+            await timeEntryService.CreateNonBillableTimeEntry(date.AddDays(-2), 7, "Lansing",
+                TimeEntryTypeEnum.Vacation);
+            await timeEntryService.CreateNonBillableTimeEntry(date.AddDays(-3), 8, "time tracker",
+                TimeEntryTypeEnum.NonBillable);
 
             var numEntries = database.TimeEntries.Count();
             var slackMessage = await orchestrator.HandleCommand(new SlashCommandPayload()
