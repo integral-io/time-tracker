@@ -40,30 +40,40 @@ namespace TimeTracker.Library.Test.Services.Orchestration
             database.TimeEntries.Count().Should().Be(0);
         }
 
-        // todo improve testing of this command.
-        [Fact]
-        public async Task HandleCommand_deleteBillableHoursType_returnsDeletedMessage_andOnlyDeletesBillableHoursForThatType()
+        [Theory]
+        [InlineData(TimeEntryTypeEnum.NonBillable, "nonbill", 4)]
+        [InlineData(TimeEntryTypeEnum.NonBillable, "nonbillable", 4)]
+        [InlineData(TimeEntryTypeEnum.Sick, "sick", 3)]
+        [InlineData(TimeEntryTypeEnum.Vacation, "vacation", 2)]
+        [InlineData(TimeEntryTypeEnum.BillableProject, "billable", 1)]
+        public async Task
+            HandleCommand_deleteHoursTypeDefaultDay_returnsDeletedMessage_andOnlyDeletesHoursForThatTypeToday(
+                TimeEntryTypeEnum entryType, string reportText, int hours)
         {
             var user = database.Users.First();
             var date = DateTime.UtcNow.Date;
             var timeEntryService = new TimeEntryService(user.UserId, database);
-            await timeEntryService.CreateBillableTimeEntry(date, 4, 1, 1);
-            await timeEntryService.CreateNonBillableTimeEntry(date, 5, "dr visit", TimeEntryTypeEnum.Sick);
-            await timeEntryService.CreateBillableTimeEntry(date.AddDays(-1), 3, 1, 1);
-//            await timeEntryService.CreateNonBillableTimeEntry(date.AddDays(-1), 4, "Maui", TimeEntryTypeEnum.Vacation);
-//            await timeEntryService.CreateNonBillableTimeEntry(date.AddDays(-1), 2, "beach", TimeEntryTypeEnum.NonBillable);
+            await timeEntryService.CreateNonBillableTimeEntry(date, 4, "beach", TimeEntryTypeEnum.NonBillable);
+            await timeEntryService.CreateNonBillableTimeEntry(date, 3, "dr visit", TimeEntryTypeEnum.Sick);
+            await timeEntryService.CreateNonBillableTimeEntry(date, 2, "Maui", TimeEntryTypeEnum.Vacation);
+            await timeEntryService.CreateBillableTimeEntry(date, 1, 1, 1);
+
+            await timeEntryService.CreateBillableTimeEntry(date.AddDays(-1), 6, 1, 1);
+            await timeEntryService.CreateNonBillableTimeEntry(date.AddDays(-2), 7, "Lansing", TimeEntryTypeEnum.Vacation);
+            await timeEntryService.CreateNonBillableTimeEntry(date.AddDays(-3), 8, "time tracker", TimeEntryTypeEnum.NonBillable);
 
             var slackMessage = await orchestrator.HandleCommand(new SlashCommandPayload()
             {
-                text = "delete billable",
+                text = "delete " + reportText,
                 user_id = user.SlackUserId,
                 user_name = user.UserName
             });
-            
-            slackMessage.Text.Should().Be($"Deleted {4d:F1} {TimeEntryTypeEnum.BillableProject} hours for date: {date:D}");
-            database.TimeEntries.Count().Should().Be(2);
-            database.TimeEntries.Where(x => x.UserId == user.UserId).Sum(x => x.Hours).Should().Be(8);
-            database.TimeEntries.Where(x => x.UserId == user.UserId && x.TimeEntryType == TimeEntryTypeEnum.BillableProject && x.Date == date).ToList().Count.Should().Be(0);
+
+            slackMessage.Text.Should().Be($"Deleted {hours:F1} {entryType} hours for date: {date:D}");
+            database.TimeEntries.Count().Should().Be(6);
+            database.TimeEntries.Where(x => x.UserId == user.UserId).Sum(x => x.Hours).Should().Be(31-hours);
+            database.TimeEntries.Where(x => x.UserId == user.UserId && x.TimeEntryType == entryType && x.Date == date)
+                .ToList().Count.Should().Be(0);
 
 //            database.Users.First(x => x.UserId == user.UserId).TimeEntries.Where(x => x.TimeEntryType == TimeEntryTypeEnum.BillableProject && x.Date == date).ToList().Count.Should().Be(0);
 //            database.Users.First(x => x.UserId == user.UserId).TimeEntries.Sum(x => x.Hours).Should().Be(8);
