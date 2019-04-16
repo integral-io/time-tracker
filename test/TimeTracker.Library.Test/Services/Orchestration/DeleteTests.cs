@@ -40,6 +40,7 @@ namespace TimeTracker.Library.Test.Services.Orchestration
             database.TimeEntries.Count().Should().Be(0);
         }
 
+        // todo improve testing of this command.
         [Fact]
         public async Task HandleCommand_deleteHoursType_returnsDeletedMessage_andOnlyDeletesHoursForThatType()
         {
