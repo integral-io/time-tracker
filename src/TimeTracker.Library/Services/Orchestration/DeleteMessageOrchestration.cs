@@ -22,9 +22,9 @@ namespace TimeTracker.Library.Services.Orchestration
             var timeEntryService = new TimeEntryService(user.UserId, dbContext);
 
             double hoursDeleted;
-            if (message.HasType)
+            if (message.TimeEntryType.HasValue)
             {
-                hoursDeleted = await timeEntryService.DeleteHoursForTimeEntryType(message.Date, message.TimeEntryType);
+                hoursDeleted = await timeEntryService.DeleteHoursForTimeEntryType(message.Date, message.TimeEntryType.Value);
                 return new SlackMessageResponse($"Deleted {hoursDeleted:F1} {message.TimeEntryType} hours for date: {message.Date:D}", true);
 
             }

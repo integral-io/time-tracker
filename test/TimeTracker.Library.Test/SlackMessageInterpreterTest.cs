@@ -153,7 +153,7 @@ namespace TimeTracker.Library.Test
             sut.Date.Year.Should().Be(now.Year);
             sut.Date.Month.Should().Be(now.Month);
             sut.Date.Day.Should().Be(now.Day);
-            sut.HasType.Should().BeFalse();
+            sut.TimeEntryType.HasValue.Should().BeFalse();
         }
 
         [Fact]
@@ -164,7 +164,7 @@ namespace TimeTracker.Library.Test
             sut.Date.Year.Should().Be(now.Year);
             sut.Date.Month.Should().Be(1);
             sut.Date.Day.Should().Be(17);
-            sut.HasType.Should().BeFalse();
+            sut.TimeEntryType.HasValue.Should().BeFalse();
         }
         
         [Theory]
@@ -180,7 +180,6 @@ namespace TimeTracker.Library.Test
             sut.Date.Year.Should().Be(now.Year);
             sut.Date.Month.Should().Be(now.Month);
             sut.Date.Day.Should().Be(now.Day);
-            sut.HasType.Should().BeTrue();
             sut.TimeEntryType.Should().Be(timeEntryType);
         }
                 
@@ -197,7 +196,6 @@ namespace TimeTracker.Library.Test
             sut.Date.Year.Should().Be(now.Year);
             sut.Date.Month.Should().Be(1);
             sut.Date.Day.Should().Be(17);
-            sut.HasType.Should().BeTrue();
             sut.TimeEntryType.Should().Be(timeEntryType);
         }
 
