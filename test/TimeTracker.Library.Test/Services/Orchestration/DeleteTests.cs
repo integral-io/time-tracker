@@ -53,19 +53,10 @@ namespace TimeTracker.Library.Test.Services.Orchestration
             var user = database.Users.First();
             var date = DateTime.UtcNow.Date;
             var timeEntryService = new TimeEntryService(user.UserId, database);
-            await timeEntryService.CreateNonBillableTimeEntry(date, 4, "beach", TimeEntryTypeEnum.NonBillable);
-            await timeEntryService.CreateNonBillableTimeEntry(date, 3, "dr visit", TimeEntryTypeEnum.Sick);
-            await timeEntryService.CreateNonBillableTimeEntry(date, 2, "Maui", TimeEntryTypeEnum.Vacation);
-            await timeEntryService.CreateBillableTimeEntry(date, 1, 1, 1);
-            await timeEntryService.CreateBillableTimeEntry(date, 2, 1, 1);
-
-            await timeEntryService.CreateBillableTimeEntry(date.AddDays(-1), 6, 1, 1);
-            await timeEntryService.CreateNonBillableTimeEntry(date.AddDays(-2), 7, "Lansing",
-                TimeEntryTypeEnum.Vacation);
-            await timeEntryService.CreateNonBillableTimeEntry(date.AddDays(-3), 8, "time tracker",
-                TimeEntryTypeEnum.NonBillable);
-
+           
+            await SetUpHourEntriesAndDays(timeEntryService, date);
             var numEntries = database.TimeEntries.Count();
+            
             var slackMessage = await orchestrator.HandleCommand(new SlashCommandPayload()
             {
                 text = "delete " + reportText,
@@ -78,9 +69,21 @@ namespace TimeTracker.Library.Test.Services.Orchestration
             database.TimeEntries.Where(x => x.UserId == user.UserId).Sum(x => x.Hours).Should().Be(33 - hours);
             database.TimeEntries.Where(x => x.UserId == user.UserId && x.TimeEntryType == entryType && x.Date == date)
                 .ToList().Count.Should().Be(0);
+        }
 
-//            database.Users.First(x => x.UserId == user.UserId).TimeEntries.Where(x => x.TimeEntryType == TimeEntryTypeEnum.BillableProject && x.Date == date).ToList().Count.Should().Be(0);
-//            database.Users.First(x => x.UserId == user.UserId).TimeEntries.Sum(x => x.Hours).Should().Be(8);
+        private static async Task SetUpHourEntriesAndDays(TimeEntryService timeEntryService, DateTime date)
+        {
+            await timeEntryService.CreateNonBillableTimeEntry(date, 4, "beach", TimeEntryTypeEnum.NonBillable);
+            await timeEntryService.CreateNonBillableTimeEntry(date, 3, "dr visit", TimeEntryTypeEnum.Sick);
+            await timeEntryService.CreateNonBillableTimeEntry(date, 2, "Maui", TimeEntryTypeEnum.Vacation);
+            await timeEntryService.CreateBillableTimeEntry(date, 1, 1, 1);
+            await timeEntryService.CreateBillableTimeEntry(date, 2, 1, 1);
+
+            await timeEntryService.CreateBillableTimeEntry(date.AddDays(-1), 6, 1, 1);
+            await timeEntryService.CreateNonBillableTimeEntry(date.AddDays(-2), 7, "Lansing",
+                TimeEntryTypeEnum.Vacation);
+            await timeEntryService.CreateNonBillableTimeEntry(date.AddDays(-3), 8, "time tracker",
+                TimeEntryTypeEnum.NonBillable);
         }
     }
 }
