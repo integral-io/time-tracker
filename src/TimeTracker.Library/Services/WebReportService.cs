@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using TimeTracker.Data;
 using TimeTracker.Data.Models;
 using TimeTracker.Library.Models.Admin;
+using TimeTracker.Library.Models.WebReport;
 
 namespace TimeTracker.Library.Services
 {

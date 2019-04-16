@@ -1,6 +1,6 @@
 using System;
 
-namespace TimeTracker.Library.Models.Admin
+namespace TimeTracker.Library.Models.WebReport
 {
     public class UserEntry
     {
