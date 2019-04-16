@@ -61,8 +61,11 @@ namespace TimeTracker.Library.Test.Services.Orchestration
             
             slackMessage.Text.Should().Be($"Deleted {4d:F1} {TimeEntryTypeEnum.BillableProject} hours for date: {date:D}");
             database.TimeEntries.Count().Should().Be(2);
-            database.Users.First().TimeEntries.Sum(x => x.Hours).Should().Be(8);
-            database.Users.First().TimeEntries.Where(x => x.TimeEntryType == TimeEntryTypeEnum.BillableProject && x.Date == date).ToList().Count.Should().Be(0);
+            database.TimeEntries.Where(x => x.UserId == user.UserId).Sum(x => x.Hours).Should().Be(8);
+            database.TimeEntries.Where(x => x.UserId == user.UserId && x.TimeEntryType == TimeEntryTypeEnum.BillableProject && x.Date == date).ToList().Count.Should().Be(0);
+
+//            database.Users.First().TimeEntries.Sum(x => x.Hours).Should().Be(8);
+//            database.Users.First().TimeEntries.Where(x => x.TimeEntryType == TimeEntryTypeEnum.BillableProject && x.Date == date).ToList().Count.Should().Be(0);
         }
     }
 }
