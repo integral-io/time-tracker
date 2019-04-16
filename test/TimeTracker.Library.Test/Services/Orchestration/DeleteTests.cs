@@ -41,14 +41,14 @@ namespace TimeTracker.Library.Test.Services.Orchestration
         }
 
         [Theory]
-        [InlineData(TimeEntryTypeEnum.NonBillable, "nonbill", 4)]
-        [InlineData(TimeEntryTypeEnum.NonBillable, "nonbillable", 4)]
-        [InlineData(TimeEntryTypeEnum.Sick, "sick", 3)]
-        [InlineData(TimeEntryTypeEnum.Vacation, "vacation", 2)]
-        [InlineData(TimeEntryTypeEnum.BillableProject, "billable", 1)]
+        [InlineData(TimeEntryTypeEnum.NonBillable, "nonbill", 4, 1)]
+        [InlineData(TimeEntryTypeEnum.NonBillable, "nonbillable", 4, 1)]
+        [InlineData(TimeEntryTypeEnum.Sick, "sick", 3, 1)]
+        [InlineData(TimeEntryTypeEnum.Vacation, "vacation", 2, 1)]
+        [InlineData(TimeEntryTypeEnum.BillableProject, "billable", 3, 2)]
         public async Task
             HandleCommand_deleteHoursTypeDefaultDay_returnsDeletedMessage_andOnlyDeletesHoursForThatTypeToday(
-                TimeEntryTypeEnum entryType, string reportText, int hours)
+                TimeEntryTypeEnum entryType, string reportText, int hours, int numEntriesToDelete)
         {
             var user = database.Users.First();
             var date = DateTime.UtcNow.Date;
@@ -57,11 +57,13 @@ namespace TimeTracker.Library.Test.Services.Orchestration
             await timeEntryService.CreateNonBillableTimeEntry(date, 3, "dr visit", TimeEntryTypeEnum.Sick);
             await timeEntryService.CreateNonBillableTimeEntry(date, 2, "Maui", TimeEntryTypeEnum.Vacation);
             await timeEntryService.CreateBillableTimeEntry(date, 1, 1, 1);
+            await timeEntryService.CreateBillableTimeEntry(date, 2, 1, 1);
 
             await timeEntryService.CreateBillableTimeEntry(date.AddDays(-1), 6, 1, 1);
             await timeEntryService.CreateNonBillableTimeEntry(date.AddDays(-2), 7, "Lansing", TimeEntryTypeEnum.Vacation);
             await timeEntryService.CreateNonBillableTimeEntry(date.AddDays(-3), 8, "time tracker", TimeEntryTypeEnum.NonBillable);
 
+            var numEntries = database.TimeEntries.Count();
             var slackMessage = await orchestrator.HandleCommand(new SlashCommandPayload()
             {
                 text = "delete " + reportText,
@@ -70,8 +72,8 @@ namespace TimeTracker.Library.Test.Services.Orchestration
             });
 
             slackMessage.Text.Should().Be($"Deleted {hours:F1} {entryType} hours for date: {date:D}");
-            database.TimeEntries.Count().Should().Be(6);
-            database.TimeEntries.Where(x => x.UserId == user.UserId).Sum(x => x.Hours).Should().Be(31-hours);
+            database.TimeEntries.Count().Should().Be(numEntries - numEntriesToDelete);
+            database.TimeEntries.Where(x => x.UserId == user.UserId).Sum(x => x.Hours).Should().Be(33 - hours);
             database.TimeEntries.Where(x => x.UserId == user.UserId && x.TimeEntryType == entryType && x.Date == date)
                 .ToList().Count.Should().Be(0);
 
