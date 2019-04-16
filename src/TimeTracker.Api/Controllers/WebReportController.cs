@@ -7,7 +7,7 @@ using TimeTracker.Library.Services;
 
 namespace TimeTracker.Api.Controllers
 {
-    [Route("user/webreports"), AllowAnonymous] // todo: change back to Authorize
+    [Route("user/web"), AllowAnonymous] // todo: change back to Authorize
     public class WebReportController : Controller
     {
         private readonly TimeTrackerDbContext dbContext;
