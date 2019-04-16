@@ -37,7 +37,12 @@ namespace TimeTracker.Library.Test.Services.Orchestration
 
             var slackMessage = await orchestrator.HandleCommand(payload);
 
-            slackMessage.Text.Should().Be("*/hours* delete <optional: date> _delete all hours for the date_");
+            slackMessage.Text.Should()
+                .Contain("*/hours* delete <optional: date> _delete all hours for the date_").And
+                .Contain("*/hours* delete nonbill <optional: date> _delete nonbillable all hours for the date_").And
+                .Contain("*/hours* delete sick <optional: date> _delete all sick hours for the date_").And
+                .Contain("*/hours* delete vacation <optional: date> _delete all vacation hours for the date_").And
+                .Contain("*/hours* delete billable <optional: date> _delete all billable hours for the date_");
         }
 
         [Fact]

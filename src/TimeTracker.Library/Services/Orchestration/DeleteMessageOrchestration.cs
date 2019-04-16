@@ -12,25 +12,24 @@ namespace TimeTracker.Library.Services.Orchestration
         {
             this.dbContext = dbContext;
         }
-        
+
         protected override async Task<SlackMessageResponse> RespondTo(DeleteInterpretedMessage message)
         {
             var userService = new UserService(dbContext);
 
-            var user = await userService.FindOrCreateSlackUser(message.UserId,message.UserName);
+            var user = await userService.FindOrCreateSlackUser(message.UserId, message.UserName);
 
             var timeEntryService = new TimeEntryService(user.UserId, dbContext);
 
-            var hoursDeleted = 0.0;
+            double hoursDeleted;
             if (message.HasType)
             {
                 hoursDeleted = await timeEntryService.DeleteHoursForTimeEntryType(message.Date, message.TimeEntryType);
-            }
-            else
-            {
-                hoursDeleted = await timeEntryService.DeleteHours(message.Date);
+                return new SlackMessageResponse($"Deleted {hoursDeleted:F1} {message.TimeEntryType} hours for date: {message.Date:D}", true);
+
             }
 
+            hoursDeleted = await timeEntryService.DeleteHours(message.Date);
             return new SlackMessageResponse($"Deleted {hoursDeleted:F1} hours for date: {message.Date:D}", true);
         }
     }

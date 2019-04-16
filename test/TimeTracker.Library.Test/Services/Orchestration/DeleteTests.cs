@@ -46,7 +46,7 @@ namespace TimeTracker.Library.Test.Services.Orchestration
             var user = database.Users.First();
             var date = DateTime.UtcNow.Date;
             var timeEntryService = new TimeEntryService(user.UserId, database);
-            await timeEntryService.CreateBillableTimeEntry(date, 3, 1, 1);
+            await timeEntryService.CreateBillableTimeEntry(date, 4, 1, 1);
             await timeEntryService.CreateNonBillableTimeEntry(date, 5, "dr visit", TimeEntryTypeEnum.Sick);
             await timeEntryService.CreateBillableTimeEntry(date.AddDays(-1), 3, 1, 1);
 //            await timeEntryService.CreateNonBillableTimeEntry(date.AddDays(-1), 4, "Maui", TimeEntryTypeEnum.Vacation);
@@ -59,9 +59,9 @@ namespace TimeTracker.Library.Test.Services.Orchestration
                 user_name = user.UserName
             });
             
-            slackMessage.Text.Should().Be($"Deleted {7d:F1} {TimeEntryTypeEnum.BillableProject} hours for date: {date:D}");
-            database.TimeEntries.Count().Should().Be(3);
-            database.Users.First().TimeEntries.Sum(x => x.Hours).Should().Be(11);
+            slackMessage.Text.Should().Be($"Deleted {4d:F1} {TimeEntryTypeEnum.BillableProject} hours for date: {date:D}");
+            database.TimeEntries.Count().Should().Be(2);
+            database.Users.First().TimeEntries.Sum(x => x.Hours).Should().Be(8);
             database.Users.First().TimeEntries.Where(x => x.TimeEntryType == TimeEntryTypeEnum.BillableProject && x.Date == date).ToList().Count.Should().Be(0);
         }
     }
