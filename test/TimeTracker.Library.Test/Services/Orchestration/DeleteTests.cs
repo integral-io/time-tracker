@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
 using TimeTracker.Data;
+using TimeTracker.Data.Models;
 using TimeTracker.Library.Models;
 using TimeTracker.Library.Services;
 using TimeTracker.Library.Services.Orchestration;
@@ -37,6 +38,31 @@ namespace TimeTracker.Library.Test.Services.Orchestration
 
             slackMessage.Text.Should().Be($"Deleted {7d:F1} hours for date: {DateTime.UtcNow.Date:D}");
             database.TimeEntries.Count().Should().Be(0);
+        }
+
+        [Fact]
+        public async Task HandleCommand_deleteHoursType_returnsDeletedMessage_andOnlyDeletesHoursForThatType()
+        {
+            var user = database.Users.First();
+            var date = DateTime.UtcNow.Date;
+            var timeEntryService = new TimeEntryService(user.UserId, database);
+            await timeEntryService.CreateBillableTimeEntry(date, 3, 1, 1);
+            await timeEntryService.CreateNonBillableTimeEntry(date, 5, "dr visit", TimeEntryTypeEnum.Sick);
+            await timeEntryService.CreateBillableTimeEntry(date.AddDays(-1), 3, 1, 1);
+//            await timeEntryService.CreateNonBillableTimeEntry(date.AddDays(-1), 4, "Maui", TimeEntryTypeEnum.Vacation);
+//            await timeEntryService.CreateNonBillableTimeEntry(date.AddDays(-1), 2, "beach", TimeEntryTypeEnum.NonBillable);
+
+            var slackMessage = await orchestrator.HandleCommand(new SlashCommandPayload()
+            {
+                text = "delete billable",
+                user_id = user.SlackUserId,
+                user_name = user.UserName
+            });
+            
+            slackMessage.Text.Should().Be($"Deleted {7d:F1} {TimeEntryTypeEnum.BillableProject} hours for date: {date:D}");
+            database.TimeEntries.Count().Should().Be(3);
+            database.Users.First().TimeEntries.Sum(x => x.Hours).Should().Be(11);
+            database.Users.First().TimeEntries.Where(x => x.TimeEntryType == TimeEntryTypeEnum.BillableProject && x.Date == date).ToList().Count.Should().Be(0);
         }
     }
 }

@@ -17,11 +17,19 @@ namespace TimeTracker.Library.Services.Orchestration
         {
             var userService = new UserService(dbContext);
 
-            var user = await userService.FindOrCreateSlackUser(message.UserId,
-                message.UserName);
+            var user = await userService.FindOrCreateSlackUser(message.UserId,message.UserName);
 
             var timeEntryService = new TimeEntryService(user.UserId, dbContext);
-            var hoursDeleted = await timeEntryService.DeleteHours(message.Date);
+
+            var hoursDeleted = 0.0;
+            if (message.HasType)
+            {
+                hoursDeleted = await timeEntryService.DeleteHoursForTimeEntryType(message.Date, message.TimeEntryType);
+            }
+            else
+            {
+                hoursDeleted = await timeEntryService.DeleteHours(message.Date);
+            }
 
             return new SlackMessageResponse($"Deleted {hoursDeleted:F1} hours for date: {message.Date:D}", true);
         }
