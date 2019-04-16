@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using TimeTracker.Data;
 using TimeTracker.Data.Models;
-using TimeTracker.Library.Models.Admin;
 using TimeTracker.Library.Models.WebReport;
 
 namespace TimeTracker.Library.Services
@@ -35,7 +34,7 @@ namespace TimeTracker.Library.Services
                     VacationHours = g.Where(x=>x.TimeEntryType == TimeEntryTypeEnum.Vacation).Sum(x=>x.Hours),
                     OtherNonBillable = g.Where(x=>x.TimeEntryType == TimeEntryTypeEnum.NonBillable).Sum(x=>x.Hours)
                 };
-            return query.ToImmutableList();
+            return query.OrderByDescending(x => x.Date).ToImmutableList();
         }
     }
 }
