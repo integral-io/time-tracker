@@ -59,20 +59,29 @@ namespace TimeTracker.Library.Test.Services
             var timeEntryService = new TimeEntryService(userId, database);
 
             await timeEntryService.CreateBillableTimeEntry(date, 8, 1, 1);
-            
+           
+            await timeEntryService.CreateBillableTimeEntry(date.AddDays(-5), 4, 1, 1);
+            await timeEntryService.CreateNonBillableTimeEntry(date.AddDays(-5), 4, null, TimeEntryTypeEnum.Vacation);
+
             await timeEntryService.CreateBillableTimeEntry(date.AddDays(-2), 4, 1, 1);
             await timeEntryService.CreateBillableTimeEntry(date.AddDays(-2), 2, 1, 1);
             await timeEntryService.CreateNonBillableTimeEntry(date.AddDays(-2), 2, "dr visit", TimeEntryTypeEnum.Sick);
-            
-            await timeEntryService.CreateBillableTimeEntry(date.AddDays(-5), 4, 1, 1);
-            await timeEntryService.CreateNonBillableTimeEntry(date.AddDays(-5), 4, null, TimeEntryTypeEnum.Vacation);
-            
+
+
             await timeEntryService.CreateNonBillableTimeEntry(date.AddDays(-7), 4, "pda", TimeEntryTypeEnum.NonBillable);
             await timeEntryService.CreateNonBillableTimeEntry(date.AddDays(-7), 3, "lunch and learn", TimeEntryTypeEnum.NonBillable);
 
             var randomGuid = Guid.NewGuid();
             timeEntryService = new TimeEntryService(randomGuid, database);
             await timeEntryService.CreateBillableTimeEntry(date, 8, 1, 1);
+        }
+
+        [Fact]
+        public async Task GetUserReport_listsEntriesInDescOrder()
+        {
+            var report = await webReportService.GetUserReport(userId);
+            var expectedOrderReport = report.OrderByDescending(x => x.Date);
+            Assert.True(expectedOrderReport.SequenceEqual(report));
         }
 
         public async Task DisposeAsync()
