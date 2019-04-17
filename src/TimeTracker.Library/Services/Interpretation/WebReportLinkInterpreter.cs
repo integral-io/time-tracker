@@ -1,6 +1,6 @@
-using System;
 using System.Collections.Generic;
 using TimeTracker.Library.Models;
+using TimeTracker.Library.Services.Orchestration;
 
 namespace TimeTracker.Library.Services.Interpretation
 {
@@ -8,24 +8,18 @@ namespace TimeTracker.Library.Services.Interpretation
     {
         public string Url { get; set; }
     }
-    
+
     public class WebReportLinkInterpreter : SlackMessageInterpreter<WebReportLinkInterpretedMessage>
     {
-        public WebReportLinkInterpreter() : base("web")
+        public WebReportLinkInterpreter() : base(SlackMessageOptions.Web)
         {
         }
 
-        public override string HelpMessage => "*/hours* web report - _generate a link to a report of hours_";
+        public override string HelpMessage => "*/hours* web - _generate a link to a report of hours_";
+
         protected override void ExtractInto(WebReportLinkInterpretedMessage message, List<TextMessagePart> splitText)
         {
-            if (splitText[1].Text == "report")
-            {
-                message.Url = "http://integral.io";
-            }
-            else
-            {
-                message.Url = "http://google.com";
-            }
+            message.Url = "http://integral.io";
         }
     }
 }

@@ -86,7 +86,17 @@ namespace TimeTracker.Library.Test.Services.Orchestration
                 .Be("*/hours* projects _display a list of available projects_");
         }
 
+        [Fact]
+        public async Task WhenRequestingForWebHelp_ShowsSlackSpecificHelpMessage()
+        {
+            var payload = CreateHelpRequest("web help");
 
+            var slackMessage = await orchestrator.HandleCommand(payload);
+
+            slackMessage.Text.Should()
+                .Be("*/hours* web - _generate a link to a report of hours_");
+        }
+        
         private static SlashCommandPayload CreateHelpRequest(string helpText)
         {
             return new SlashCommandPayload

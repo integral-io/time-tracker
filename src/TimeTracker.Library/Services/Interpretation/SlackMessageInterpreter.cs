@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.EntityFrameworkCore.Internal;
 using TimeTracker.Library.Models;
+using TimeTracker.Library.Services.Orchestration;
 using TimeTracker.Library.Utils;
 
 namespace TimeTracker.Library.Services.Interpretation
@@ -10,10 +11,10 @@ namespace TimeTracker.Library.Services.Interpretation
     public abstract class SlackMessageInterpreter<T> : SlackMessageInterpreter 
         where T : InterpretedMessage, new()
     {
-        private readonly string command;
+        private readonly SlackMessageOptions command;
         public abstract string HelpMessage { get; }
 
-        protected SlackMessageInterpreter(string command)
+        protected SlackMessageInterpreter(SlackMessageOptions command)
         {
             this.command = command;
         }
@@ -24,7 +25,7 @@ namespace TimeTracker.Library.Services.Interpretation
             
             var splitText = SplitTextToParts(payload.text);
             
-            Guard.ThrowIfCheckFails(payload.text.StartsWith(command),
+            Guard.ThrowIfCheckFails(payload.text.StartsWith(command.ToString().ToLower()),
                 $"Invalid start option: {splitText.FirstOrDefault()}", nameof(payload.text));
             splitText.First().IsUsed = true;
 

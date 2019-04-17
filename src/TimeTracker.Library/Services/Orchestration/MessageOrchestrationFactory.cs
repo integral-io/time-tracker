@@ -21,6 +21,8 @@ namespace TimeTracker.Library.Services.Orchestration
             
             switch (optionEnum)
             {
+                case SlackMessageOptions.Web:
+                    return new WebMessageOrchestration(dbContext);
                 case SlackMessageOptions.Record:
                     return new RecordMessageOrchestration(dbContext);
                 case SlackMessageOptions.Delete:
