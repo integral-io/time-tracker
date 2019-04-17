@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -8,7 +9,7 @@ using Xunit;
 
 namespace TimeTracker.Library.Test.Services
 {
-    public class UserServiceTest
+    public class UserServiceTest 
     {
 
         [Fact]
@@ -35,5 +36,34 @@ namespace TimeTracker.Library.Test.Services
                 userCreated.UserId.Should().Be(firstUserDb.UserId);
             }
         }
+
+        [Fact]
+        public async Task SaveGoogleInfo_savesExpectedData()
+        {
+            var options = TestHelpers.BuildInMemoryDatabaseOptions("users-2");
+            string slackUsername = "harry-slack";
+            string slackUserId = "userId";
+            string googleId = Guid.NewGuid().ToString();
+            string first = "first";
+            string last = "last";
+            string email = "email@bobby.com";
+                
+            using (var context = new TimeTrackerDbContext(options))
+            {
+                var sut = new UserService(context);
+                var userCreated = await sut.FindOrCreateSlackUser(slackUserId, slackUsername);
+
+                await sut.SaveGoogleInfo(slackUserId, googleId, first, last, email);
+
+                var dbUser = context.Users.FirstOrDefault(x => x.SlackUserId == slackUserId);
+
+                dbUser.LastName.Should().Be(last);
+                dbUser.FirstName.Should().Be(first);
+                dbUser.GoogleIdentifier.Should().Be(googleId);
+                dbUser.OrganizationEmail.Should().Be(email);
+            }
+            
+        }
+
     }
 }

@@ -37,5 +37,13 @@ namespace TimeTracker.Library.Services
             }
             return user;
         }
+
+        public async Task SaveGoogleInfo(string slackUserId, string googleIdentifier, string first, string last, string email)
+        {
+            Guard.ThrowIfCheckFails(!string.IsNullOrEmpty(slackUserId), "cannot be null or empty", nameof(slackUserId));
+            Guard.ThrowIfCheckFails(!string.IsNullOrEmpty(googleIdentifier), "cannot be null or empty", nameof(googleIdentifier));
+
+            
+        }
     }
 }
