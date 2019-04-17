@@ -168,14 +168,13 @@ namespace TimeTracker.Library.Test
         }
         
         [Theory]
-        [InlineData(TimeEntryTypeEnum.NonBillable, "nonbillable")]
-        [InlineData(TimeEntryTypeEnum.NonBillable, "nonbill")]
-        [InlineData(TimeEntryTypeEnum.Sick, "sick")]
-        [InlineData(TimeEntryTypeEnum.Vacation, "vacation")]
-        [InlineData(TimeEntryTypeEnum.BillableProject, "billable")]
-        public void InterpretDeleteMessage_canInterpretDifferentTimeTypeDeletion(TimeEntryTypeEnum timeEntryType, string type)
+        [InlineData(TimeEntryTypeEnum.NonBillable)]
+        [InlineData(TimeEntryTypeEnum.Sick)]
+        [InlineData(TimeEntryTypeEnum.Vacation)]
+        [InlineData(TimeEntryTypeEnum.BillableProject)]
+        public void InterpretDeleteMessage_canInterpretDifferentTimeTypeDeletion(TimeEntryTypeEnum timeEntryType)
         {
-            var sut = new DeleteInterpreter().InterpretMessage(ToPayload("delete " + type));
+            var sut = new DeleteInterpreter().InterpretMessage(ToPayload("delete " + timeEntryType.GetDescription()));
             var now = DateTime.UtcNow;
             sut.Date.Year.Should().Be(now.Year);
             sut.Date.Month.Should().Be(now.Month);
@@ -184,14 +183,13 @@ namespace TimeTracker.Library.Test
         }
                 
         [Theory]
-        [InlineData(TimeEntryTypeEnum.NonBillable, "nonbillable")]
-        [InlineData(TimeEntryTypeEnum.NonBillable, "nonbill")]
-        [InlineData(TimeEntryTypeEnum.Sick, "sick")]
-        [InlineData(TimeEntryTypeEnum.Vacation, "vacation")]
-        [InlineData(TimeEntryTypeEnum.BillableProject, "billable")]
-        public void InterpretDeleteMessage_canInterpretDifferentTimeTypeAndDayDeletion(TimeEntryTypeEnum timeEntryType, string type)
+        [InlineData(TimeEntryTypeEnum.NonBillable)]
+        [InlineData(TimeEntryTypeEnum.Sick)]
+        [InlineData(TimeEntryTypeEnum.Vacation)]
+        [InlineData(TimeEntryTypeEnum.BillableProject)]
+        public void InterpretDeleteMessage_canInterpretDifferentTimeTypeAndDayDeletion(TimeEntryTypeEnum timeEntryType)
         {
-            var sut = new DeleteInterpreter().InterpretMessage(ToPayload("delete " + type + " jan-17"));
+            var sut = new DeleteInterpreter().InterpretMessage(ToPayload("delete " + timeEntryType.GetDescription() + " jan-17"));
             var now = DateTime.UtcNow;
             sut.Date.Year.Should().Be(now.Year);
             sut.Date.Month.Should().Be(1);
