@@ -41,21 +41,13 @@ namespace TimeTracker.Library.Services.Interpretation
 
         private static TimeEntryTypeEnum? InterpretTimeEntryType(string text)
         {
-            if (text == "nonbill")
+            foreach (var type in Enum.GetValues(typeof(TimeEntryTypeEnum)).Cast<TimeEntryTypeEnum>())
             {
-                return TimeEntryTypeEnum.NonBillable;
+                if (type.GetDescription() == text)
+                {
+                    return type;
+                }
             }
-
-            if (text == "billable")
-            {
-                return TimeEntryTypeEnum.BillableProject;
-            }
-
-            if (Enum.TryParse(text, true, out TimeEntryTypeEnum entryTypeEnum))
-            {
-                return entryTypeEnum;
-            }
-
             return null;
         }
     }
