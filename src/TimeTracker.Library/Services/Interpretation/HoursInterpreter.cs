@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using TimeTracker.Data.Models;
 using TimeTracker.Library.Models;
+using TimeTracker.Library.Services.Orchestration;
 
 namespace TimeTracker.Library.Services.Interpretation
 {
@@ -20,7 +21,7 @@ namespace TimeTracker.Library.Services.Interpretation
 
     public class HoursInterpreter : SlackMessageInterpreter<HoursInterpretedMessage>
     {
-        public HoursInterpreter() : base("record")
+        public HoursInterpreter() : base(SlackMessageOptions.Record)
         {
         }
 
