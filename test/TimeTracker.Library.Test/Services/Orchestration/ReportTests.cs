@@ -56,14 +56,14 @@ namespace TimeTracker.Library.Test.Services.Orchestration
         [Fact]
         public async Task WhenRequestingReportForSpecificMonth_ReportOnlyIncludesHoursForTheMonth()
         {
-            DateTime date = new DateTime(2019, 3, 18);
+            DateTime date = new DateTime(DateTime.UtcNow.Year, 3, 18);
             var user = database.Users.First();
             TimeEntryService timeEntryService = new TimeEntryService(user.UserId, database);
             await timeEntryService.CreateBillableTimeEntry(date, 2, 1, 1);
             await timeEntryService.CreateNonBillableTimeEntry(date.AddDays(1), 3, null, TimeEntryTypeEnum.Vacation);
             await timeEntryService.CreateNonBillableTimeEntry(date.AddDays(2), 1, "flu", TimeEntryTypeEnum.Sick);            
             
-            DateTime mayDate = new DateTime(2019, 5, 18);
+            DateTime mayDate = new DateTime(DateTime.UtcNow.Year, 5, 18);
             await timeEntryService.CreateBillableTimeEntry(mayDate, 2, 1, 1);
             
             

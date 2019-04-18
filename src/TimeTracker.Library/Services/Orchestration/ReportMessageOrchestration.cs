@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using TimeTracker.Data;
 using TimeTracker.Library.Models;
@@ -24,7 +25,7 @@ namespace TimeTracker.Library.Services.Orchestration
             TimeEntryReport report;
             if (message.Month != null)
             {
-                report = await userReportSvc.GetHoursSummaryMonth(message.Date.Month);
+                report = await userReportSvc.GetHoursSummaryMonth(message.Date.Month, DateTime.UtcNow.Year);
                 return new SlackMessageResponse(report.ToMonthlyMessage(), true);
             }
             else if (message.ReportYear)
