@@ -18,8 +18,7 @@ namespace TimeTracker.Library.Services.Orchestration
         {
             var userService = new UserService(dbContext);
 
-            var user = await userService.FindOrCreateSlackUser(message.UserId,
-                message.UserName);
+            var user = await userService.FindOrCreateSlackUser(message.UserId,message.UserName);
             var timeEntryService = new TimeEntryService(user.UserId, dbContext);
 
             if (message.IsBillable)

@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Threading.Tasks;
 using TimeTracker.Data;
 using TimeTracker.Library.Services.Interpretation;
@@ -12,9 +13,10 @@ namespace TimeTracker.Library.Services.Orchestration
         {
             this.dbContext = dbContext;
         }
-        protected override Task<SlackMessageResponse> RespondTo(WebReportLinkInterpretedMessage message)
+        protected override async Task<SlackMessageResponse> RespondTo(WebReportLinkInterpretedMessage message)
         {
-            throw new System.NotImplementedException();
+            var link = "https://localhost:5001/user/web/" + message.UserId;
+            return new SlackMessageResponse("Click this link " + link + " to access your hours on the web.", true);
         }
     }
 }
