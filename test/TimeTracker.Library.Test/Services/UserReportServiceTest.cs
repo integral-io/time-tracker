@@ -2,7 +2,6 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
-using TimeTracker.Data;
 using TimeTracker.Data.Models;
 using TimeTracker.Library.Services;
 using Xunit;
@@ -66,7 +65,7 @@ namespace TimeTracker.Library.Test.Services
 
             hours.CurrentMonthDisplay.Should().Be($"March {utcNowYear}");
             hours.BillableHoursMonth.Should().Be(20d);
-            hours.BillableHourssYtd.Should().Be(28d);
+            hours.BillableHoursYtd.Should().Be(28d);
 
             hours.SickHoursMonth.Should().Be(6d);
             hours.VacationHoursMonth.Should().Be(5d);

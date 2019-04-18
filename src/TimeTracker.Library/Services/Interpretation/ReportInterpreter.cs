@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using System.Linq;
+using System.Text;
 using TimeTracker.Library.Models;
 
 namespace TimeTracker.Library.Services.Interpretation
@@ -7,7 +7,6 @@ namespace TimeTracker.Library.Services.Interpretation
 
     public class ReportInterpretedMessage : InterpretedMessage
     {
-        public string Project { get; set; }
     }
     
     public class ReportInterpreter : SlackMessageInterpreter<ReportInterpretedMessage>
@@ -16,14 +15,19 @@ namespace TimeTracker.Library.Services.Interpretation
         {
         }
 
-        public override string HelpMessage => "*/hours* report <optional: date> _generate report of hours_";
+        public override string HelpMessage => new StringBuilder()
+            .AppendLine("*/hours* report <optional: date> _generate report of hours for monthly and ytd_")
+            .AppendLine("*/hours* report month <month> _generate report of hours for month_")
+            .AppendLine("*/hours* report year <year> _generate report of hours for year_")
+            .ToString();
 
         protected override void ExtractInto(ReportInterpretedMessage message,
             List<TextMessagePart> splitText)
         {
             if (splitText.Count > 1)
             {
-                message.Project = splitText.ElementAt(1).Text;
+                //SlackMessageInterpreter.FindDatePart(splitText.ElementAt(1));
+                //todo message.Date = splitText.ElementAt(1).Text;
             }
         }
     }

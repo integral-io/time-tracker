@@ -1,4 +1,3 @@
-using System.Text;
 using System.Threading.Tasks;
 using TimeTracker.Data;
 using TimeTracker.Library.Services.Interpretation;
@@ -22,7 +21,7 @@ namespace TimeTracker.Library.Services.Orchestration
             var userReportSvc = new UserReportService(dbContext, user.UserId);
 
             var report = await userReportSvc.GetHoursSummaryMonthAndYtd(null);
-            return new SlackMessageResponse(report.ToMessage(), true);
+            return new SlackMessageResponse(report.ToMonthAndYTDMessage(), true);
         }
     }
 }

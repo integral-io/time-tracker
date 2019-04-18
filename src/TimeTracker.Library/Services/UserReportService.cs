@@ -59,7 +59,7 @@ namespace TimeTracker.Library.Services
             timeEntryReport.VacationHoursMonth = CalculateHours(allHours, currentBeginningMonth, TimeEntryTypeEnum.Vacation);
             timeEntryReport.NonBillableHoursMonth = CalculateHours(allHours, currentBeginningMonth, TimeEntryTypeEnum.NonBillable);
 
-            timeEntryReport.BillableHourssYtd = CalculateHours(allHours, currentBeginningYear, TimeEntryTypeEnum.BillableProject);
+            timeEntryReport.BillableHoursYtd = CalculateHours(allHours, currentBeginningYear, TimeEntryTypeEnum.BillableProject);
             timeEntryReport.SickHoursYtd = CalculateHours(allHours, currentBeginningYear, TimeEntryTypeEnum.Sick); 
             timeEntryReport.VacationHoursYtd = CalculateHours(allHours, currentBeginningYear, TimeEntryTypeEnum.Vacation); 
             timeEntryReport.NonBillableHoursYtd = CalculateHours(allHours, currentBeginningYear, TimeEntryTypeEnum.NonBillable);

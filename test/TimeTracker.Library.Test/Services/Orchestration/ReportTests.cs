@@ -53,6 +53,33 @@ namespace TimeTracker.Library.Test.Services.Orchestration
             response.Text.Should().Contain($"YTD Total {reportText} Hours: 8.0");
         }
 
+        [Fact]
+        public async Task WhenRequestingReportForSpecificMonth_ReportOnlyIncludesHoursForTheMonth()
+        {
+            DateTime date = new DateTime(2019, 4, 18);
+            var user = database.Users.First();
+            TimeEntryService timeEntryService = new TimeEntryService(user.UserId, database);
+            await timeEntryService.CreateBillableTimeEntry(date, 2, 1, 1);
+            await timeEntryService.CreateNonBillableTimeEntry(date.AddDays(1), 3, null, TimeEntryTypeEnum.Vacation);
+            await timeEntryService.CreateNonBillableTimeEntry(date.AddDays(2), 1, "flu", TimeEntryTypeEnum.Sick);            
+            
+            DateTime mayDate = new DateTime(2019, 5, 18);
+            await timeEntryService.CreateBillableTimeEntry(mayDate, 2, 1, 1);
+            
+            
+            var response = await orchestrator.HandleCommand(new SlashCommandPayload
+            {    
+                text = "report apr-2019",
+                user_id = user.SlackUserId,
+                user_name = user.UserName
+            });
+            
+            response.Text.Should().Contain($"{date.Month} {date.Year} Total Billable Hours: 2.0");
+            response.Text.Should().Contain($"{date.Month} {date.Year} Total Vacation Hours: 3.0");
+            response.Text.Should().Contain($"{date.Month} {date.Year} Total Sick Hours: 1.0");
+            response.Text.Should().Contain($"{date.Month} {date.Year} Total Other Non-Billable Hours: 0.0");
+        }
+
         private Task<SlackMessage> RequestReport(User user)
         {
             return orchestrator.HandleCommand(new SlashCommandPayload
