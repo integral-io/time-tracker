@@ -19,9 +19,10 @@ namespace TimeTracker.Library.Services.Interpretation
         }
 
         public override string HelpMessage => new StringBuilder()
-            .AppendLine("*/hours* report <optional: date> _generate report of hours for monthly and ytd_")
-            .AppendLine("*/hours* report month <month> _generate report of hours for month in current year_")
+            .AppendLine("*/hours* report _generate default report of hours for month and ytd_")
+            .AppendLine("*/hours* report month <month> _generate report of hours for month (ie. apr) in current year_")
             .AppendLine("*/hours* report year <year> _generate report of hours for year_")
+            .AppendLine("*/hours* report date <month year> _generate report of hours for specific month and year (ie. apr 2019)_")
             .ToString();
 
         protected override void ExtractInto(ReportInterpretedMessage message,
