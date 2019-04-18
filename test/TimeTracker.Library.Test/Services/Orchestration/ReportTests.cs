@@ -136,8 +136,14 @@ namespace TimeTracker.Library.Test.Services.Orchestration
         
               
         //todo different parsing combinations
-        [Fact]
-        public async Task CanRequestReportForSpecificMonthAndYearWithoutDashParsingIsues()
+        [Theory]
+        [InlineData("feb-2018")]
+        [InlineData("Feb-2018")]
+        [InlineData("FEB-2018")]
+        [InlineData("feb 2018")]
+        [InlineData("Feb 2018")]
+        [InlineData("FEB 2018")]
+        public async Task CanRequestReportForSpecificMonthAndYearWithoutDashParsingIssues(string dateEntry)
         {
             DateTime date = new DateTime(2018, 2, 1);
             var user = database.Users.First();
@@ -152,7 +158,7 @@ namespace TimeTracker.Library.Test.Services.Orchestration
             
             var response = await orchestrator.HandleCommand(new SlashCommandPayload
             {    
-                text = "report month feb-2018",
+                text = "report month " + dateEntry,
                 user_id = user.SlackUserId,
                 user_name = user.UserName
             });

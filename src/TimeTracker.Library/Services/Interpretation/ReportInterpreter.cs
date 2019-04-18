@@ -45,12 +45,16 @@ namespace TimeTracker.Library.Services.Interpretation
                         message.Date = new DateTime(Convert.ToInt32(message.Year), message.Month.ToMonth(), 1);
                     } else if (splitText.Count > 3)
                     {
+                        message.Month = splitText.ElementAt(2).Text;
+                        splitText.ElementAt(2).IsUsed = true;
                         message.Year  = splitText.ElementAt(3).Text;
                         splitText.ElementAt(3).IsUsed = true;
                         message.Date = new DateTime(Convert.ToInt32(message.Year), message.Month.ToMonth(), 1);
                     }
                     else
                     {
+                        message.Month = splitText.ElementAt(2).Text;
+                        splitText.ElementAt(2).IsUsed = true;
                         message.Year = DateTime.UtcNow.Year.ToString();
                         message.Date = new DateTime(DateTime.UtcNow.Year, message.Month.ToMonth(), 1);
                     }
@@ -77,6 +81,7 @@ namespace TimeTracker.Library.Services.Interpretation
     {
         public static int ToMonth(this String month)
         {
+            month = month.ToLower();
             switch (month)
             {
                 case "jan":
