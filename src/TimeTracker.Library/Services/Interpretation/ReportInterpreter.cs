@@ -20,7 +20,7 @@ namespace TimeTracker.Library.Services.Interpretation
 
         public override string HelpMessage => new StringBuilder()
             .AppendLine("*/hours* report <optional: date> _generate report of hours for monthly and ytd_")
-            .AppendLine("*/hours* report month <month> _generate report of hours for month_")
+            .AppendLine("*/hours* report month <month> _generate report of hours for month in current year_")
             .AppendLine("*/hours* report year <year> _generate report of hours for year_")
             .ToString();
 

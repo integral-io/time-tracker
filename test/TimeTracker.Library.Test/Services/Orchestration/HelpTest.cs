@@ -70,7 +70,7 @@ namespace TimeTracker.Library.Test.Services.Orchestration
 
             slackMessage.Text.Should()
                 .Contain("*/hours* report <optional: date> _generate report of hours for monthly and ytd_").And
-                .Contain("*/hours* report month <month> _generate report of hours for month").And
+                .Contain("*/hours* report month <month> _generate report of hours for month in current year").And
                 .Contain("*/hours* report year <year> _generate report of hours for year_");
         }
 
