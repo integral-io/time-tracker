@@ -23,7 +23,12 @@ namespace TimeTracker.Library.Services.Orchestration
             var userReportSvc = new UserReportService(dbContext, user.UserId);
 
             TimeEntryReport report;
-            if (message.Month != null)
+            if (message.HasDate)
+            {
+                report = await userReportSvc.GetHoursSummaryForDay(message.Date);
+                return new SlackMessageResponse(report.ToDayMessage(), true);
+            }
+            else if (message.Month != null)
             {
                 report = await userReportSvc.GetHoursSummaryMonth(message.Date.Month, Convert.ToInt32(message.Year));
                 return new SlackMessageResponse(report.ToMonthlyMessage(), true);

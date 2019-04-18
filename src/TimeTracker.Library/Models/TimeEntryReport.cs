@@ -11,6 +11,15 @@ namespace TimeTracker.Library.Models
                 .Append(YearlyMessageBuilder())
                 .ToString();
         }
+        public string ToDayMessage()
+        {
+            return new StringBuilder()
+                .AppendLine($"{CurrentDayDisplay} Billable Hours: {BillableHoursDay:F1}")
+                .AppendLine($"{CurrentDayDisplay} Sick Hours: {SickHoursDay:F1}")
+                .AppendLine($"{CurrentDayDisplay} Vacation Hours: {VacationHoursDay:F1}")
+                .AppendLine($"{CurrentDayDisplay} Other Non-billable Hours: {NonBillableHoursDay:F1}")
+                .ToString();
+        }
 
         public string ToMonthlyMessage()
         {
@@ -22,6 +31,7 @@ namespace TimeTracker.Library.Models
             return YearlyMessageBuilder().ToString();
         }
 
+        
         private StringBuilder MonthlyMessageBuilder()
         {
             return new StringBuilder()
@@ -41,6 +51,13 @@ namespace TimeTracker.Library.Models
                 .AppendLine($"{Year} Total Other Non-billable Hours: {NonBillableHoursYtd:F1}");
         }
 
+        public double NonBillableHoursDay { get; set; }
+
+        public double VacationHoursDay { get; set; }
+
+        public double SickHoursDay { get; set; }
+
+        public double BillableHoursDay { get; set; }
         public double NonBillableHoursYtd { get; set; }
 
         public double VacationHoursYtd { get; set; }
@@ -56,6 +73,7 @@ namespace TimeTracker.Library.Models
         public double SickHoursMonth { get; set; }
 
         public double BillableHoursMonth { get; set; }
+        public string CurrentDayDisplay { get; set; }
 
         public string CurrentMonthDisplay { get; set; }
 
