@@ -9,7 +9,7 @@ namespace TimeTracker.Library.Services.Interpretation
     public class ReportInterpretedMessage : InterpretedMessage
     {
         public string Month { get; set; }
-        public bool ReportYear { get; set; }
+        public string Year { get; set; }
     }
 
     public class ReportInterpreter : SlackMessageInterpreter<ReportInterpretedMessage>
@@ -34,16 +34,27 @@ namespace TimeTracker.Library.Services.Interpretation
                 {
                     splitText.ElementAt(1).IsUsed = true;
                     message.Month  = splitText.ElementAt(2).Text;
+                    message.Year = DateTime.UtcNow.Year.ToString();
                     splitText.ElementAt(2).IsUsed = true;
                     message.Date = new DateTime(DateTime.UtcNow.Year, message.Month.ToMonth(), 1);
                 }
                 
                 if (splitText.ElementAt(1).Text.Equals("year"))
                 {
-                    message.ReportYear = true;
                     splitText.ElementAt(1).IsUsed = true;
-                    message.Date = new DateTime(Convert.ToInt32(splitText.ElementAt(2).Text), 1, 1);
+                    message.Year = splitText.ElementAt(2).Text;
                     splitText.ElementAt(2).IsUsed = true;
+                    message.Date = new DateTime(Convert.ToInt32(splitText.ElementAt(2).Text), 1, 1);
+                }
+
+                if (splitText.ElementAt(1).Text.Equals("date"))
+                {
+                    splitText.ElementAt(1).IsUsed = true;
+                    message.Month  = splitText.ElementAt(2).Text;
+                    message.Year  = splitText.ElementAt(3).Text;
+                    splitText.ElementAt(2).IsUsed = true;
+                    splitText.ElementAt(3).IsUsed = true;
+                    message.Date = new DateTime(Convert.ToInt32(message.Year), message.Month.ToMonth(), 1);
                 }
             }
         }

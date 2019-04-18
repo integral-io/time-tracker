@@ -25,10 +25,10 @@ namespace TimeTracker.Library.Services.Orchestration
             TimeEntryReport report;
             if (message.Month != null)
             {
-                report = await userReportSvc.GetHoursSummaryMonth(message.Date.Month, DateTime.UtcNow.Year);
+                report = await userReportSvc.GetHoursSummaryMonth(message.Date.Month, Convert.ToInt32(message.Year));
                 return new SlackMessageResponse(report.ToMonthlyMessage(), true);
             }
-            else if (message.ReportYear)
+            else if (message.Year != null)
             {
                 report = await userReportSvc.GetHoursSummaryYear(message.Date.Year);
                 return new SlackMessageResponse(report.ToYearlyMessage(), true);
