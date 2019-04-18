@@ -60,6 +60,20 @@ namespace TimeTracker.Library.Services
             return await BuildMonthlyTimeEntryReport(month, year, new TimeEntryReport());
         }
         
+        public async Task<TimeEntryReport> GetHoursSummaryForDay(DateTime date)
+        {
+            TimeEntryReport timeEntryReport = new TimeEntryReport();
+            var allHours = await QueryAllHours();
+
+            timeEntryReport.CurrentDayDisplay = date.ToString("MMMM d yyyy");
+            timeEntryReport.BillableHoursDay = CalculateDailyHours(allHours, date, TimeEntryTypeEnum.BillableProject);
+            timeEntryReport.SickHoursDay = CalculateDailyHours(allHours, date, TimeEntryTypeEnum.Sick);
+            timeEntryReport.VacationHoursDay = CalculateDailyHours(allHours, date, TimeEntryTypeEnum.Vacation);
+            timeEntryReport.NonBillableHoursDay = CalculateDailyHours(allHours, date, TimeEntryTypeEnum.NonBillable);
+
+            return timeEntryReport;
+        }
+
         private async Task<TimeEntryReport> BuildYearlyTimeEntryReport(int year, TimeEntryReport timeEntryReport)
         {
             var currentBeginningYear = new DateTime(year, 1, 1, 0, 0, 0, DateTimeKind.Utc);
@@ -116,6 +130,14 @@ namespace TimeTracker.Library.Services
             query = query.Where(x => x.Date >= start && x.Date < endDate);
 
             return query.Sum(x => x.Hours);
+        }
+        
+        private double CalculateDailyHours(IReadOnlyCollection<HourPair> hours, DateTime date, TimeEntryTypeEnum type)
+        {
+            var query = hours.Where(x => x.TimeEntryType == type);
+            query = query.Where(x => x.Date.Day == date.Day && x.Date.Month == date.Month && x.Date.Year == date.Year);
+
+            return query.Sum(x => x.Hours);        
         }
     }
 }

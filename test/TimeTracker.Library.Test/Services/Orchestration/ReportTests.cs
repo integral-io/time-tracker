@@ -108,7 +108,7 @@ namespace TimeTracker.Library.Test.Services.Orchestration
         }
         
         [Fact]
-        public async Task WhenRequestingReportForSpecificDate_ReportIncludesAllHoursForThatMonthAndYear()
+        public async Task WhenRequestingReportForSpecificMonthAndYear_ReportIncludesAllHoursForThatMonthAndYear()
         {
             DateTime date = new DateTime(2018, 2, 1);
             var user = database.Users.First();
@@ -133,7 +133,34 @@ namespace TimeTracker.Library.Test.Services.Orchestration
             response.Text.Should().Contain($"February {date.Year} Sick Hours: 1.0");
             response.Text.Should().Contain($"February {date.Year} Other Non-billable Hours: 0.0");
         }
-
+        
+        [Fact]
+        public async Task WhenRequestingReportForSpecificDate_ReportIncludesAllHoursForThatDay()
+        {
+            DateTime date = new DateTime(2018, 2, 9);
+            var user = database.Users.First();
+            TimeEntryService timeEntryService = new TimeEntryService(user.UserId, database);
+            await timeEntryService.CreateBillableTimeEntry(date, 2, 1, 1);
+            await timeEntryService.CreateNonBillableTimeEntry(date, 3, null, TimeEntryTypeEnum.Vacation);
+            await timeEntryService.CreateNonBillableTimeEntry(date, 1, "flu", TimeEntryTypeEnum.Sick);            
+            
+            DateTime mayDate = new DateTime(2019, 5, 18);
+            await timeEntryService.CreateBillableTimeEntry(mayDate, 2, 1, 1);
+            
+            
+            var response = await orchestrator.HandleCommand(new SlashCommandPayload
+            {    
+                text = "report date Feb-9-2018",
+                user_id = user.SlackUserId,
+                user_name = user.UserName
+            });
+            
+            response.Text.Should().Contain($"February {date.Day} {date.Year} Billable Hours: 2.0");
+            response.Text.Should().Contain($"February {date.Day} {date.Year} Vacation Hours: 3.0");
+            response.Text.Should().Contain($"February {date.Day} {date.Year} Sick Hours: 1.0");
+            response.Text.Should().Contain($"February {date.Day} {date.Year} Other Non-billable Hours: 0.0");
+        }
+        
         private Task<SlackMessage> RequestReport(User user)
         {
             return orchestrator.HandleCommand(new SlashCommandPayload

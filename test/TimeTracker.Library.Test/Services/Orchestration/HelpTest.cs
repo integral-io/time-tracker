@@ -71,7 +71,8 @@ namespace TimeTracker.Library.Test.Services.Orchestration
             slackMessage.Text.Should()
                 .Contain("*/hours* report _generate default report of hours for month and ytd_").And
                 .Contain("*/hours* report month <month> <optional: year> _generate report of hours for month (ie. apr) default is current year_").And
-                .Contain("*/hours* report year <year> _generate report of hours for year_");
+                .Contain("*/hours* report year <year> _generate report of hours for year_").And
+                .Contain("*/hours* report date <date> _generate report for day (include dashes)_");
         }
 
         private static SlashCommandPayload CreateHelpRequest(string helpText)
