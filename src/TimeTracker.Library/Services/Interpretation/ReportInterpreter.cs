@@ -34,38 +34,12 @@ namespace TimeTracker.Library.Services.Interpretation
             {
                 if (splitText.ElementAt(1).Text.Equals("month"))
                 {
-                    splitText.ElementAt(1).IsUsed = true;
-                    var parseEnd = splitText.ElementAt(2).Text.Split(' ','-');
-
-                    if (parseEnd.Length == 2)
-                    {
-                        message.Month = parseEnd[0];
-                        message.Year = parseEnd[1];
-                        splitText.ElementAt(2).IsUsed = true;
-                        message.Date = new DateTime(Convert.ToInt32(message.Year), message.Month.ToMonth(), 1);
-                    } else if (splitText.Count > 3)
-                    {
-                        message.Month = splitText.ElementAt(2).Text;
-                        splitText.ElementAt(2).IsUsed = true;
-                        message.Year  = splitText.ElementAt(3).Text;
-                        splitText.ElementAt(3).IsUsed = true;
-                        message.Date = new DateTime(Convert.ToInt32(message.Year), message.Month.ToMonth(), 1);
-                    }
-                    else
-                    {
-                        message.Month = splitText.ElementAt(2).Text;
-                        splitText.ElementAt(2).IsUsed = true;
-                        message.Year = DateTime.UtcNow.Year.ToString();
-                        message.Date = new DateTime(DateTime.UtcNow.Year, message.Month.ToMonth(), 1);
-                    }
+                    SetUpReportForMonth(message, splitText);
                 }
                 
                 if (splitText.ElementAt(1).Text.Equals("year"))
                 {
-                    splitText.ElementAt(1).IsUsed = true;
-                    message.Year = splitText.ElementAt(2).Text;
-                    splitText.ElementAt(2).IsUsed = true;
-                    message.Date = new DateTime(Convert.ToInt32(splitText.ElementAt(2).Text), 1, 1);
+                    CreateDateWithYear(message, splitText);
                 }
 
                 if (splitText.ElementAt(1).Text.Equals("date"))
@@ -74,6 +48,68 @@ namespace TimeTracker.Library.Services.Interpretation
                     message.HasDate = true;
                 }
             }
+        }
+
+        private static void SetUpReportForMonth(ReportInterpretedMessage message, List<TextMessagePart> splitText)
+        {
+            splitText.ElementAt(1).IsUsed = true;
+            var parseEnd = splitText.ElementAt(2).Text.Split(' ', '-');
+
+            if (MonthYearHasDashes(parseEnd))
+            {
+                ParseDashesToCreateDateWithMonthYear(message, splitText, parseEnd);
+            }
+            else if (MonthYearDoesNotHaveDashes(splitText))
+            {
+                CreateDateWithMonthYear(message, splitText);
+            }
+            else
+            {
+                CreateDateWithMonthAndDefaultYear(message, splitText);
+            }
+        }
+
+        private static void CreateDateWithMonthYear(ReportInterpretedMessage message, List<TextMessagePart> splitText)
+        {
+            message.Month = splitText.ElementAt(2).Text;
+            splitText.ElementAt(2).IsUsed = true;
+            message.Year = splitText.ElementAt(3).Text;
+            splitText.ElementAt(3).IsUsed = true;
+            message.Date = new DateTime(Convert.ToInt32(message.Year), message.Month.ToMonth(), 1);
+        }
+
+        private static void ParseDashesToCreateDateWithMonthYear(ReportInterpretedMessage message, List<TextMessagePart> splitText, string[] parseEnd)
+        {
+            message.Month = parseEnd[0];
+            message.Year = parseEnd[1];
+            splitText.ElementAt(2).IsUsed = true;
+            message.Date = new DateTime(Convert.ToInt32(message.Year), message.Month.ToMonth(), 1);
+        }
+
+        private static void CreateDateWithMonthAndDefaultYear(ReportInterpretedMessage message, List<TextMessagePart> splitText)
+        {
+            message.Month = splitText.ElementAt(2).Text;
+            splitText.ElementAt(2).IsUsed = true;
+            message.Year = DateTime.UtcNow.Year.ToString();
+            message.Date = new DateTime(DateTime.UtcNow.Year, message.Month.ToMonth(), 1);
+        }
+
+        private static void CreateDateWithYear(ReportInterpretedMessage message, List<TextMessagePart> splitText)
+        {
+            splitText.ElementAt(1).IsUsed = true;
+            message.Year = splitText.ElementAt(2).Text;
+            splitText.ElementAt(2).IsUsed = true;
+            message.Date = new DateTime(Convert.ToInt32(splitText.ElementAt(2).Text), 1, 1);
+        }
+        
+        private static bool MonthYearDoesNotHaveDashes(List<TextMessagePart> splitText)
+        {
+            return splitText.Count > 3;
+        }
+
+        private static bool MonthYearHasDashes(string[] parseEnd)
+        {
+            return parseEnd.Length == 2;
         }
     }
 
