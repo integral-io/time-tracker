@@ -61,7 +61,7 @@ namespace TimeTracker.Library.Test.Services
             await entryService.CreateNonBillableTimeEntry(dateAfter.AddDays(17), 7, "PDA",
                 TimeEntryTypeEnum.NonBillable);
 
-            var hours = await userReportService.GetHoursSummaryMonthAndYtd(testMonth);
+            var hours = await userReportService.GetHoursSummaryDefaultMonthAndYtd();
 
             hours.CurrentMonthDisplay.Should().Be($"March {utcNowYear}");
             hours.BillableHoursMonth.Should().Be(20d);
