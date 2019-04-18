@@ -69,9 +69,10 @@ namespace TimeTracker.Library.Test.Services.Orchestration
             var slackMessage = await orchestrator.HandleCommand(payload);
 
             slackMessage.Text.Should()
-                .Contain("*/hours* report <optional: date> _generate report of hours for monthly and ytd_").And
-                .Contain("*/hours* report month <month> _generate report of hours for month in current year").And
-                .Contain("*/hours* report year <year> _generate report of hours for year_");
+                .Contain("*/hours* report _generate default report of hours for month and ytd_").And
+                .Contain("*/hours* report month <month> _generate report of hours for month (ie. apr) in current year").And
+                .Contain("*/hours* report year <year> _generate report of hours for year_").And
+                .Contain("*/hours* report date <month year> _generate report of hours for specific month and year (ie. apr 2019)_");
         }
 
         private static SlashCommandPayload CreateHelpRequest(string helpText)
