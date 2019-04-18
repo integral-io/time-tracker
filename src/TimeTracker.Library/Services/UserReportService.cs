@@ -42,25 +42,11 @@ namespace TimeTracker.Library.Services
         public async Task<TimeEntryReport> GetHoursSummaryDefaultMonthAndYtd()
         {
             var currentDate = DateTime.UtcNow;
-            var currentBeginningMonth = new DateTime(currentDate.Year, currentDate.Month, 1, 0, 0, 0, DateTimeKind.Utc);
-            var currentBeginningYear = new DateTime(currentDate.Year, 1, 1, 0, 0, 0, DateTimeKind.Utc);
             var timeEntryReport = new TimeEntryReport();
 
-            timeEntryReport.CurrentMonthDisplay = currentBeginningMonth.ToString("MMMM yyyy");
-
-            var allHours = await QueryAllHours();
-
-            timeEntryReport.BillableHoursMonth =  CalculateMonthlyHours(allHours, currentBeginningMonth, TimeEntryTypeEnum.BillableProject);
-            timeEntryReport.SickHoursMonth = CalculateMonthlyHours(allHours, currentBeginningMonth, TimeEntryTypeEnum.Sick);
-            timeEntryReport.VacationHoursMonth = CalculateMonthlyHours(allHours, currentBeginningMonth, TimeEntryTypeEnum.Vacation);
-            timeEntryReport.NonBillableHoursMonth = CalculateMonthlyHours(allHours, currentBeginningMonth, TimeEntryTypeEnum.NonBillable);
-
-            timeEntryReport.Year = currentBeginningYear.Year.ToString();
-            timeEntryReport.BillableHoursYtd = CalculateYearlyHours(allHours, currentBeginningYear, TimeEntryTypeEnum.BillableProject);
-            timeEntryReport.SickHoursYtd = CalculateYearlyHours(allHours, currentBeginningYear, TimeEntryTypeEnum.Sick);
-            timeEntryReport.VacationHoursYtd = CalculateYearlyHours(allHours, currentBeginningYear, TimeEntryTypeEnum.Vacation);
-            timeEntryReport.NonBillableHoursYtd = CalculateYearlyHours(allHours, currentBeginningYear, TimeEntryTypeEnum.NonBillable);
-
+            timeEntryReport = await BuildMonthlyTimeEntryReport(currentDate.Month, timeEntryReport);
+            timeEntryReport = await BuildYearlyTimeEntryReport(currentDate.Year, timeEntryReport);
+           
             return timeEntryReport;
         }
 
@@ -115,8 +101,7 @@ namespace TimeTracker.Library.Services
             return query.Sum(x => x.Hours);
         }
 
-        private double CalculateMonthlyHours(IReadOnlyCollection<HourPair> hours, DateTime start,
-            TimeEntryTypeEnum type)
+        private double CalculateMonthlyHours(IReadOnlyCollection<HourPair> hours, DateTime start, TimeEntryTypeEnum type)
         {
             var query = hours.Where(x => x.TimeEntryType == type);
             DateTime endDate;
