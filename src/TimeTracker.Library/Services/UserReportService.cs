@@ -39,15 +39,10 @@ namespace TimeTracker.Library.Services
             return allHours;
         }
 
-        public async Task<TimeEntryReport> GetHoursSummaryMonthAndYtd(int? month)
+        public async Task<TimeEntryReport> GetHoursSummaryDefaultMonthAndYtd()
         {
             var currentDate = DateTime.UtcNow;
-            if (!month.HasValue)
-            {
-                month = currentDate.Month;
-            }
-
-            var currentBeginningMonth = new DateTime(currentDate.Year, month.Value, 1, 0, 0, 0, DateTimeKind.Utc);
+            var currentBeginningMonth = new DateTime(currentDate.Year, currentDate.Month, 1, 0, 0, 0, DateTimeKind.Utc);
             var currentBeginningYear = new DateTime(currentDate.Year, 1, 1, 0, 0, 0, DateTimeKind.Utc);
             var timeEntryReport = new TimeEntryReport();
 
@@ -69,7 +64,6 @@ namespace TimeTracker.Library.Services
             return timeEntryReport;
         }
 
-        // todo change to year
         public async Task<TimeEntryReport> GetHoursSummaryYear(int year)
         {
             var currentBeginningYear = new DateTime(year, 1, 1, 0, 0, 0, DateTimeKind.Utc);
@@ -102,18 +96,6 @@ namespace TimeTracker.Library.Services
             timeEntryReport.NonBillableHoursMonth = CalculateMonthlyHours(allHours, currentBeginningMonth, TimeEntryTypeEnum.NonBillable);
 
             return timeEntryReport;
-        }
-
-        private double CalculateHours(IReadOnlyCollection<HourPair> hours, DateTime? start, TimeEntryTypeEnum type)
-        {
-            var query = hours.Where(x => x.TimeEntryType == type);
-
-            if (start.HasValue)
-            {
-                query = query.Where(x => x.Date >= start);
-            }
-
-            return query.Sum(x => x.Hours);
         }
 
         private double CalculateYearlyHours(IReadOnlyCollection<HourPair> hours, DateTime start, TimeEntryTypeEnum type)
