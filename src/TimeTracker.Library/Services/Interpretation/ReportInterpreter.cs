@@ -20,23 +20,32 @@ namespace TimeTracker.Library.Services.Interpretation
 
         public override string HelpMessage => new StringBuilder()
             .AppendLine("*/hours* report _generate default report of hours for month and ytd_")
-            .AppendLine("*/hours* report month <month> _generate report of hours for month (ie. apr) in current year_")
+            .AppendLine("*/hours* report month <month> <optional: year> _generate report of hours for month (ie. apr) default is current year_")
             .AppendLine("*/hours* report year <year> _generate report of hours for year_")
-            .AppendLine("*/hours* report date <month year> _generate report of hours for specific month and year (ie. apr 2019)_")
             .ToString();
 
         protected override void ExtractInto(ReportInterpretedMessage message,
             List<TextMessagePart> splitText)
         {
-            if (splitText.Count > 1)
+            if (splitText.Count > 2)
             {
                 if (splitText.ElementAt(1).Text.Equals("month"))
                 {
                     splitText.ElementAt(1).IsUsed = true;
                     message.Month  = splitText.ElementAt(2).Text;
-                    message.Year = DateTime.UtcNow.Year.ToString();
                     splitText.ElementAt(2).IsUsed = true;
-                    message.Date = new DateTime(DateTime.UtcNow.Year, message.Month.ToMonth(), 1);
+
+                    if (splitText.Count > 3)
+                    {
+                        message.Year  = splitText.ElementAt(3).Text;
+                        splitText.ElementAt(3).IsUsed = true;
+                        message.Date = new DateTime(Convert.ToInt32(message.Year), message.Month.ToMonth(), 1);
+                    }
+                    else
+                    {
+                        message.Year = DateTime.UtcNow.Year.ToString();
+                        message.Date = new DateTime(DateTime.UtcNow.Year, message.Month.ToMonth(), 1);
+                    }
                 }
                 
                 if (splitText.ElementAt(1).Text.Equals("year"))
@@ -45,16 +54,6 @@ namespace TimeTracker.Library.Services.Interpretation
                     message.Year = splitText.ElementAt(2).Text;
                     splitText.ElementAt(2).IsUsed = true;
                     message.Date = new DateTime(Convert.ToInt32(splitText.ElementAt(2).Text), 1, 1);
-                }
-
-                if (splitText.ElementAt(1).Text.Equals("date"))
-                {
-                    splitText.ElementAt(1).IsUsed = true;
-                    message.Month  = splitText.ElementAt(2).Text;
-                    message.Year  = splitText.ElementAt(3).Text;
-                    splitText.ElementAt(2).IsUsed = true;
-                    splitText.ElementAt(3).IsUsed = true;
-                    message.Date = new DateTime(Convert.ToInt32(message.Year), message.Month.ToMonth(), 1);
                 }
             }
         }

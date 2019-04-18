@@ -123,7 +123,7 @@ namespace TimeTracker.Library.Test.Services.Orchestration
             
             var response = await orchestrator.HandleCommand(new SlashCommandPayload
             {    
-                text = "report date feb 2018",
+                text = "report month feb 2018",
                 user_id = user.SlackUserId,
                 user_name = user.UserName
             });
