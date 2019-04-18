@@ -35,10 +35,10 @@ namespace TimeTracker.Library.Models
         private StringBuilder YearlyMessageBuilder()
         {
             return new StringBuilder()
-                .AppendLine($"YTD Total Billable Hours: {BillableHoursYtd:F1}")
-                .AppendLine($"YTD Total Sick Hours: {SickHoursYtd:F1}")
-                .AppendLine($"YTD Total Vacation Hours: {VacationHoursYtd:F1}")
-                .AppendLine($"YTD Total Other Non-billable Hours: {NonBillableHoursYtd:F1}");
+                .AppendLine($"{Year} Total Billable Hours: {BillableHoursYtd:F1}")
+                .AppendLine($"{Year} Total Sick Hours: {SickHoursYtd:F1}")
+                .AppendLine($"{Year} Total Vacation Hours: {VacationHoursYtd:F1}")
+                .AppendLine($"{Year} Total Other Non-billable Hours: {NonBillableHoursYtd:F1}");
         }
 
         public double NonBillableHoursYtd { get; set; }
@@ -58,5 +58,7 @@ namespace TimeTracker.Library.Models
         public double BillableHoursMonth { get; set; }
 
         public string CurrentMonthDisplay { get; set; }
+
+        public string Year { get; set; }
     }
 }

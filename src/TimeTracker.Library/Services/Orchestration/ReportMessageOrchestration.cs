@@ -1,5 +1,6 @@
 using System.Threading.Tasks;
 using TimeTracker.Data;
+using TimeTracker.Library.Models;
 using TimeTracker.Library.Services.Interpretation;
 
 namespace TimeTracker.Library.Services.Orchestration
@@ -20,15 +21,20 @@ namespace TimeTracker.Library.Services.Orchestration
 
             var userReportSvc = new UserReportService(dbContext, user.UserId);
 
-
+            TimeEntryReport report;
             if (message.Month != null)
             {
-                var report = await userReportSvc.GetHoursSummaryMonth(message.Date.Month);
+                report = await userReportSvc.GetHoursSummaryMonth(message.Date.Month);
                 return new SlackMessageResponse(report.ToMonthlyMessage(), true);
+            }
+            else if (message.ReportYear)
+            {
+                report = await userReportSvc.GetHoursSummaryYear(message.Date.Year);
+                return new SlackMessageResponse(report.ToYearlyMessage(), true);
             }
             else
             {
-                var report = await userReportSvc.GetHoursSummaryMonthAndYtd(null);
+                report = await userReportSvc.GetHoursSummaryMonthAndYtd(null);
                 return new SlackMessageResponse(report.ToMonthAndYTDMessage(), true);
             }
         }
