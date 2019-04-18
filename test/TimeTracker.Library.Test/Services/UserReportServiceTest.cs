@@ -40,7 +40,8 @@ namespace TimeTracker.Library.Test.Services
         [Fact]
         public async Task GetHoursSummary_summarizesHoursCorrectly()
         {
-            const int testMonth = 3;
+            int testMonth = Convert.ToInt32(DateTime.UtcNow.Month.ToString());
+            string monthName = DateTime.UtcNow.ToString("MMMM");
 
             var utcNowYear = DateTime.UtcNow.Year;
             var dateBefore = new DateTime(2018, 11, 30);
@@ -63,7 +64,7 @@ namespace TimeTracker.Library.Test.Services
 
             var hours = await userReportService.GetHoursSummaryDefaultMonthAndYtd();
 
-            hours.CurrentMonthDisplay.Should().Be($"March {utcNowYear}");
+            hours.CurrentMonthDisplay.Should().Be($"{monthName} {utcNowYear}");
             hours.BillableHoursMonth.Should().Be(20d);
             hours.BillableHoursYtd.Should().Be(28d);
 

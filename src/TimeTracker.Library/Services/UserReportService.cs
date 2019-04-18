@@ -66,8 +66,17 @@ namespace TimeTracker.Library.Services
 
         public async Task<TimeEntryReport> GetHoursSummaryYear(int year)
         {
+            return await BuildYearlyTimeEntryReport(year, new TimeEntryReport());
+        }
+
+        public async Task<TimeEntryReport> GetHoursSummaryMonth(int month)
+        {
+            return await BuildMonthlyTimeEntryReport(month, new TimeEntryReport());
+        }
+        
+        private async Task<TimeEntryReport> BuildYearlyTimeEntryReport(int year, TimeEntryReport timeEntryReport)
+        {
             var currentBeginningYear = new DateTime(year, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-            var timeEntryReport = new TimeEntryReport();
 
             var allHours = await QueryAllHours();
 
@@ -80,12 +89,10 @@ namespace TimeTracker.Library.Services
             return timeEntryReport;
         }
 
-        public async Task<TimeEntryReport> GetHoursSummaryMonth(int month)
+        private async Task<TimeEntryReport> BuildMonthlyTimeEntryReport(int month, TimeEntryReport timeEntryReport)
         {
             var currentDate = DateTime.UtcNow;
             var currentBeginningMonth = new DateTime(currentDate.Year, month, 1, 0, 0, 0, DateTimeKind.Utc);
-            var timeEntryReport = new TimeEntryReport();
-
             timeEntryReport.CurrentMonthDisplay = currentBeginningMonth.ToString("MMMM yyyy");
 
             var allHours = await QueryAllHours();
