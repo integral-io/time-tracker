@@ -20,8 +20,17 @@ namespace TimeTracker.Library.Services.Orchestration
 
             var userReportSvc = new UserReportService(dbContext, user.UserId);
 
-            var report = await userReportSvc.GetHoursSummaryMonthAndYtd(null);
-            return new SlackMessageResponse(report.ToMonthAndYTDMessage(), true);
+
+            if (message.Month != null)
+            {
+                var report = await userReportSvc.GetHoursSummaryMonth(message.Date.Month);
+                return new SlackMessageResponse(report.ToMonthlyMessage(), true);
+            }
+            else
+            {
+                var report = await userReportSvc.GetHoursSummaryMonthAndYtd(null);
+                return new SlackMessageResponse(report.ToMonthAndYTDMessage(), true);
+            }
         }
     }
 }

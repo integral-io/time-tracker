@@ -67,13 +67,52 @@ namespace TimeTracker.Library.Services
             return timeEntryReport;
         }
         
+        public async Task<TimeEntryReport> GetHoursSummaryMonth(int month)
+        {
+            var currentDate = DateTime.UtcNow;
+            var currentBeginningMonth = new DateTime(currentDate.Year, month, 1, 0, 0, 0, DateTimeKind.Utc);
+            var timeEntryReport = new TimeEntryReport();
+            
+            timeEntryReport.CurrentMonthDisplay = currentBeginningMonth.ToString("MMMM yyyy");
+
+            var allHours = await QueryAllHours();
+
+            timeEntryReport.BillableHoursMonth = CalculateMonthlyHours(allHours, currentBeginningMonth, TimeEntryTypeEnum.BillableProject);
+            timeEntryReport.SickHoursMonth = CalculateMonthlyHours(allHours, currentBeginningMonth, TimeEntryTypeEnum.Sick);
+            timeEntryReport.VacationHoursMonth = CalculateMonthlyHours(allHours, currentBeginningMonth, TimeEntryTypeEnum.Vacation);
+            timeEntryReport.NonBillableHoursMonth = CalculateMonthlyHours(allHours, currentBeginningMonth, TimeEntryTypeEnum.NonBillable);
+
+            return timeEntryReport;
+        }
+        
         private double CalculateHours(IReadOnlyCollection<HourPair> hours, DateTime? start, TimeEntryTypeEnum type)
         {
             var query = hours.Where(x => x.TimeEntryType == type);
-
+                
             if (start.HasValue)
             {
                 query = query.Where(x => x.Date >= start);
+            }
+            
+            return query.Sum(x=>x.Hours);
+        }
+        
+        private double CalculateMonthlyHours(IReadOnlyCollection<HourPair> hours, DateTime? start, TimeEntryTypeEnum type)
+        {
+            var query = hours.Where(x => x.TimeEntryType == type);
+            DateTime endDate;
+            if (start.Value.Month == 12)
+            {
+                endDate = new DateTime(start.Value.Year + 1, 1, 1);
+            }
+            else
+            {
+                endDate = new DateTime(start.Value.Year, start.Value.Month + 1, 1);
+            }
+                
+            if (start.HasValue)
+            {
+                query = query.Where(x => x.Date >= start && x.Date < endDate);
             }
             
             return query.Sum(x=>x.Hours);

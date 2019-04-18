@@ -56,7 +56,7 @@ namespace TimeTracker.Library.Test.Services.Orchestration
         [Fact]
         public async Task WhenRequestingReportForSpecificMonth_ReportOnlyIncludesHoursForTheMonth()
         {
-            DateTime date = new DateTime(2019, 4, 18);
+            DateTime date = new DateTime(2019, 3, 18);
             var user = database.Users.First();
             TimeEntryService timeEntryService = new TimeEntryService(user.UserId, database);
             await timeEntryService.CreateBillableTimeEntry(date, 2, 1, 1);
@@ -69,15 +69,15 @@ namespace TimeTracker.Library.Test.Services.Orchestration
             
             var response = await orchestrator.HandleCommand(new SlashCommandPayload
             {    
-                text = "report apr-2019",
+                text = "report month mar",
                 user_id = user.SlackUserId,
                 user_name = user.UserName
             });
             
-            response.Text.Should().Contain($"{date.Month} {date.Year} Total Billable Hours: 2.0");
-            response.Text.Should().Contain($"{date.Month} {date.Year} Total Vacation Hours: 3.0");
-            response.Text.Should().Contain($"{date.Month} {date.Year} Total Sick Hours: 1.0");
-            response.Text.Should().Contain($"{date.Month} {date.Year} Total Other Non-Billable Hours: 0.0");
+            response.Text.Should().Contain($"March {date.Year} Billable Hours: 2.0");
+            response.Text.Should().Contain($"March {date.Year} Vacation Hours: 3.0");
+            response.Text.Should().Contain($"March {date.Year} Sick Hours: 1.0");
+            response.Text.Should().Contain($"March {date.Year} Other Non-billable Hours: 0.0");
         }
 
         private Task<SlackMessage> RequestReport(User user)
