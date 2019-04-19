@@ -6,7 +6,7 @@ namespace TimeTracker.Library.Services.Interpretation
     {
         public static int ToMonth(this String month)
         {
-            month = month.ToLower();
+            month = month.Substring(0,3).ToLower();
             switch (month)
             {
                 case "jan":
