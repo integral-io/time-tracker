@@ -21,13 +21,11 @@ namespace TimeTracker.Library.Services.Interpretation
                     return 5;
                 case "jun":
                     return 6;
-                case "july":
+                case "jul":
                     return 7;
                 case "aug":
                     return 8;
                 case "sep":
-                    return 9;
-                case "sept":
                     return 9;
                 case "oct":
                     return 10;
