@@ -41,14 +41,13 @@ namespace TimeTracker.Library.Test.Services.Orchestration
         }
 
         [Theory]
-        [InlineData(TimeEntryTypeEnum.NonBillable, "nonbill", 4, 1)]
-        [InlineData(TimeEntryTypeEnum.NonBillable, "nonbillable", 4, 1)]
-        [InlineData(TimeEntryTypeEnum.Sick, "sick", 3, 1)]
-        [InlineData(TimeEntryTypeEnum.Vacation, "vacation", 2, 1)]
-        [InlineData(TimeEntryTypeEnum.BillableProject, "billable", 3, 2)]
+        [InlineData(TimeEntryTypeEnum.NonBillable, 4, 1)]
+        [InlineData(TimeEntryTypeEnum.Sick, 3, 1)]
+        [InlineData(TimeEntryTypeEnum.Vacation, 2, 1)]
+        [InlineData(TimeEntryTypeEnum.BillableProject, 3, 2)]
         public async Task
             HandleCommand_deleteHoursTypeDefaultDay_returnsDeletedMessage_andOnlyDeletesHoursForThatTypeToday(
-                TimeEntryTypeEnum entryType, string reportText, int hours, int numEntriesToDelete)
+                TimeEntryTypeEnum entryType, int hours, int numEntriesToDelete)
         {
             var user = database.Users.First();
             var date = DateTime.UtcNow.Date;
@@ -59,7 +58,7 @@ namespace TimeTracker.Library.Test.Services.Orchestration
             
             var slackMessage = await orchestrator.HandleCommand(new SlashCommandPayload()
             {
-                text = "delete " + reportText,
+                text = "delete " + entryType.GetDescription(),
                 user_id = user.SlackUserId,
                 user_name = user.UserName
             });
