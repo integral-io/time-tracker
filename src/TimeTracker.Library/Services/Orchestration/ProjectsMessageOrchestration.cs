@@ -1,3 +1,5 @@
+  using System.Linq;
+  using System.Text;
   using System.Threading.Tasks;
   using TimeTracker.Data;
   using TimeTracker.Library.Services.Interpretation;
@@ -15,13 +17,19 @@
 
             protected override async Task<SlackMessageResponse> RespondTo(ProjectsInterpretedMessage message)
             {
-                var userService = new UserService(dbContext);
-                var user = await userService.FindOrCreateSlackUser(message.UserId, message.UserName);
+                var projectService = new ProjectService(dbContext);
+                var projects = dbContext.Projects.ToList(); 
 
-                var userReportSvc = new UserReportService(dbContext, user.UserId);
+                var stringBuilder = new StringBuilder();
 
-                var report = await userReportSvc.GetHoursSummaryMonthAndYtd(null);
-                return new SlackMessageResponse(report.ToMessage(), true);
+
+                foreach (var project in projects)
+                {
+
+                    stringBuilder.Append(project.Name + " - " + project.BillingClient.Name + projects.Count());
+                }    
+                
+                return new SlackMessageResponse(stringBuilder.ToString(), true);
             }
         }
     }
