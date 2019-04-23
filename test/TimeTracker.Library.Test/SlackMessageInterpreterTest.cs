@@ -142,21 +142,6 @@ namespace TimeTracker.Library.Test
 
         #endregion
 
-        #region projects
-
-        [Fact]
-        public void InterpretProjectsMessage_canInterprojects()
-        {
-            var currentDate = DateTime.UtcNow;
-            
-            var sut = new ProjectsInterpreter().InterpretMessage(ToPayload("projects"));
-            sut.Projects.Should().BeNull();
-            sut.Date.Year.Should().Be(currentDate.Year);
-            sut.Date.Month.Should().Be(currentDate.Month);
-        }
-
-        #endregion
-
         #region delete
 
         [Fact]
