@@ -5,7 +5,6 @@ namespace TimeTracker.Library.Services.Orchestration
         Help = 0,
         Record,
         Delete,
-        Report,
-        Projects
+        Report
     }
 }
