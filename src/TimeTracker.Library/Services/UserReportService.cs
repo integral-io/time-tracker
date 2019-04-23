@@ -39,16 +39,20 @@ namespace TimeTracker.Library.Services
             return allHours;
         }
 
-        public async Task<TimeEntryReport> GetHoursSummaryDefaultMonthAndYtd()
+        public async Task<TimeEntryReport> GetHoursSummaryDefaultWeekMonthAndYtd()
         {
             var currentDate = DateTime.UtcNow;
             var timeEntryReport = new TimeEntryReport();
+            
+            timeEntryReport = await BuildWeeklyTimeEntryReport(currentDate, timeEntryReport);
 
             timeEntryReport = await BuildMonthlyTimeEntryReport(currentDate.Month, currentDate.Year, timeEntryReport);
             timeEntryReport = await BuildYearlyTimeEntryReport(currentDate.Year, timeEntryReport);
            
             return timeEntryReport;
         }
+
+ 
 
         public async Task<TimeEntryReport> GetHoursSummaryYear(int year)
         {
@@ -103,6 +107,36 @@ namespace TimeTracker.Library.Services
 
             return timeEntryReport;
         }
+        
+        private async Task<TimeEntryReport> BuildWeeklyTimeEntryReport(DateTime currentDate, TimeEntryReport timeEntryReport)
+        {
+            var currentDayOfWeek = (int)currentDate.DayOfWeek;
+            var beginningOfWeek = currentDate.AddDays(currentDayOfWeek * -1);
+            var endOfWeek = beginningOfWeek.AddDays(7);
+
+            timeEntryReport.CurrentWeekDisplay = "This Week";
+            
+            var allHours = await QueryAllHours();
+
+            timeEntryReport.BillableHoursWeekly = CalculateWeeklyHours(allHours, beginningOfWeek, TimeEntryTypeEnum.BillableProject);
+            timeEntryReport.SickHoursWeekly = CalculateWeeklyHours(allHours, beginningOfWeek, TimeEntryTypeEnum.Sick);
+            timeEntryReport.VacationHoursWeekly = CalculateWeeklyHours(allHours, beginningOfWeek, TimeEntryTypeEnum.Vacation);
+            timeEntryReport.NonBillableHoursWeekly = CalculateWeeklyHours(allHours, beginningOfWeek, TimeEntryTypeEnum.NonBillable);
+
+            return timeEntryReport;
+
+        }
+
+        private double CalculateWeeklyHours(IReadOnlyCollection<HourPair> hours, DateTime beginningOfWeek, TimeEntryTypeEnum type)
+        {
+            var query = hours.Where(x => x.TimeEntryType == type);
+            var endDate = beginningOfWeek.AddDays(7);
+
+            query = query.Where(x => x.Date >= beginningOfWeek && x.Date < endDate);
+            
+            return query.Sum(x => x.Hours);
+        }
+
 
         private double CalculateYearlyHours(IReadOnlyCollection<HourPair> hours, DateTime start, TimeEntryTypeEnum type)
         {
