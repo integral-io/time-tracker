@@ -40,8 +40,8 @@ namespace TimeTracker.Library.Services.Orchestration
             }
             else
             {
-                report = await userReportSvc.GetHoursSummaryDefaultMonthAndYtd();
-                return new SlackMessageResponse(report.ToMonthAndYTDMessage(), true);
+                report = await userReportSvc.GetHoursSummaryDefaultWeekMonthAndYtd();
+                return new SlackMessageResponse(report.ToWeekMonthAndYTDMessage(), true);
             }
         }
     }

@@ -21,7 +21,7 @@ namespace TimeTracker.Library.Services.Interpretation
         }
 
         public override string HelpMessage => new StringBuilder()
-            .AppendLine("*/hours* report _generate default report of hours for month and ytd_")
+            .AppendLine("*/hours* report _generate default report of hours for week, month, and ytd_")
             .AppendLine("*/hours* report month <month> <optional: year> _generate report of hours for month (ie. apr) default is current year_")
             .AppendLine("*/hours* report year <year> _generate report of hours for year_")
             .AppendLine("*/hours* report date <date> _generate report for day (include dashes)_")

@@ -4,13 +4,27 @@ namespace TimeTracker.Library.Models
 {
     public class TimeEntryReport
     {
-        public string ToMonthAndYTDMessage()
+        public string ToWeekMonthAndYTDMessage()
         {
-            return MonthlyMessageBuilder()
+            return WeeklyMessageBuilder()
+                .AppendLine("------------------------")
+                .Append(MonthlyMessageBuilder())
                 .AppendLine("------------------------")
                 .Append(YearlyMessageBuilder())
                 .ToString();
         }
+
+        private StringBuilder WeeklyMessageBuilder()
+        {
+            return new StringBuilder()
+                // todo: count of billable entries
+                .AppendLine($"{CurrentWeekDisplay} Billable Hours: {BillableHoursWeekly:F1}")
+                .AppendLine($"{CurrentWeekDisplay} Sick Hours: {SickHoursWeekly:F1}")
+                .AppendLine($"{CurrentWeekDisplay} Vacation Hours: {VacationHoursWeekly:F1}")
+                .AppendLine($"{CurrentWeekDisplay} Other Non-billable Hours: {NonBillableHoursWeekly:F1}");
+            
+        }
+
         public string ToDayMessage()
         {
             return new StringBuilder()
@@ -78,5 +92,10 @@ namespace TimeTracker.Library.Models
         public string CurrentMonthDisplay { get; set; }
 
         public string Year { get; set; }
+        public string CurrentWeekDisplay { get; set; }
+        public double BillableHoursWeekly { get; set; }
+        public double SickHoursWeekly { get; set; }
+        public double VacationHoursWeekly { get; set; }
+        public double NonBillableHoursWeekly { get; set; }
     }
 }
