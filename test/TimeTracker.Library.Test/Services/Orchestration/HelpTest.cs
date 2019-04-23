@@ -80,7 +80,7 @@ namespace TimeTracker.Library.Test.Services.Orchestration
             var slackMessage = await orchestrator.HandleCommand(payload);
 
             slackMessage.Text.Should()
-                .Be("*/hours* projects _show a list of available projects_");
+                .Be("*/hours* projects _display a list of available projects_");
         }
 
 
