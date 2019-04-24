@@ -135,7 +135,6 @@ namespace TimeTracker.Library.Test.Services.Orchestration
         }
         
               
-        //todo different parsing combinations
         [Theory]
         [InlineData("feb-2018")]
         [InlineData("Feb-2018")]
@@ -143,6 +142,12 @@ namespace TimeTracker.Library.Test.Services.Orchestration
         [InlineData("feb 2018")]
         [InlineData("Feb 2018")]
         [InlineData("FEB 2018")]
+        [InlineData("Febr 2018")]
+        [InlineData("Febr-2018")]
+        [InlineData("FEBRUARY 2018")]
+        [InlineData("FEBRUARY-2018")]
+        [InlineData("February 2018")]
+        [InlineData("February-2018")]
         public async Task CanRequestReportForSpecificMonthAndYearWithoutDashParsingIssues(string dateEntry)
         {
             DateTime date = new DateTime(2018, 2, 1);
