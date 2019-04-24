@@ -55,5 +55,10 @@ namespace TimeTracker.Library.Services
 
             db.Users.Update(user);
         }
+
+        public Guid GetUserIdFromGoogleId(string googleId)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
