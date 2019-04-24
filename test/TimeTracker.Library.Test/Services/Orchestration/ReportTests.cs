@@ -50,9 +50,190 @@ namespace TimeTracker.Library.Test.Services.Orchestration
 
             var response = await RequestReport(user);
 
-            response.Text.Should().Contain($"YTD Total {reportText} Hours: 8.0");
+            response.Text.Should().Contain($"{DateTime.UtcNow.Year} Total {reportText} Hours: 8.0");
+        }
+        
+        [Fact]
+        public async Task WhenRequestingNonSpecificReport_ReportIncludesCurrentWeekSummary()
+        {
+            DateTime date = new DateTime(DateTime.UtcNow.Year, DateTime.UtcNow.Month - 1, DateTime.UtcNow.Day);
+            var user = database.Users.First();
+            TimeEntryService timeEntryService = new TimeEntryService(user.UserId, database);
+            await timeEntryService.CreateBillableTimeEntry(date, 2, 1, 1);
+            await timeEntryService.CreateNonBillableTimeEntry(date.AddDays(1), 3, null, TimeEntryTypeEnum.Vacation);
+            await timeEntryService.CreateNonBillableTimeEntry(date.AddDays(2), 1, "flu", TimeEntryTypeEnum.Sick);
+
+            date = date.AddMonths(1);
+            await timeEntryService.CreateBillableTimeEntry(date, 2, 1, 1);
+            await timeEntryService.CreateNonBillableTimeEntry(date.AddDays(1), 3, null, TimeEntryTypeEnum.Vacation);
+            await timeEntryService.CreateNonBillableTimeEntry(date.AddDays(2), 1, "flu", TimeEntryTypeEnum.Sick);            
+
+            
+            DateTime mayDate = new DateTime(DateTime.UtcNow.Year, 5, 18);
+            await timeEntryService.CreateBillableTimeEntry(mayDate, 2, 1, 1);
+            
+            
+            var response = await orchestrator.HandleCommand(new SlashCommandPayload
+            {    
+                text = "report",
+                user_id = user.SlackUserId,
+                user_name = user.UserName
+            });
+            
+            response.Text.Should().Contain($"This Week Billable Hours: 2.0");
+            response.Text.Should().Contain($"This Week Vacation Hours: 3.0");
+            response.Text.Should().Contain($"This Week Sick Hours: 1.0");
+            response.Text.Should().Contain($"This Week Other Non-billable Hours: 0.0");
         }
 
+        [Fact]
+        public async Task WhenRequestingReportForSpecificMonth_ReportOnlyIncludesHoursForTheMonth()
+        {
+            DateTime date = new DateTime(DateTime.UtcNow.Year, 3, 18);
+            var user = database.Users.First();
+            TimeEntryService timeEntryService = new TimeEntryService(user.UserId, database);
+            await timeEntryService.CreateBillableTimeEntry(date, 2, 1, 1);
+            await timeEntryService.CreateNonBillableTimeEntry(date.AddDays(1), 3, null, TimeEntryTypeEnum.Vacation);
+            await timeEntryService.CreateNonBillableTimeEntry(date.AddDays(2), 1, "flu", TimeEntryTypeEnum.Sick);            
+            
+            DateTime mayDate = new DateTime(DateTime.UtcNow.Year, 5, 18);
+            await timeEntryService.CreateBillableTimeEntry(mayDate, 2, 1, 1);
+            
+            
+            var response = await orchestrator.HandleCommand(new SlashCommandPayload
+            {    
+                text = "report month mar",
+                user_id = user.SlackUserId,
+                user_name = user.UserName
+            });
+            
+            response.Text.Should().Contain($"March {date.Year} Billable Hours: 2.0");
+            response.Text.Should().Contain($"March {date.Year} Vacation Hours: 3.0");
+            response.Text.Should().Contain($"March {date.Year} Sick Hours: 1.0");
+            response.Text.Should().Contain($"March {date.Year} Other Non-billable Hours: 0.0");
+        }
+        
+        [Fact]
+        public async Task WhenRequestingReportForSpecificYear_ReportIncludesAllHoursForThatYear()
+        {
+            DateTime date = new DateTime(2018, 1, 1);
+            var user = database.Users.First();
+            TimeEntryService timeEntryService = new TimeEntryService(user.UserId, database);
+            await timeEntryService.CreateBillableTimeEntry(date, 2, 1, 1);
+            await timeEntryService.CreateNonBillableTimeEntry(date.AddDays(1), 3, null, TimeEntryTypeEnum.Vacation);
+            await timeEntryService.CreateNonBillableTimeEntry(date.AddDays(2), 1, "flu", TimeEntryTypeEnum.Sick);            
+            
+            DateTime mayDate = new DateTime(2019, 5, 18);
+            await timeEntryService.CreateBillableTimeEntry(mayDate, 2, 1, 1);
+            
+            
+            var response = await orchestrator.HandleCommand(new SlashCommandPayload
+            {    
+                text = "report year 2018",
+                user_id = user.SlackUserId,
+                user_name = user.UserName
+            });
+            
+            response.Text.Should().Contain($"{date.Year} Total Billable Hours: 2.0");
+            response.Text.Should().Contain($"{date.Year} Total Vacation Hours: 3.0");
+            response.Text.Should().Contain($"{date.Year} Total Sick Hours: 1.0");
+            response.Text.Should().Contain($"{date.Year} Total Other Non-billable Hours: 0.0");
+        }
+        
+        [Fact]
+        public async Task WhenRequestingReportForSpecificMonthAndYear_ReportIncludesAllHoursForThatMonthAndYear()
+        {
+            DateTime date = new DateTime(2018, 2, 1);
+            var user = database.Users.First();
+            TimeEntryService timeEntryService = new TimeEntryService(user.UserId, database);
+            await timeEntryService.CreateBillableTimeEntry(date, 2, 1, 1);
+            await timeEntryService.CreateNonBillableTimeEntry(date.AddDays(1), 3, null, TimeEntryTypeEnum.Vacation);
+            await timeEntryService.CreateNonBillableTimeEntry(date.AddDays(2), 1, "flu", TimeEntryTypeEnum.Sick);            
+            
+            DateTime mayDate = new DateTime(2019, 5, 18);
+            await timeEntryService.CreateBillableTimeEntry(mayDate, 2, 1, 1);
+            
+            
+            var response = await orchestrator.HandleCommand(new SlashCommandPayload
+            {    
+                text = "report month feb 2018",
+                user_id = user.SlackUserId,
+                user_name = user.UserName
+            });
+            
+            response.Text.Should().Contain($"February {date.Year} Billable Hours: 2.0");
+            response.Text.Should().Contain($"February {date.Year} Vacation Hours: 3.0");
+            response.Text.Should().Contain($"February {date.Year} Sick Hours: 1.0");
+            response.Text.Should().Contain($"February {date.Year} Other Non-billable Hours: 0.0");
+        }
+        
+              
+        [Theory]
+        [InlineData("feb-2018")]
+        [InlineData("Feb-2018")]
+        [InlineData("FEB-2018")]
+        [InlineData("feb 2018")]
+        [InlineData("Feb 2018")]
+        [InlineData("FEB 2018")]
+        [InlineData("Febr 2018")]
+        [InlineData("Febr-2018")]
+        [InlineData("FEBRUARY 2018")]
+        [InlineData("FEBRUARY-2018")]
+        [InlineData("February 2018")]
+        [InlineData("February-2018")]
+        public async Task CanRequestReportForSpecificMonthAndYearWithoutDashParsingIssues(string dateEntry)
+        {
+            DateTime date = new DateTime(2018, 2, 1);
+            var user = database.Users.First();
+            TimeEntryService timeEntryService = new TimeEntryService(user.UserId, database);
+            await timeEntryService.CreateBillableTimeEntry(date, 2, 1, 1);
+            await timeEntryService.CreateNonBillableTimeEntry(date.AddDays(1), 3, null, TimeEntryTypeEnum.Vacation);
+            await timeEntryService.CreateNonBillableTimeEntry(date.AddDays(2), 1, "flu", TimeEntryTypeEnum.Sick);            
+            
+            DateTime mayDate = new DateTime(2019, 5, 18);
+            await timeEntryService.CreateBillableTimeEntry(mayDate, 2, 1, 1);
+            
+            
+            var response = await orchestrator.HandleCommand(new SlashCommandPayload
+            {    
+                text = "report month " + dateEntry,
+                user_id = user.SlackUserId,
+                user_name = user.UserName
+            });
+            
+            response.Text.Should().Contain($"February {date.Year} Billable Hours: 2.0");
+            response.Text.Should().Contain($"February {date.Year} Vacation Hours: 3.0");
+            response.Text.Should().Contain($"February {date.Year} Sick Hours: 1.0");
+            response.Text.Should().Contain($"February {date.Year} Other Non-billable Hours: 0.0");
+        }
+        
+        [Fact]
+        public async Task WhenRequestingReportForSpecificDate_ReportIncludesAllHoursForThatDay()
+        {
+            DateTime date = new DateTime(2018, 2, 9);
+            var user = database.Users.First();
+            TimeEntryService timeEntryService = new TimeEntryService(user.UserId, database);
+            await timeEntryService.CreateBillableTimeEntry(date, 2, 1, 1);
+            await timeEntryService.CreateNonBillableTimeEntry(date, 3, null, TimeEntryTypeEnum.Vacation);
+            await timeEntryService.CreateNonBillableTimeEntry(date, 1, "flu", TimeEntryTypeEnum.Sick);            
+            
+            DateTime mayDate = new DateTime(2019, 5, 18);
+            await timeEntryService.CreateBillableTimeEntry(mayDate, 2, 1, 1);
+            
+            
+            var response = await orchestrator.HandleCommand(new SlashCommandPayload
+            {    
+                text = "report date Feb-9-2018",
+                user_id = user.SlackUserId,
+                user_name = user.UserName
+            });
+            
+            response.Text.Should().Contain($"February {date.Day} {date.Year} Billable Hours: 2.0");
+            response.Text.Should().Contain($"February {date.Day} {date.Year} Vacation Hours: 3.0");
+            response.Text.Should().Contain($"February {date.Day} {date.Year} Sick Hours: 1.0");
+            response.Text.Should().Contain($"February {date.Day} {date.Year} Other Non-billable Hours: 0.0");
+        }
+        
         private Task<SlackMessage> RequestReport(User user)
         {
             return orchestrator.HandleCommand(new SlashCommandPayload
