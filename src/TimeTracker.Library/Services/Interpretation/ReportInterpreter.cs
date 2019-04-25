@@ -21,7 +21,7 @@ namespace TimeTracker.Library.Services.Interpretation
         }
 
         public override string HelpMessage => new StringBuilder()
-            .AppendLine("*/hours* report _generate default report of hours for month and ytd_")
+            .AppendLine("*/hours* report _generate default report of hours for week, month, and ytd_")
             .AppendLine("*/hours* report month <month> <optional: year> _generate report of hours for month (ie. apr) default is current year_")
             .AppendLine("*/hours* report year <year> _generate report of hours for year_")
             .AppendLine("*/hours* report date <date> _generate report for day (include dashes)_")
@@ -110,45 +110,6 @@ namespace TimeTracker.Library.Services.Interpretation
         private static bool MonthYearHasDashes(string[] parseEnd)
         {
             return parseEnd.Length == 2;
-        }
-    }
-
-    public static class MonthConverter
-    {
-        public static int ToMonth(this String month)
-        {
-            month = month.ToLower();
-            switch (month)
-            {
-                case "jan":
-                    return 1;
-                case "feb":
-                    return 2;
-                case "mar":
-                    return 3;
-                case "apr":
-                    return 4;
-                case "may":
-                    return 5;
-                case "jun":
-                    return 6;
-                case "july":
-                    return 7;
-                case "aug":
-                    return 8;
-                case "sep":
-                    return 9;
-                case "sept":
-                    return 9;
-                case "oct":
-                    return 10;
-                case "nov":
-                    return 11;
-                case "dec":
-                    return 12;
-                default:
-                    throw new Exception("Improper month abbreviation");
-            }
         }
     }
 }

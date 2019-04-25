@@ -52,6 +52,39 @@ namespace TimeTracker.Library.Test.Services.Orchestration
 
             response.Text.Should().Contain($"{DateTime.UtcNow.Year} Total {reportText} Hours: 8.0");
         }
+        
+        [Fact]
+        public async Task WhenRequestingNonSpecificReport_ReportIncludesCurrentWeekSummary()
+        {
+            DateTime date = new DateTime(DateTime.UtcNow.Year, DateTime.UtcNow.Month - 1, DateTime.UtcNow.Day);
+            var user = database.Users.First();
+            TimeEntryService timeEntryService = new TimeEntryService(user.UserId, database);
+            await timeEntryService.CreateBillableTimeEntry(date, 2, 1, 1);
+            await timeEntryService.CreateNonBillableTimeEntry(date.AddDays(1), 3, null, TimeEntryTypeEnum.Vacation);
+            await timeEntryService.CreateNonBillableTimeEntry(date.AddDays(2), 1, "flu", TimeEntryTypeEnum.Sick);
+
+            date = date.AddMonths(1);
+            await timeEntryService.CreateBillableTimeEntry(date, 2, 1, 1);
+            await timeEntryService.CreateNonBillableTimeEntry(date.AddDays(1), 3, null, TimeEntryTypeEnum.Vacation);
+            await timeEntryService.CreateNonBillableTimeEntry(date.AddDays(2), 1, "flu", TimeEntryTypeEnum.Sick);            
+
+            
+            DateTime mayDate = new DateTime(DateTime.UtcNow.Year, 5, 18);
+            await timeEntryService.CreateBillableTimeEntry(mayDate, 2, 1, 1);
+            
+            
+            var response = await orchestrator.HandleCommand(new SlashCommandPayload
+            {    
+                text = "report",
+                user_id = user.SlackUserId,
+                user_name = user.UserName
+            });
+            
+            response.Text.Should().Contain($"This Week Billable Hours: 2.0");
+            response.Text.Should().Contain($"This Week Vacation Hours: 3.0");
+            response.Text.Should().Contain($"This Week Sick Hours: 1.0");
+            response.Text.Should().Contain($"This Week Other Non-billable Hours: 0.0");
+        }
 
         [Fact]
         public async Task WhenRequestingReportForSpecificMonth_ReportOnlyIncludesHoursForTheMonth()
@@ -135,7 +168,6 @@ namespace TimeTracker.Library.Test.Services.Orchestration
         }
         
               
-        //todo different parsing combinations
         [Theory]
         [InlineData("feb-2018")]
         [InlineData("Feb-2018")]
@@ -143,6 +175,12 @@ namespace TimeTracker.Library.Test.Services.Orchestration
         [InlineData("feb 2018")]
         [InlineData("Feb 2018")]
         [InlineData("FEB 2018")]
+        [InlineData("Febr 2018")]
+        [InlineData("Febr-2018")]
+        [InlineData("FEBRUARY 2018")]
+        [InlineData("FEBRUARY-2018")]
+        [InlineData("February 2018")]
+        [InlineData("February-2018")]
         public async Task CanRequestReportForSpecificMonthAndYearWithoutDashParsingIssues(string dateEntry)
         {
             DateTime date = new DateTime(2018, 2, 1);

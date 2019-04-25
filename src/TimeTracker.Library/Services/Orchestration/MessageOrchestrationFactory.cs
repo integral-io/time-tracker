@@ -27,6 +27,8 @@ namespace TimeTracker.Library.Services.Orchestration
                     return new DeleteMessageOrchestration(dbContext);
                 case SlackMessageOptions.Report:
                     return new ReportMessageOrchestration(dbContext);
+                case SlackMessageOptions.Projects:
+                        return new ProjectsMessageOrchestration(dbContext);
                 case SlackMessageOptions.Help:
                     return new HelpMessageOrchestration();
                 default:
