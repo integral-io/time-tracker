@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using FluentAssertions;
 using TimeTracker.Data;
@@ -233,7 +234,74 @@ namespace TimeTracker.Library.Test.Services.Orchestration
             response.Text.Should().Contain($"February {date.Day} {date.Year} Sick Hours: 1.0");
             response.Text.Should().Contain($"February {date.Day} {date.Year} Other Non-billable Hours: 0.0");
         }
-        
+
+        [Fact]
+
+        public async Task WhenRequestingReportForLastTenEntries_ReportIncludesAListOfTenEntries()
+        {
+            DateTime yesterday = DateTime.UtcNow.AddDays(-1);
+            var user = database.Users.First();
+            TimeEntryService timeEntryService = new TimeEntryService(user.UserId, database);
+            await timeEntryService.CreateBillableTimeEntry(yesterday, 2, 1, 1);
+            await timeEntryService.CreateNonBillableTimeEntry(yesterday, 3, null, TimeEntryTypeEnum.Vacation);
+            await timeEntryService.CreateNonBillableTimeEntry(yesterday, 1, "flu", TimeEntryTypeEnum.Sick);
+
+            DateTime twoDaysAgo = yesterday.AddDays(-1);
+            await timeEntryService.CreateBillableTimeEntry(twoDaysAgo, 4, 1, 1);
+            await timeEntryService.CreateNonBillableTimeEntry(twoDaysAgo, 2, null, TimeEntryTypeEnum.Vacation);
+            await timeEntryService.CreateNonBillableTimeEntry(twoDaysAgo, 2, "flu", TimeEntryTypeEnum.Sick);
+
+            DateTime threeDaysAgo = twoDaysAgo.AddDays(-1);
+            await timeEntryService.CreateBillableTimeEntry(threeDaysAgo, 5, 1, 1);
+            await timeEntryService.CreateNonBillableTimeEntry(threeDaysAgo, 1, null, TimeEntryTypeEnum.Vacation);
+            await timeEntryService.CreateNonBillableTimeEntry(threeDaysAgo, 2, "flu", TimeEntryTypeEnum.Sick); 
+            
+            DateTime fourDaysAgo = threeDaysAgo.AddDays(-1);
+            await timeEntryService.CreateBillableTimeEntry(fourDaysAgo, 1, 1, 1);
+            await timeEntryService.CreateNonBillableTimeEntry(fourDaysAgo.AddMinutes(-30), 4, null, TimeEntryTypeEnum.Vacation);
+            await timeEntryService.CreateNonBillableTimeEntry(fourDaysAgo.AddMinutes(-15), 2, "flu", TimeEntryTypeEnum.Sick); 
+            
+            var response = await orchestrator.HandleCommand(new SlashCommandPayload
+            {    
+                text = "report last",
+                user_id = user.SlackUserId,
+                user_name = user.UserName
+            });
+
+            response.Text.Should().Contain("The Last Ten Time Entries: ").And
+                .Contain(
+                    $"{yesterday.Month}-{yesterday.Day}-{yesterday.Year} {TimeEntryTypeEnum.BillableProject.GetDescription()} 2 hours")
+                .And
+                .Contain(
+                    $"{yesterday.Month}-{yesterday.Day}-{yesterday.Year} {TimeEntryTypeEnum.Vacation.GetDescription()} 3 hours")
+                .And
+                .Contain(
+                    $"{yesterday.Month}-{yesterday.Day}-{yesterday.Year} {TimeEntryTypeEnum.Sick.GetDescription()} 1 hours")
+                .And
+                .Contain(
+                    $"{twoDaysAgo.Month}-{twoDaysAgo.Day}-{twoDaysAgo.Year} {TimeEntryTypeEnum.BillableProject.GetDescription()} 4 hours")
+                .And
+                .Contain(
+                    $"{twoDaysAgo.Month}-{twoDaysAgo.Day}-{twoDaysAgo.Year} {TimeEntryTypeEnum.Vacation.GetDescription()} 2 hours")
+                .And
+                .Contain(
+                    $"{twoDaysAgo.Month}-{twoDaysAgo.Day}-{twoDaysAgo.Year} {TimeEntryTypeEnum.Sick.GetDescription()} 2 hours")
+                .And
+                .Contain(
+                    $"{threeDaysAgo.Month}-{threeDaysAgo.Day}-{threeDaysAgo.Year} {TimeEntryTypeEnum.BillableProject.GetDescription()} 5 hours")
+                .And
+                .Contain(
+                    $"{threeDaysAgo.Month}-{threeDaysAgo.Day}-{threeDaysAgo.Year} {TimeEntryTypeEnum.Vacation.GetDescription()} 1 hours")
+                .And
+                .Contain(
+                    $"{threeDaysAgo.Month}-{threeDaysAgo.Day}-{threeDaysAgo.Year} {TimeEntryTypeEnum.Sick.GetDescription()} 2 hours")
+             
+                .And
+                .Contain(
+                    $"{fourDaysAgo.Month}-{fourDaysAgo.Day}-{fourDaysAgo.Year} {TimeEntryTypeEnum.BillableProject.GetDescription()} 1 hours");
+
+
+        }
         private Task<SlackMessage> RequestReport(User user)
         {
             return orchestrator.HandleCommand(new SlashCommandPayload
@@ -257,5 +325,8 @@ namespace TimeTracker.Library.Test.Services.Orchestration
             database.TimeEntries.Add(timeEntry);
             await database.SaveChangesAsync();
         }
+        
     }
+    
+    
 }
