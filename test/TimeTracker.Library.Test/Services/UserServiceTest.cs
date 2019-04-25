@@ -65,5 +65,25 @@ namespace TimeTracker.Library.Test.Services
             
         }
 
+        [Fact]
+        public async Task GetUserIdFromGoogleId_getsCorrectGuid()
+        {
+            var options = TestHelpers.BuildInMemoryDatabaseOptions("users-3");
+
+            string googleId = Guid.NewGuid().ToString();
+            string first = "first";
+            string last = "last";
+            string email = "email@bobby.com";
+            string slackUserId = "id";
+            using (var context = new TimeTrackerDbContext(options))
+            {
+                var userService = new UserService(context);
+                var user = userService.FindOrCreateSlackUser(slackUserId, "username");
+                await userService.SaveGoogleInfo(slackUserId, googleId, first, last, email);
+                var userId = await userService.GetUserIdFromGoogleId(googleId);
+                userId.Should().Be(user.Result.UserId);
+            }
+        }
+
     }
 }

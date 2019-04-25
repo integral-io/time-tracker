@@ -56,9 +56,10 @@ namespace TimeTracker.Library.Services
             db.Users.Update(user);
         }
 
-        public Guid GetUserIdFromGoogleId(string googleId)
+        public async Task<Guid> GetUserIdFromGoogleId(string googleId)
         {
-            throw new NotImplementedException();
+            var user = db.Users.FirstOrDefaultAsync(x => x.GoogleIdentifier == googleId);
+            return user.Result.UserId;
         }
     }
 }
