@@ -10,7 +10,6 @@ namespace TimeTracker.Library.Services.Interpretation
     {
         public string Month { get; set; }
         public string Year { get; set; }
-
         public bool HasDate { get; set; }
     }
 
@@ -25,6 +24,7 @@ namespace TimeTracker.Library.Services.Interpretation
             .AppendLine("*/hours* report month <month> <optional: year> _generate report of hours for month (ie. apr) default is current year_")
             .AppendLine("*/hours* report year <year> _generate report of hours for year_")
             .AppendLine("*/hours* report date <date> _generate report for day (include dashes)_")
+            .AppendLine("*/hours* report last _generate report for last ten days_")
             .ToString();
 
         protected override void ExtractInto(ReportInterpretedMessage message,
@@ -41,7 +41,10 @@ namespace TimeTracker.Library.Services.Interpretation
                 {
                     CreateDateWithYear(message, splitText);
                 }
-
+                if (splitText.ElementAt(1).Text.Equals("days"))
+                {
+                    CreateDateWithYear(message, splitText);
+                }
                 if (splitText.ElementAt(1).Text.Equals("date"))
                 {
                     splitText.ElementAt(1).IsUsed = true;
