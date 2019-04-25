@@ -10,8 +10,8 @@ namespace TimeTracker.Library.Services.Interpretation
     {
         public string Month { get; set; }
         public string Year { get; set; }
-
         public bool HasDate { get; set; }
+        public bool GetLastEntries { get; set; }
     }
 
     public class ReportInterpreter : SlackMessageInterpreter<ReportInterpretedMessage>
@@ -25,23 +25,28 @@ namespace TimeTracker.Library.Services.Interpretation
             .AppendLine("*/hours* report month <month> <optional: year> _generate report of hours for month (ie. apr) default is current year_")
             .AppendLine("*/hours* report year <year> _generate report of hours for year_")
             .AppendLine("*/hours* report date <date> _generate report for day (include dashes)_")
+            .AppendLine("*/hours* report last _generate report for last ten days_")
             .ToString();
 
         protected override void ExtractInto(ReportInterpretedMessage message,
             List<TextMessagePart> splitText)
         {
-            if (splitText.Count > 2)
+            if (splitText.Count > 1 && splitText.ElementAt(1).Text.Equals("last"))
             {
-                if (splitText.ElementAt(1).Text.Equals("month"))
+                message.GetLastEntries = true;
+                splitText.ElementAt(1).IsUsed = true;
+            }
+            else if (splitText.Count > 2)
+            {
+                message.GetLastEntries = false;
+                if (splitText.Count > 1 && splitText.ElementAt(1).Text.Equals("month"))
                 {
                     SetUpReportForMonth(message, splitText);
                 }
-                
                 if (splitText.ElementAt(1).Text.Equals("year"))
                 {
                     CreateDateWithYear(message, splitText);
                 }
-
                 if (splitText.ElementAt(1).Text.Equals("date"))
                 {
                     splitText.ElementAt(1).IsUsed = true;
@@ -68,7 +73,7 @@ namespace TimeTracker.Library.Services.Interpretation
                 CreateDateWithMonthAndDefaultYear(message, splitText);
             }
         }
-
+        
         private static void CreateDateWithMonthYear(ReportInterpretedMessage message, List<TextMessagePart> splitText)
         {
             message.Month = splitText.ElementAt(2).Text;
