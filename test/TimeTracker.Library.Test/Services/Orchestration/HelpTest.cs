@@ -69,11 +69,23 @@ namespace TimeTracker.Library.Test.Services.Orchestration
             var slackMessage = await orchestrator.HandleCommand(payload);
 
             slackMessage.Text.Should()
-                .Contain("*/hours* report _generate default report of hours for month and ytd_").And
+                .Contain("*/hours* report _generate default report of hours for week, month, and ytd_").And
                 .Contain("*/hours* report month <month> <optional: year> _generate report of hours for month (ie. apr) default is current year_").And
                 .Contain("*/hours* report year <year> _generate report of hours for year_").And
                 .Contain("*/hours* report date <date> _generate report for day (include dashes)_");
         }
+
+        [Fact]
+        public async Task WhenRequestingHelpForProjects_ShowsSlackSpecificHelpMessage()
+        {
+            var payload = CreateHelpRequest("projects help");
+
+            var slackMessage = await orchestrator.HandleCommand(payload);
+
+            slackMessage.Text.Should()
+                .Be("*/hours* projects _display a list of available projects_");
+        }
+
 
         private static SlashCommandPayload CreateHelpRequest(string helpText)
         {
