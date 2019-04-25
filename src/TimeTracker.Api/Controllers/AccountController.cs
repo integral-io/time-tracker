@@ -35,7 +35,7 @@ namespace TimeTracker.Api.Controllers
 
             await userService.SaveGoogleInfo(slackUser, googleId, first, last, email);
 
-            return RedirectToAction("Index", "Home");
+            return RedirectToAction("UserEntryReport", "WebReport");
         }
     }
 }
