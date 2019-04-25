@@ -38,6 +38,11 @@ namespace TimeTracker.Library.Services.Orchestration
                 report = await userReportSvc.GetHoursSummaryYear(message.Date.Year);
                 return new SlackMessageResponse(report.ToYearlyMessage(), true);
             }
+            else if (message.GetLastEntries)
+            {
+                var stringReport = await userReportSvc.GetLastTenEntries();
+                return new SlackMessageResponse(stringReport, true);
+            }
             else
             {
                 report = await userReportSvc.GetHoursSummaryDefaultWeekMonthAndYtd();

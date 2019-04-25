@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using TimeTracker.Data;
@@ -126,6 +127,24 @@ namespace TimeTracker.Library.Services
             return timeEntryReport;
 
         }
+        
+        public async Task<String> GetLastTenEntries()
+        {
+            var allHours = await QueryAllHours();
+            var sortedHours = allHours.OrderByDescending(x => x.Date).ToList().Take(10);
+            
+            StringBuilder stringBuilder = new StringBuilder();
+            stringBuilder.AppendLine("The Last Ten Time Entries: ");
+
+            foreach (var entry in sortedHours)
+            {
+                stringBuilder.AppendLine(entry.Date.Month + "-" + entry.Date.Day + "-" + entry.Date.Year + " " +
+                                         entry.TimeEntryType.GetDescription() + " " + entry.Hours + " hours");
+            }
+
+            return stringBuilder.ToString();
+
+        }
 
         private double CalculateWeeklyHours(IReadOnlyCollection<HourPair> hours, DateTime beginningOfWeek, TimeEntryTypeEnum type)
         {
@@ -173,5 +192,7 @@ namespace TimeTracker.Library.Services
 
             return query.Sum(x => x.Hours);        
         }
+
+     
     }
 }

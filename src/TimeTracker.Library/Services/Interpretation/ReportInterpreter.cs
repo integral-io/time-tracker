@@ -11,6 +11,7 @@ namespace TimeTracker.Library.Services.Interpretation
         public string Month { get; set; }
         public string Year { get; set; }
         public bool HasDate { get; set; }
+        public bool GetLastEntries { get; set; }
     }
 
     public class ReportInterpreter : SlackMessageInterpreter<ReportInterpretedMessage>
@@ -30,8 +31,15 @@ namespace TimeTracker.Library.Services.Interpretation
         protected override void ExtractInto(ReportInterpretedMessage message,
             List<TextMessagePart> splitText)
         {
-            if (splitText.Count > 2)
+            if (splitText.ElementAt(1).Text.Equals("last"))
             {
+                message.GetLastEntries = true;
+                splitText.ElementAt(1).IsUsed = true;
+
+            }
+            else if (splitText.Count > 2)
+            {
+                message.GetLastEntries = false;
                 if (splitText.ElementAt(1).Text.Equals("month"))
                 {
                     SetUpReportForMonth(message, splitText);
@@ -71,6 +79,7 @@ namespace TimeTracker.Library.Services.Interpretation
 
         private static void CreateDateWithMonthYear(ReportInterpretedMessage message, List<TextMessagePart> splitText)
         {
+     
             message.Month = splitText.ElementAt(2).Text;
             splitText.ElementAt(2).IsUsed = true;
             message.Year = splitText.ElementAt(3).Text;
