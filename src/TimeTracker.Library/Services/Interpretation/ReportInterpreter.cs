@@ -36,15 +36,12 @@ namespace TimeTracker.Library.Services.Interpretation
                 {
                     SetUpReportForMonth(message, splitText);
                 }
-                
+
                 if (splitText.ElementAt(1).Text.Equals("year"))
                 {
                     CreateDateWithYear(message, splitText);
                 }
-                if (splitText.ElementAt(1).Text.Equals("days"))
-                {
-                    CreateDateWithYear(message, splitText);
-                }
+
                 if (splitText.ElementAt(1).Text.Equals("date"))
                 {
                     splitText.ElementAt(1).IsUsed = true;
