@@ -31,25 +31,22 @@ namespace TimeTracker.Library.Services.Interpretation
         protected override void ExtractInto(ReportInterpretedMessage message,
             List<TextMessagePart> splitText)
         {
-            if (splitText.ElementAt(1).Text.Equals("last"))
+            if (splitText.Count > 1 && splitText.ElementAt(1).Text.Equals("last"))
             {
                 message.GetLastEntries = true;
                 splitText.ElementAt(1).IsUsed = true;
-
             }
             else if (splitText.Count > 2)
             {
                 message.GetLastEntries = false;
-                if (splitText.ElementAt(1).Text.Equals("month"))
+                if (splitText.Count > 1 && splitText.ElementAt(1).Text.Equals("month"))
                 {
                     SetUpReportForMonth(message, splitText);
                 }
-
                 if (splitText.ElementAt(1).Text.Equals("year"))
                 {
                     CreateDateWithYear(message, splitText);
                 }
-
                 if (splitText.ElementAt(1).Text.Equals("date"))
                 {
                     splitText.ElementAt(1).IsUsed = true;
@@ -76,10 +73,9 @@ namespace TimeTracker.Library.Services.Interpretation
                 CreateDateWithMonthAndDefaultYear(message, splitText);
             }
         }
-
+        
         private static void CreateDateWithMonthYear(ReportInterpretedMessage message, List<TextMessagePart> splitText)
         {
-     
             message.Month = splitText.ElementAt(2).Text;
             splitText.ElementAt(2).IsUsed = true;
             message.Year = splitText.ElementAt(3).Text;
