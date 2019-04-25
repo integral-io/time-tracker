@@ -13,6 +13,7 @@ namespace TimeTracker.Api.Controllers
     {
         private readonly TimeTrackerDbContext dbContext;
         private readonly UserService userService;
+        private const string url = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/";
 
         public AccountController(TimeTrackerDbContext dbContext)
         {
@@ -25,12 +26,12 @@ namespace TimeTracker.Api.Controllers
         public async Task<IActionResult> LinkSlack(string slackUser)
         {
             var ident = User.Identity as ClaimsIdentity;
-            var user = ident.Claims.First(x => x.Value == "Identifier");
+            var user = ident.Claims.First(x => x.Type == url + "nameidentifier");
             string googleId = user.Value;
 
-            string first = ident.Claims.First(x => x.Value == "First").Value;
-            string last = ident.Claims.First(x => x.Value == "Last").Value;
-            string email = ident.Claims.First(x => x.Value == "Email").Value;
+            string first = ident.Claims.First(x => x.Type == url + "givenname").Value;
+            string last = ident.Claims.First(x => x.Type == url + "surname").Value;    
+            string email = ident.Claims.First(x => x.Type == url + "emailaddress").Value;
 
             await userService.SaveGoogleInfo(slackUser, googleId, first, last, email);
 

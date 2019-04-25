@@ -22,14 +22,12 @@ namespace TimeTracker.Api.Controllers
         }
         
         [HttpGet("userEntryReport")]
-        private async Task<ViewResult> UserEntryReport()
+        public async Task<ViewResult> UserEntryReport()
         {
             var ident = User.Identity as ClaimsIdentity;
             // refactor this line, also used in AccountController
-            string googleId = ident.Claims.First(x => x.Value == "Identifier").Value;
-            // we need something to convert from google id to our UserId, and then some kind of caching layer,
-            // or inherit from a master Controller that handles it under the covers. 
-            Guid userId = userService.GetUserIdFromGoogleId(googleId);
+            string googleId = ident.Claims.First(x => x.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier").Value;
+            Guid userId = await userService.GetUserIdFromGoogleId(googleId);
             
             var webReportService = new WebReportService(dbContext);
             var items = await webReportService.GetUserReport(userId);

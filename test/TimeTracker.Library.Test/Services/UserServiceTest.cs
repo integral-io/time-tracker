@@ -9,9 +9,8 @@ using Xunit;
 
 namespace TimeTracker.Library.Test.Services
 {
-    public class UserServiceTest 
+    public class UserServiceTest
     {
-
         [Fact]
         public async Task FindOrCreateSlackUser_savesNewUserAndReturnsExisting()
         {
@@ -19,7 +18,7 @@ namespace TimeTracker.Library.Test.Services
 
             User userCreated;
             var slackUsername = "userName";
-            
+
             using (var context = new TimeTrackerDbContext(options))
             {
                 var sut = new UserService(context);
@@ -47,33 +46,35 @@ namespace TimeTracker.Library.Test.Services
             string first = "first";
             string last = "last";
             string email = "email@bobby.com";
-                
+
             using (var context = new TimeTrackerDbContext(options))
             {
                 var sut = new UserService(context);
                 var userCreated = await sut.FindOrCreateSlackUser(slackUserId, slackUsername);
 
                 await sut.SaveGoogleInfo(slackUserId, googleId, first, last, email);
+            }
 
+            using (var context = new TimeTrackerDbContext(options))
+            {
                 var dbUser = context.Users.FirstOrDefault(x => x.SlackUserId == slackUserId);
-
                 dbUser.LastName.Should().Be(last);
                 dbUser.FirstName.Should().Be(first);
                 dbUser.GoogleIdentifier.Should().Be(googleId);
                 dbUser.OrganizationEmail.Should().Be(email);
+                
             }
-            
         }
 
         [Fact]
         public async Task GetUserIdFromGoogleId_getsCorrectGuid()
         {
             var options = TestHelpers.BuildInMemoryDatabaseOptions("users-3");
-
             string googleId = Guid.NewGuid().ToString();
             string first = "first";
             string last = "last";
             string email = "email@bobby.com";
+
             string slackUserId = "id";
             using (var context = new TimeTrackerDbContext(options))
             {
@@ -84,6 +85,5 @@ namespace TimeTracker.Library.Test.Services
                 userId.Should().Be(user.Result.UserId);
             }
         }
-
     }
 }
