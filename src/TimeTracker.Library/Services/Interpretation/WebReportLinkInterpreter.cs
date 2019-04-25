@@ -6,7 +6,6 @@ namespace TimeTracker.Library.Services.Interpretation
 {
     public class WebReportLinkInterpretedMessage : InterpretedMessage
     {
-        public string Url { get; set; }
     }
 
     public class WebReportLinkInterpreter : SlackMessageInterpreter<WebReportLinkInterpretedMessage>
@@ -19,7 +18,6 @@ namespace TimeTracker.Library.Services.Interpretation
 
         protected override void ExtractInto(WebReportLinkInterpretedMessage message, List<TextMessagePart> splitText)
         {
-            message.Url = "http://integral.io";
         }
     }
 }

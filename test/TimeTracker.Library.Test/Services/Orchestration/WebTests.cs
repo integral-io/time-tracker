@@ -35,7 +35,7 @@ namespace TimeTracker.Library.Test.Services.Orchestration
                 user_name = user.UserName
             });
 
-            var link = "https://localhost:5001/user/web/" + user.SlackUserId;
+            var link = "https://localhost:5001/account/linkslack?slackuser=" + user.SlackUserId;
 
             slackMessage.Text.Should().Be($"Click this link {link} to access your hours on the web.");
         }
