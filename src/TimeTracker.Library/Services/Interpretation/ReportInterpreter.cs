@@ -6,12 +6,22 @@ using TimeTracker.Library.Models;
 
 namespace TimeTracker.Library.Services.Interpretation
 {
+    public enum ReportType
+    {
+        Default,
+        ForMonth,
+        ForYear,
+        ForSpecificDate,
+        ForMostRecent
+    }
+    
     public class ReportInterpretedMessage : InterpretedMessage
     {
         public string Month { get; set; }
         public string Year { get; set; }
         public bool HasDate { get; set; }
         public bool GetLastEntries { get; set; }
+        public ReportType ToGenerate { get; set; }
     }
 
     public class ReportInterpreter : SlackMessageInterpreter<ReportInterpretedMessage>
@@ -34,6 +44,7 @@ namespace TimeTracker.Library.Services.Interpretation
             if (splitText.Count > 1 && splitText.ElementAt(1).Text.Equals("last"))
             {
                 message.GetLastEntries = true;
+                message.ToGenerate = ReportType.ForMostRecent;
                 splitText.ElementAt(1).IsUsed = true;
             }
             else if (splitText.Count > 2)
@@ -42,15 +53,18 @@ namespace TimeTracker.Library.Services.Interpretation
                 if (splitText.Count > 1 && splitText.ElementAt(1).Text.Equals("month"))
                 {
                     SetUpReportForMonth(message, splitText);
+                    message.ToGenerate = ReportType.ForMonth;
                 }
                 if (splitText.ElementAt(1).Text.Equals("year"))
                 {
                     CreateDateWithYear(message, splitText);
+                    message.ToGenerate = ReportType.ForYear;
                 }
                 if (splitText.ElementAt(1).Text.Equals("date"))
                 {
                     splitText.ElementAt(1).IsUsed = true;
                     message.HasDate = true;
+                    message.ToGenerate = ReportType.ForSpecificDate;
                 }
             }
         }

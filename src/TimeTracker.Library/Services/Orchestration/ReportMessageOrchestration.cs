@@ -22,32 +22,56 @@ namespace TimeTracker.Library.Services.Orchestration
 
             var userReportSvc = new UserReportService(dbContext, user.UserId);
 
-            TimeEntryReport report;
-            if (message.HasDate)
+            return await DecideWhichReportToGenerate(message, userReportSvc);
+        }
+
+        private static async Task<SlackMessageResponse> DecideWhichReportToGenerate(ReportInterpretedMessage message, UserReportService userReportSvc)
+        {
+            switch (message.ToGenerate)
             {
-                report = await userReportSvc.GetHoursSummaryForDay(message.Date);
-                return new SlackMessageResponse(report.ToDayMessage(), true);
-            }
-            else if (message.Month != null)
-            {
-                report = await userReportSvc.GetHoursSummaryMonth(message.Date.Month, Convert.ToInt32(message.Year));
-                return new SlackMessageResponse(report.ToMonthlyMessage(), true);
-            }
-            else if (message.Year != null)
-            {
-                report = await userReportSvc.GetHoursSummaryYear(message.Date.Year);
-                return new SlackMessageResponse(report.ToYearlyMessage(), true);
-            }
-            else if (message.GetLastEntries)
-            {
-                var stringReport = await userReportSvc.GetLastTenEntries();
-                return new SlackMessageResponse(stringReport, true);
-            }
-            else
-            {
-                report = await userReportSvc.GetHoursSummaryDefaultWeekMonthAndYtd();
-                return new SlackMessageResponse(report.ToWeekMonthAndYTDMessage(), true);
+                case ReportType.ForSpecificDate:
+                    return await GenerateDateReport(message, userReportSvc);
+                case ReportType.ForMonth:
+                    return await GenerateMonthReport(message, userReportSvc);
+                case ReportType.ForYear:
+                    return await GenerateYearReport(message, userReportSvc);
+                case ReportType.ForMostRecent:
+                    return await GenerateLast10EntryReport(userReportSvc);
+                default:
+                    return await GenerateDefaultReport(userReportSvc);
             }
         }
+
+        private static async Task<SlackMessageResponse> GenerateLast10EntryReport(UserReportService userReportSvc)
+        {
+            var stringReport = await userReportSvc.GetLastTenEntries();
+            return new SlackMessageResponse(stringReport, true);
+        }
+
+        private static async Task<SlackMessageResponse> GenerateDefaultReport(UserReportService userReportSvc)
+        {
+            TimeEntryReport report = await userReportSvc.GetHoursSummaryDefaultWeekMonthAndYtd();
+            return new SlackMessageResponse(report.ToWeekMonthAndYTDMessage(), true);
+        }
+
+        private static async Task<SlackMessageResponse> GenerateYearReport(ReportInterpretedMessage message, UserReportService userReportSvc)
+        {
+            TimeEntryReport report = await userReportSvc.GetHoursSummaryYear(message.Date.Year);
+            return new SlackMessageResponse(report.ToYearlyMessage(), true);
+        }
+
+        private static async Task<SlackMessageResponse> GenerateMonthReport(ReportInterpretedMessage message, UserReportService userReportSvc)
+        {
+            TimeEntryReport report =
+                await userReportSvc.GetHoursSummaryMonth(message.Date.Month, Convert.ToInt32(message.Year));
+            return new SlackMessageResponse(report.ToMonthlyMessage(), true);
+        }
+
+        private static async Task<SlackMessageResponse> GenerateDateReport(ReportInterpretedMessage message, UserReportService userReportSvc)
+        {
+            TimeEntryReport report = await userReportSvc.GetHoursSummaryForDay(message.Date);
+            return new SlackMessageResponse(report.ToDayMessage(), true);
+        }
+
     }
 } 
