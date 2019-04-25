@@ -54,12 +54,13 @@ namespace TimeTracker.Library.Services
             user.OrganizationEmail = email;
 
             db.Users.Update(user);
+            await db.SaveChangesAsync();
         }
 
         public async Task<Guid> GetUserIdFromGoogleId(string googleId)
         {
-            var user = db.Users.FirstOrDefaultAsync(x => x.GoogleIdentifier == googleId);
-            return user.Result.UserId;
+            var user = await db.Users.FirstOrDefaultAsync(x => x.GoogleIdentifier == googleId);
+            return user.UserId;
         }
     }
 }
