@@ -15,11 +15,12 @@ namespace TimeTracker.Library.Test.Services.Orchestration
     {
         private readonly TimeTrackerDbContext database;
         private readonly SlackMessageOrchestrator orchestrator;
+        private const string WebAppUri = "https://localhost";
 
         public DeleteTests()
         {
             database = new InMemoryDatabaseWithProjectsAndUsers().Database;
-            orchestrator = new SlackMessageOrchestrator(database);
+            orchestrator = new SlackMessageOrchestrator(database, WebAppUri);
         }
 
         [Fact]
