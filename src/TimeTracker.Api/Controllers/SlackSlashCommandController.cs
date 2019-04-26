@@ -1,5 +1,7 @@
+using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using TimeTracker.Data;
 using TimeTracker.Library.Models;
 using TimeTracker.Library.Services.Orchestration;
@@ -11,10 +13,11 @@ namespace TimeTracker.Api.Controllers
     public class SlackSlashCommandController : ControllerBase
     {
         private readonly SlackMessageOrchestrator messageOrchestrator;
+        private const string WebAppUriKey = "WebAppUri";
 
-        public SlackSlashCommandController(TimeTrackerDbContext dbContext)
+        public SlackSlashCommandController(TimeTrackerDbContext dbContext, IConfiguration config)
         {
-            messageOrchestrator = new SlackMessageOrchestrator(dbContext);
+            messageOrchestrator = new SlackMessageOrchestrator(dbContext, config.GetValue<String>(WebAppUriKey));
         }
 
         [HttpPost("hours")]

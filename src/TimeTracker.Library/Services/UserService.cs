@@ -37,5 +37,30 @@ namespace TimeTracker.Library.Services
             }
             return user;
         }
+
+        public async Task SaveGoogleInfo(string slackUserId, string googleIdentifier, string first, string last, string email)
+        {
+            Guard.ThrowIfCheckFails(!string.IsNullOrEmpty(slackUserId), "cannot be null or empty", nameof(slackUserId));
+            Guard.ThrowIfCheckFails(!string.IsNullOrEmpty(googleIdentifier), "cannot be null or empty", nameof(googleIdentifier));
+
+            var user = await db.Users.FirstOrDefaultAsync(
+                x => x.SlackUserId.Equals(slackUserId, StringComparison.InvariantCultureIgnoreCase));
+
+            Guard.ThrowIfCheckFails(user != null, "must have existing slack user", nameof(user));
+
+            user.FirstName = first;
+            user.LastName = last;
+            user.GoogleIdentifier = googleIdentifier;
+            user.OrganizationEmail = email;
+
+            db.Users.Update(user);
+            await db.SaveChangesAsync();
+        }
+
+        public async Task<Guid> GetUserIdFromGoogleId(string googleId)
+        {
+            var user = await db.Users.FirstOrDefaultAsync(x => x.GoogleIdentifier == googleId);
+            return user.UserId;
+        }
     }
 }

@@ -6,6 +6,7 @@ namespace TimeTracker.Library.Services.Orchestration
         Record,
         Delete,
         Report,
+        Web,
         Projects
     }
 }

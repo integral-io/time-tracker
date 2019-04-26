@@ -7,11 +7,13 @@ namespace TimeTracker.Library.Services.Orchestration
 {
     public class SlackMessageOrchestrator
     {
+        private readonly string webAppUri;
         private readonly MessageOrchestrationFactory messageOrchestrationFactory;
 
-        public SlackMessageOrchestrator(TimeTrackerDbContext dbContext)
+        public SlackMessageOrchestrator(TimeTrackerDbContext dbContext, string webAppUri)
         {
-            messageOrchestrationFactory = new MessageOrchestrationFactory(dbContext);
+            this.webAppUri = webAppUri;
+            messageOrchestrationFactory = new MessageOrchestrationFactory(dbContext, webAppUri);
         }
 
         /// <summary>
