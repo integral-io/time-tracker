@@ -93,6 +93,28 @@ namespace TimeTracker.Library.Test.Services.Orchestration
             timeEntry.Should().NotBeNull();
             timeEntry.Hours.Should().Be(3);
         }
+        
+        [Fact]
+        public async Task WhenRecordVacationHours_SlackMessageIncludesVacationHoursWereRecorded()
+        {
+            var todayString = DateTime.UtcNow.ToString("D");
+            var textCommand = "record vacation 5";
+
+            var slackMessage = await orchestrator.HandleCommand(new SlashCommandPayload()
+            {
+                text = textCommand,
+                user_id = "UT33423",
+                user_name = "James"
+            });
+
+            slackMessage.Text.Should()
+                .Be($"Registered *5.0 hours* for Vacation for date: {todayString}");
+
+            var timeEntry = await database.TimeEntries.FirstOrDefaultAsync();
+            timeEntry.Should().NotBeNull();
+            timeEntry.Hours.Should().Be(5);
+        }
+
 
 
     }
