@@ -1,6 +1,7 @@
 using System.Text;
 using System.Threading.Tasks;
 using TimeTracker.Data;
+using TimeTracker.Data.Models;
 using TimeTracker.Library.Services.Interpretation;
 
 namespace TimeTracker.Library.Services.Orchestration
@@ -40,13 +41,32 @@ namespace TimeTracker.Library.Services.Orchestration
                     $"Registered *{message.Hours:F1} hours* for project *{message.Project}* {message.Date:D}. " +
                     (message.IsWorkFromHome ? "_Worked From Home_" : ""), true);
             }
+            
+            switch (message.TimeEntryType)
+            {
+                case TimeEntryTypeEnum.Sick:
+                    await timeEntryService.CreateNonBillableTimeEntry(message.Date, message.Hours,
+                        message.NonBillReason, message.TimeEntryType);
+                
+                    return new SlackMessageResponse(
+                        $"Registered *{message.Hours:F1} hours* for Sick reason: {message.NonBillReason} for date: {message.Date:D}",
+                        true);
+                
+                case TimeEntryTypeEnum.Vacation:
+                    await timeEntryService.CreateNonBillableTimeEntry(message.Date, message.Hours,
+                        message.NonBillReason, message.TimeEntryType);
+                
+                    return new SlackMessageResponse(
+                        $"Registered *{message.Hours:F1} hours* for Vacation for date: {message.Date:D}",
+                        true);
+                default:
+                    await timeEntryService.CreateNonBillableTimeEntry(message.Date, message.Hours,
+                        message.NonBillReason, message.TimeEntryType);
 
-            await timeEntryService.CreateNonBillableTimeEntry(message.Date, message.Hours,
-                message.NonBillReason, message.TimeEntryType);
-
-            return new SlackMessageResponse(
-                $"Registered *{message.Hours:F1} hours* for Nonbillable reason: {message.NonBillReason ?? message.TimeEntryType.ToString()} for date: {message.Date:D}",
-                true);
+                    return new SlackMessageResponse(
+                        $"Registered *{message.Hours:F1} hours* for Nonbillable reason: {message.NonBillReason ?? message.TimeEntryType.ToString()} for date: {message.Date:D}",
+                        true);
+            }
         }
     }
 }

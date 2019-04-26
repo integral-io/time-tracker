@@ -7,12 +7,22 @@ using TimeTracker.Library.Services.Orchestration;
 
 namespace TimeTracker.Library.Services.Interpretation
 {
+    public enum ReportType
+    {
+        Default,
+        ForMonth,
+        ForYear,
+        ForSpecificDate,
+        ForMostRecent
+    }
+    
     public class ReportInterpretedMessage : InterpretedMessage
     {
         public string Month { get; set; }
         public string Year { get; set; }
         public bool HasDate { get; set; }
         public bool GetLastEntries { get; set; }
+        public ReportType ToGenerate { get; set; }
     }
 
     public class ReportInterpreter : SlackMessageInterpreter<ReportInterpretedMessage>
@@ -32,28 +42,52 @@ namespace TimeTracker.Library.Services.Interpretation
         protected override void ExtractInto(ReportInterpretedMessage message,
             List<TextMessagePart> splitText)
         {
-            if (splitText.Count > 1 && splitText.ElementAt(1).Text.Equals("last"))
+            if (UserRequestedReportOfMostRecentTimeEntries(splitText))
             {
                 message.GetLastEntries = true;
+                message.ToGenerate = ReportType.ForMostRecent;
                 splitText.ElementAt(1).IsUsed = true;
             }
             else if (splitText.Count > 2)
             {
                 message.GetLastEntries = false;
-                if (splitText.Count > 1 && splitText.ElementAt(1).Text.Equals("month"))
+                if (UserRequestedReportForTheMonth(splitText))
                 {
                     SetUpReportForMonth(message, splitText);
+                    message.ToGenerate = ReportType.ForMonth;
                 }
-                if (splitText.ElementAt(1).Text.Equals("year"))
+                if (UserRequestedReportForTheYear(splitText))
                 {
                     CreateDateWithYear(message, splitText);
+                    message.ToGenerate = ReportType.ForYear;
                 }
-                if (splitText.ElementAt(1).Text.Equals("date"))
+                if (UserRequestedReportForSpecificDate(splitText))
                 {
                     splitText.ElementAt(1).IsUsed = true;
                     message.HasDate = true;
+                    message.ToGenerate = ReportType.ForSpecificDate;
                 }
             }
+        }
+
+        private static bool UserRequestedReportForSpecificDate(List<TextMessagePart> splitText)
+        {
+            return splitText.ElementAt(1).Text.Equals("date");
+        }
+
+        private static bool UserRequestedReportForTheYear(List<TextMessagePart> splitText)
+        {
+            return splitText.ElementAt(1).Text.Equals("year");
+        }
+
+        private static bool UserRequestedReportForTheMonth(List<TextMessagePart> splitText)
+        {
+            return splitText.Count > 1 && splitText.ElementAt(1).Text.Equals("month");
+        }
+
+        private static bool UserRequestedReportOfMostRecentTimeEntries(List<TextMessagePart> splitText)
+        {
+            return splitText.Count > 1 && splitText.ElementAt(1).Text.Equals("last");
         }
 
         private static void SetUpReportForMonth(ReportInterpretedMessage message, List<TextMessagePart> splitText)
