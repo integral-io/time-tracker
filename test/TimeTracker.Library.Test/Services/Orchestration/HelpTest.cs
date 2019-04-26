@@ -9,11 +9,12 @@ namespace TimeTracker.Library.Test.Services.Orchestration
     public class HelpTest : IClassFixture<InMemoryDatabaseWithProjectsAndUsers>
     {
         private readonly SlackMessageOrchestrator orchestrator;
+        private const string WebAppUri = "https://localhost";
 
         public HelpTest(InMemoryDatabaseWithProjectsAndUsers inMemoryDatabase)
         {
             var database = inMemoryDatabase.Database;
-            orchestrator = new SlackMessageOrchestrator(database);
+            orchestrator = new SlackMessageOrchestrator(database, WebAppUri);
         }
 
         [Fact]
@@ -27,6 +28,7 @@ namespace TimeTracker.Library.Test.Services.Orchestration
                 .Contain("*/hours* record - Allows the user to record hours.").And
                 .Contain("*/hours* report - Shows the users reported hours.").And
                 .Contain("*/hours* delete - Deletes hours reported.").And
+                .Contain("*/hours* web - Links user to web for hours report.").And
                 .Contain("Add 'help' to each one of the options to get specific help. ex: */hours* record help");
         }
 
@@ -87,7 +89,17 @@ namespace TimeTracker.Library.Test.Services.Orchestration
                 .Be("*/hours* projects _display a list of available projects_");
         }
 
+        [Fact]
+        public async Task WhenRequestingForWebHelp_ShowsSlackSpecificHelpMessage()
+        {
+            var payload = CreateHelpRequest("web help");
 
+            var slackMessage = await orchestrator.HandleCommand(payload);
+
+            slackMessage.Text.Should()
+                .Be("*/hours* web - _generate a link to a report of hours_");
+        }
+        
         private static SlashCommandPayload CreateHelpRequest(string helpText)
         {
             return new SlashCommandPayload

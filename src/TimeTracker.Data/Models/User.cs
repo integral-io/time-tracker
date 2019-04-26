@@ -14,6 +14,16 @@ namespace TimeTracker.Data.Models
         public string FirstName { get; set; }
         public string LastName { get; set; }
 
+        /// <summary>
+        /// Should not be edited by user. Claim: http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier
+        /// </summary>
+        public string GoogleIdentifier { get; set; }
+
+        /// <summary>
+        /// Should not be edited by user. Claim: http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress
+        /// </summary>
+        public string OrganizationEmail { get; set; }
+
         public ICollection<TimeEntry> TimeEntries { get; set; }
     }
 }

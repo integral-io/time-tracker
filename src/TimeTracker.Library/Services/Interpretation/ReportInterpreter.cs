@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using TimeTracker.Library.Models;
+using TimeTracker.Library.Services.Orchestration;
 
 namespace TimeTracker.Library.Services.Interpretation
 {
@@ -26,7 +27,7 @@ namespace TimeTracker.Library.Services.Interpretation
 
     public class ReportInterpreter : SlackMessageInterpreter<ReportInterpretedMessage>
     {
-        public ReportInterpreter() : base("report")
+        public ReportInterpreter() : base(SlackMessageOptions.Report)
         {
         }
 
