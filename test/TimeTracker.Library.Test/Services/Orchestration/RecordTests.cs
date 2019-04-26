@@ -72,6 +72,28 @@ namespace TimeTracker.Library.Test.Services.Orchestration
             database.TimeEntries.Should().BeEmpty();
             slackMessage.Text.Should().Be($"Error: *Not sure how to interpret 'some nonsense'*");
         }
+        
+        [Fact]
+        public async Task WhenRecordSickHours_SlackMessageIncludesSickHoursWereRecorded()
+        {
+            var todayString = DateTime.UtcNow.ToString("D");
+            var textCommand = "record sick 3 flu";
+
+            var slackMessage = await orchestrator.HandleCommand(new SlashCommandPayload()
+            {
+                text = textCommand,
+                user_id = "UT33423",
+                user_name = "James"
+            });
+
+            slackMessage.Text.Should()
+                .Be($"Registered *3.0 hours* for Sick reason: flu for date: {todayString}");
+
+            var timeEntry = await database.TimeEntries.FirstOrDefaultAsync();
+            timeEntry.Should().NotBeNull();
+            timeEntry.Hours.Should().Be(3);
+        }
+
 
     }
 }

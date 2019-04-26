@@ -62,8 +62,7 @@ namespace TimeTracker.Library.Services.Orchestration
 
         private static async Task<SlackMessageResponse> GenerateMonthReport(ReportInterpretedMessage message, UserReportService userReportSvc)
         {
-            TimeEntryReport report =
-                await userReportSvc.GetHoursSummaryMonth(message.Date.Month, Convert.ToInt32(message.Year));
+            TimeEntryReport report = await userReportSvc.GetHoursSummaryMonth(message.Date.Month, Convert.ToInt32(message.Year));
             return new SlackMessageResponse(report.ToMonthlyMessage(), true);
         }
 

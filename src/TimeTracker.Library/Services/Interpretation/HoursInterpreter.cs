@@ -14,7 +14,6 @@ namespace TimeTracker.Library.Services.Interpretation
         public bool IsWorkFromHome { get; set; }
         public bool IsBillable { get; set; }
         public string NonBillReason { get; set; }
-
         public TimeEntryTypeEnum TimeEntryType { get; set; }
     }
 
@@ -23,7 +22,6 @@ namespace TimeTracker.Library.Services.Interpretation
         public HoursInterpreter() : base("record")
         {
         }
-
         public override string HelpMessage => new StringBuilder()
             .AppendLine("*/hours* record <projectName> <hours> _Will use today date by default_")
             .AppendLine("*/hours* record <projectName> <hours> jan-21 _sets date to january 21 current year_")
@@ -59,9 +57,9 @@ namespace TimeTracker.Library.Services.Interpretation
                 message.IsBillable = true;
                 message.Project = projectOrTypePart.Text;
             }
-
+            
             message.IsWorkFromHome = InterpretIsWorkingFromHome(splitText.Where(x => !x.IsUsed));
-
+            
             if (!message.IsBillable)
             {
                 message.NonBillReason = InterpretNonBillableReason(splitText.Where(x => !x.IsUsed).ToList());
@@ -85,12 +83,12 @@ namespace TimeTracker.Library.Services.Interpretation
             {
                 return TimeEntryTypeEnum.NonBillable;
             }
-
+            
             if (Enum.TryParse(text, true, out TimeEntryTypeEnum entryTypeEnum))
             {
                 return entryTypeEnum;
             }
-
+            
             return null;
         }
 
@@ -103,7 +101,6 @@ namespace TimeTracker.Library.Services.Interpretation
             wfhPart.IsUsed = true;
             return true;
         }
-
         private static string InterpretNonBillableReason(List<TextMessagePart> unusedParts)
         {
             unusedParts.ForEach(x => x.IsUsed = true);

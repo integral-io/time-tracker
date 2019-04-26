@@ -1,6 +1,7 @@
 using System.Text;
 using System.Threading.Tasks;
 using TimeTracker.Data;
+using TimeTracker.Data.Models;
 using TimeTracker.Library.Services.Interpretation;
 
 namespace TimeTracker.Library.Services.Orchestration
@@ -40,6 +41,16 @@ namespace TimeTracker.Library.Services.Orchestration
                 return new SlackMessageResponse(
                     $"Registered *{message.Hours:F1} hours* for project *{message.Project}* {message.Date:D}. " +
                     (message.IsWorkFromHome ? "_Worked From Home_" : ""), true);
+            }
+            
+            if (message.TimeEntryType == TimeEntryTypeEnum.Sick)
+            {
+                await timeEntryService.CreateNonBillableTimeEntry(message.Date, message.Hours,
+                    message.NonBillReason, message.TimeEntryType);
+                
+                return new SlackMessageResponse(
+                    $"Registered *{message.Hours:F1} hours* for Sick reason: {message.NonBillReason} for date: {message.Date:D}",
+                    true);  
             }
 
             await timeEntryService.CreateNonBillableTimeEntry(message.Date, message.Hours,
