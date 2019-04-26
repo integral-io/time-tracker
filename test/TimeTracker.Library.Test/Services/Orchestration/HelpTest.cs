@@ -28,6 +28,7 @@ namespace TimeTracker.Library.Test.Services.Orchestration
                 .Contain("*/hours* record - Allows the user to record hours.").And
                 .Contain("*/hours* report - Shows the users reported hours.").And
                 .Contain("*/hours* delete - Deletes hours reported.").And
+                .Contain("*/hours* web - Links user to web for hours report.").And
                 .Contain("Add 'help' to each one of the options to get specific help. ex: */hours* record help");
         }
 
