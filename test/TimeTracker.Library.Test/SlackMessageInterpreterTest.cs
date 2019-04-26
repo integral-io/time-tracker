@@ -210,6 +210,10 @@ namespace TimeTracker.Library.Test
             sut.Date.Day.Should().Be(17);
             sut.TimeEntryType.Should().Be(timeEntryType);
         }
+        #endregion
+
+        #region web
+        
 
         #endregion
 
@@ -259,4 +263,5 @@ namespace TimeTracker.Library.Test
             };
         }
     }
+
 }

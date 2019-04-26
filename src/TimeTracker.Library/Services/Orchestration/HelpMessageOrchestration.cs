@@ -13,6 +13,7 @@ namespace TimeTracker.Library.Services.Orchestration
             sb.AppendLine("*/hours* record - Allows the user to record hours.");
             sb.AppendLine("*/hours* report - Shows the users reported hours.");
             sb.AppendLine("*/hours* delete - Deletes hours reported.");
+            sb.AppendLine("*/hours* web - Links user to web for hours report.");
             sb.AppendLine("Add 'help' to each one of the options to get specific help. ex: */hours* record help");
 
             return Task.FromResult(new SlackMessage

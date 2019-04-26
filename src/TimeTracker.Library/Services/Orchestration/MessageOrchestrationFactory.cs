@@ -8,10 +8,12 @@ namespace TimeTracker.Library.Services.Orchestration
     public class MessageOrchestrationFactory
     {
         private readonly TimeTrackerDbContext dbContext;
+        private readonly string webAppUri;
 
-        public MessageOrchestrationFactory(TimeTrackerDbContext dbContext)
+        public MessageOrchestrationFactory(TimeTrackerDbContext dbContext, string webAppUri)
         {
             this.dbContext = dbContext;
+            this.webAppUri = webAppUri;
         }
 
         public IMessageOrchestration Create(SlashCommandPayload payload) 
@@ -21,6 +23,8 @@ namespace TimeTracker.Library.Services.Orchestration
             
             switch (optionEnum)
             {
+                case SlackMessageOptions.Web:
+                    return new WebMessageOrchestration(dbContext, webAppUri);
                 case SlackMessageOptions.Record:
                     return new RecordMessageOrchestration(dbContext);
                 case SlackMessageOptions.Delete:
