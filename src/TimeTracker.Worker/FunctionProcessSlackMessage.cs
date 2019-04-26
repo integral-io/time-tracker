@@ -37,6 +37,7 @@ namespace TimeTracker.Worker
         private static void SetupServiceCollection()
         {
             if (serviceProvider != null) return;
+            string webAppUri = configuration.GetValue<string>("WebAppUri");
             
             serviceProvider = new ServiceCollection()
                 .AddEntityFrameworkSqlServer()
@@ -47,6 +48,7 @@ namespace TimeTracker.Worker
                     options.UseSqlServer(connectionString)
                         .UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
                 })
+                .AddSingleton(webAppUri)
                 .AddScoped<SlackMessageOrchestrator>()
                 .BuildServiceProvider();
         }

@@ -9,11 +9,12 @@ namespace TimeTracker.Library.Test.Services.Orchestration
     public class HelpTest : IClassFixture<InMemoryDatabaseWithProjectsAndUsers>
     {
         private readonly SlackMessageOrchestrator orchestrator;
+        private const string WebAppUri = "https://localhost";
 
         public HelpTest(InMemoryDatabaseWithProjectsAndUsers inMemoryDatabase)
         {
             var database = inMemoryDatabase.Database;
-            orchestrator = new SlackMessageOrchestrator(database);
+            orchestrator = new SlackMessageOrchestrator(database, WebAppUri);
         }
 
         [Fact]

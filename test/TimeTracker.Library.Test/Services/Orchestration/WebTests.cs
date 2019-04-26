@@ -1,7 +1,9 @@
 using System;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Microsoft.Extensions.Configuration;
 using TimeTracker.Data;
 using TimeTracker.Library.Models;
 using TimeTracker.Library.Services;
@@ -14,11 +16,12 @@ namespace TimeTracker.Library.Test.Services.Orchestration
     {
         private readonly TimeTrackerDbContext database;
         private readonly SlackMessageOrchestrator orchestrator;
+        private const string WebAppUri = "https://localhost";
 
         public WebTests()
         {
             database = new InMemoryDatabaseWithProjectsAndUsers().Database;
-            orchestrator = new SlackMessageOrchestrator(database);
+            orchestrator = new SlackMessageOrchestrator(database, WebAppUri);
         }
 
         [Fact]
@@ -35,7 +38,7 @@ namespace TimeTracker.Library.Test.Services.Orchestration
                 user_name = user.UserName
             });
 
-            var link = "https://localhost:5001/account/linkslack?slackuser=" + user.SlackUserId;
+            var link = $"{WebAppUri}/account/linkslack?slackuser=" + user.SlackUserId;
 
             slackMessage.Text.Should().Be($"Click this link {link} to access your hours on the web.");
         }
