@@ -49,6 +49,38 @@ namespace TimeTracker.Library.Test.Services
             report.Where(x => x.SlackUserName == database.Users.Last().UserName).Should().NotBeEmpty();
         }
 
+        [Fact]
+        public async Task GetAllUsersByDateReport_includesExpectedHours()
+        {
+            var report = await adminReportService.GetAllUsersByDate(new DateTime(DateTime.UtcNow.Date.Year, 2, 7));
+
+            report.First().BillableHoursYtd.Should().Be(12);
+            report.First().SickHoursYtd.Should().Be(6);
+            report.First().VacationHoursYtd.Should().Be(13);
+            report.First().OtherNonBillableYtd.Should().Be(6);
+
+            report = await adminReportService.GetAllUsersByDate(new DateTime(DateTime.UtcNow.Date.Year, 2, 15));
+
+            report.First().BillableHoursYtd.Should().Be(8);
+            report.First().SickHoursYtd.Should().Be(0);
+            report.First().VacationHoursYtd.Should().Be(0);
+            report.First().OtherNonBillableYtd.Should().Be(0);
+
+        }
+
+        [Fact]
+        public async Task GetAllUsersByDateReport_filtersCustomRange()
+        {
+            var report = await adminReportService.GetAllUsersByDate(
+                new DateTime(DateTime.UtcNow.Date.Year, 2, 7),
+                new DateTime(DateTime.UtcNow.Date.Year, 2, 12));
+
+            report.First().BillableHoursYtd.Should().Be(0);
+            report.First().SickHoursYtd.Should().Be(4);
+            report.First().VacationHoursYtd.Should().Be(13);
+            report.First().OtherNonBillableYtd.Should().Be(6);
+        }
+
         private async Task PopulateTimeEntries()
         {
             var timeEntryService = new TimeEntryService(database.Users.First().UserId, database);
