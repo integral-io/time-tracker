@@ -6,7 +6,11 @@
 }
 
 <h2>Report by Pay Period or Range</h2>
-/* todo: refactor into partial view*/
+<form asp-action="PeriodReport" asp-controller="AdminReports" method="get"> 
+    <label>Pay Period Start Date:</label>
+    <input name="start" type="text" maxlength="10" placeholder="YYYY-MM-DD"/>
+    <input type="submit"/>
+</form>
 
 <table>
     <thead>
