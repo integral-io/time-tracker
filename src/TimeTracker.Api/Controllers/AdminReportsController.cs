@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -22,17 +23,25 @@ namespace TimeTracker.Api.Controllers
         [HttpGet("ytd")]
         public async Task<ViewResult> AllUsersReport()
         {
-            
             var adminReportService = new AdminReportService(dbContext);
             var items = await adminReportService.GetAllUsersReport();
             return View(items);
         }
         
         [HttpGet("payperiod")]
-        public async Task<ViewResult> PeriodReport(string start, string end)
+        public async Task<ViewResult> PeriodReport(string start, string end = null)
         {
+            if (string.IsNullOrEmpty(start))
+            {
+                ModelState.AddModelError(start, "cannot be empty");
+                return View();
+            }
+            
             var adminReportService = new AdminReportService(dbContext);
-            var items = await adminReportService.GetAllUsersReport();
+            var items = await adminReportService.GetAllUsersByDate(
+                Convert.ToDateTime(start),
+                string.IsNullOrEmpty(end) ? (DateTime?)null : Convert.ToDateTime(end));
+            
             return View(items);
         }
     }
