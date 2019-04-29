@@ -27,16 +27,16 @@ namespace TimeTracker.Library.Services.Interpretation
 
     public class ReportInterpreter : SlackMessageInterpreter<ReportInterpretedMessage>
     {
-        public ReportInterpreter() : base(SlackMessageOptions.Report)
+        public ReportInterpreter() : base(SlackMessageOptions.Summary)
         {
         }
 
         public override string HelpMessage => new StringBuilder()
-            .AppendLine("*/hours* report _generate default report of hours for week, month, and ytd_")
-            .AppendLine("*/hours* report month <month> <optional: year> _generate report of hours for month (ie. apr) default is current year_")
-            .AppendLine("*/hours* report year <year> _generate report of hours for year_")
-            .AppendLine("*/hours* report date <date> _generate report for day (include dashes)_")
-            .AppendLine("*/hours* report last _generate report for last ten days_")
+            .AppendLine("*/hours* summary _generate default summary of hours for week, month, and ytd_")
+            .AppendLine("*/hours* summary month <month> <optional: year> _generate summary of hours for month (ie. apr) default is current year_")
+            .AppendLine("*/hours* summary year <year> _generate summary of hours for year_")
+            .AppendLine("*/hours* summary date <date> _generate summary for day (include dashes)_")
+            .AppendLine("*/hours* summary last _generate summary for last ten days_")
             .ToString();
 
         protected override void ExtractInto(ReportInterpretedMessage message,

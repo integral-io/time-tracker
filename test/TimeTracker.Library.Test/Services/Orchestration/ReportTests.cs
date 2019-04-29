@@ -78,7 +78,7 @@ namespace TimeTracker.Library.Test.Services.Orchestration
             
             var response = await orchestrator.HandleCommand(new SlashCommandPayload
             {    
-                text = "report",
+                text = "summary",
                 user_id = user.SlackUserId,
                 user_name = user.UserName
             });
@@ -105,7 +105,7 @@ namespace TimeTracker.Library.Test.Services.Orchestration
             
             var response = await orchestrator.HandleCommand(new SlashCommandPayload
             {    
-                text = "report month mar",
+                text = "summary month mar",
                 user_id = user.SlackUserId,
                 user_name = user.UserName
             });
@@ -132,7 +132,7 @@ namespace TimeTracker.Library.Test.Services.Orchestration
             
             var response = await orchestrator.HandleCommand(new SlashCommandPayload
             {    
-                text = "report year 2018",
+                text = "summary year 2018",
                 user_id = user.SlackUserId,
                 user_name = user.UserName
             });
@@ -159,7 +159,7 @@ namespace TimeTracker.Library.Test.Services.Orchestration
             
             var response = await orchestrator.HandleCommand(new SlashCommandPayload
             {    
-                text = "report month feb 2018",
+                text = "summary month feb 2018",
                 user_id = user.SlackUserId,
                 user_name = user.UserName
             });
@@ -199,7 +199,7 @@ namespace TimeTracker.Library.Test.Services.Orchestration
             
             var response = await orchestrator.HandleCommand(new SlashCommandPayload
             {    
-                text = "report month " + dateEntry,
+                text = "summary month " + dateEntry,
                 user_id = user.SlackUserId,
                 user_name = user.UserName
             });
@@ -226,7 +226,7 @@ namespace TimeTracker.Library.Test.Services.Orchestration
             
             var response = await orchestrator.HandleCommand(new SlashCommandPayload
             {    
-                text = "report date Feb-9-2018",
+                text = "summary date Feb-9-2018",
                 user_id = user.SlackUserId,
                 user_name = user.UserName
             });
@@ -265,7 +265,7 @@ namespace TimeTracker.Library.Test.Services.Orchestration
             
             var response = await orchestrator.HandleCommand(new SlashCommandPayload
             {    
-                text = "report last",
+                text = "summary last",
                 user_id = user.SlackUserId,
                 user_name = user.UserName
             });
@@ -308,7 +308,7 @@ namespace TimeTracker.Library.Test.Services.Orchestration
         {
             return orchestrator.HandleCommand(new SlashCommandPayload
             {
-                text = "report",
+                text = "summary",
                 user_id = user.SlackUserId,
                 user_name = user.UserName
             });
