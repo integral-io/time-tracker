@@ -12,7 +12,7 @@ namespace TimeTracker.Library.Models.WebReport
 
         public double BillableHours { get; set; }
 
-        //public string BillableProject { get; set; }
+        public string BillableProject { get; set; }
 
         public double SickHours { get; set; }
 

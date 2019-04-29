@@ -33,6 +33,7 @@ namespace TimeTracker.Library.Services
                     Date = g.FirstOrDefault().Date.ToShortDateString(),
                     DayOfWeek = g.FirstOrDefault().Date.DayOfWeek.ToString(),
                     BillableHours = g.Where(x=>x.TimeEntryType == TimeEntryTypeEnum.BillableProject).Sum(x=>x.Hours),
+                    BillableProject = db.Projects.FirstOrDefault(x => x.ProjectId == (g.FirstOrDefault(y=>y.TimeEntryType == TimeEntryTypeEnum.BillableProject).ProjectId ?? 0))?.Name ?? "",
                     SickHours = g.Where(x=>x.TimeEntryType == TimeEntryTypeEnum.Sick).Sum(x=>x.Hours),
                     SickReason = g.FirstOrDefault(x=>x.TimeEntryType == TimeEntryTypeEnum.Sick)?.NonBillableReason ?? "",
                     VacationHours = g.Where(x=>x.TimeEntryType == TimeEntryTypeEnum.Vacation).Sum(x=>x.Hours),
