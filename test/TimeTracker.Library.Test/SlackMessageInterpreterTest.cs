@@ -135,7 +135,7 @@ namespace TimeTracker.Library.Test
         {
             var currentDate = DateTime.UtcNow;
             
-            var sut = new ReportInterpreter().InterpretMessage(ToPayload("report"));
+            var sut = new ReportInterpreter().InterpretMessage(ToPayload("summary"));
             sut.Date.Year.Should().Be(currentDate.Year);
             sut.Date.Month.Should().Be(currentDate.Month);
         }

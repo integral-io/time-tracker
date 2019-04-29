@@ -26,7 +26,7 @@ namespace TimeTracker.Library.Test.Services.Orchestration
 
             slackMessage.Text.Should()
                 .Contain("*/hours* record - Allows the user to record hours.").And
-                .Contain("*/hours* report - Shows the users reported hours.").And
+                .Contain("*/hours* summary - Shows the users reported hours.").And
                 .Contain("*/hours* delete - Deletes hours reported.").And
                 .Contain("*/hours* web - Links user to web for hours report.").And
                 .Contain("Add 'help' to each one of the options to get specific help. ex: */hours* record help");
@@ -64,18 +64,18 @@ namespace TimeTracker.Library.Test.Services.Orchestration
         }
 
         [Fact]
-        public async Task WhenRequestingHelpForReport_ShowsSlackSpecificHelpMessage()
+        public async Task WhenRequestingHelpForSummary_ShowsSlackSpecificHelpMessage()
         {
-            var payload = CreateHelpRequest("report help");
+            var payload = CreateHelpRequest("summary help");
 
             var slackMessage = await orchestrator.HandleCommand(payload);
 
             slackMessage.Text.Should()
-                .Contain("*/hours* report _generate default report of hours for week, month, and ytd_").And
-                .Contain("*/hours* report month <month> <optional: year> _generate report of hours for month (ie. apr) default is current year_").And
-                .Contain("*/hours* report year <year> _generate report of hours for year_").And
-                .Contain("*/hours* report date <date> _generate report for day (include dashes)_").And
-                .Contain("*/hours* report last _generate report for last ten days_");
+                .Contain("*/hours* summary _generate default summary of hours for week, month, and ytd_").And
+                .Contain("*/hours* summary month <month> <optional: year> _generate summary of hours for month (ie. apr) default is current year_").And
+                .Contain("*/hours* summary year <year> _generate summary of hours for year_").And
+                .Contain("*/hours* summary date <date> _generate summary for day (include dashes)_").And
+                .Contain("*/hours* summary last _generate summary for last ten days_");
         } 
 
         [Fact]
