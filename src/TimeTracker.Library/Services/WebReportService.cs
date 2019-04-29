@@ -20,7 +20,8 @@ namespace TimeTracker.Library.Services
         public async Task<IImmutableList<UserEntry>> GetUserReport(Guid userId)
         {
             var timeEntries = await db.TimeEntries.Where(x => x.UserId == userId).ToListAsync();
-
+            var user = db.Users.First(x => x.UserId == userId);
+            var name = user.FirstName + " " + user.LastName;
             
             var query = from u in timeEntries
                 group u by u.Date
@@ -28,6 +29,7 @@ namespace TimeTracker.Library.Services
                 select new UserEntry
                 {
                     UserId = g.FirstOrDefault().UserId,
+                    Name = name,
                     Date = g.FirstOrDefault().Date.ToShortDateString(),
                     DayOfWeek = g.FirstOrDefault().Date.DayOfWeek.ToString(),
                     BillableHours = g.Where(x=>x.TimeEntryType == TimeEntryTypeEnum.BillableProject).Sum(x=>x.Hours),
