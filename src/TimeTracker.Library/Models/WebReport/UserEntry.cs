@@ -16,16 +16,13 @@ namespace TimeTracker.Library.Models.WebReport
 
         public double SickHours { get; set; }
 
-        //public string SickReason { get; set; }
+        public string SickReason { get; set; }
 
         public double VacationHours { get; set; }
         
-        //public string VacationReason { get; set; }
-
+        public string VacationReason { get; set; }
         public double OtherNonBillable { get; set; }
         
-        //public string NonBillableReason { get; set; }
-
-        
+        public string NonBillableReason { get; set; }
     }
 }

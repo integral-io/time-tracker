@@ -23,9 +23,9 @@
         <tr>
             <td>@user.Date  @user.DayOfWeek</td>
             <td>@user.BillableHours</td>
-            <td>@user.SickHours</td>
-            <td>@user.VacationHours</td>
-            <td>@user.OtherNonBillable</td>
+            <td>@user.SickHours @user.SickReason</td>
+            <td>@user.VacationHours @user.VacationReason</td>
+            <td>@user.OtherNonBillable @user.NonBillableReason</td>
         </tr>
     }
     </tbody>
