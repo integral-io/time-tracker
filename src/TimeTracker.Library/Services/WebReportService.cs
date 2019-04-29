@@ -20,7 +20,8 @@ namespace TimeTracker.Library.Services
         public async Task<IImmutableList<UserEntry>> GetUserReport(Guid userId)
         {
             var timeEntries = await db.TimeEntries.Where(x => x.UserId == userId).ToListAsync();
-
+            var user = db.Users.First(x => x.UserId == userId);
+            var name = user.FirstName + " " + user.LastName;
             
             var query = from u in timeEntries
                 group u by u.Date
@@ -28,11 +29,17 @@ namespace TimeTracker.Library.Services
                 select new UserEntry
                 {
                     UserId = g.FirstOrDefault().UserId,
+                    Name = name,
                     Date = g.FirstOrDefault().Date.ToShortDateString(),
+                    DayOfWeek = g.FirstOrDefault().Date.DayOfWeek.ToString(),
                     BillableHours = g.Where(x=>x.TimeEntryType == TimeEntryTypeEnum.BillableProject).Sum(x=>x.Hours),
+                    BillableProject = db.Projects.FirstOrDefault(x => x.ProjectId == (g.FirstOrDefault(y=>y.TimeEntryType == TimeEntryTypeEnum.BillableProject).ProjectId ?? 0))?.Name ?? "",
                     SickHours = g.Where(x=>x.TimeEntryType == TimeEntryTypeEnum.Sick).Sum(x=>x.Hours),
+                    SickReason = g.FirstOrDefault(x=>x.TimeEntryType == TimeEntryTypeEnum.Sick)?.NonBillableReason ?? "",
                     VacationHours = g.Where(x=>x.TimeEntryType == TimeEntryTypeEnum.Vacation).Sum(x=>x.Hours),
-                    OtherNonBillable = g.Where(x=>x.TimeEntryType == TimeEntryTypeEnum.NonBillable).Sum(x=>x.Hours)
+                    VacationReason = g.FirstOrDefault(x=>x.TimeEntryType == TimeEntryTypeEnum.Vacation)?.NonBillableReason ?? "",
+                    OtherNonBillable = g.Where(x=>x.TimeEntryType == TimeEntryTypeEnum.NonBillable).Sum(x=>x.Hours),
+                    NonBillableReason = g.FirstOrDefault(x=>x.TimeEntryType == TimeEntryTypeEnum.NonBillable)?.NonBillableReason ?? "" 
                 };
             return query.OrderByDescending(x => x.Date).ToImmutableList();
         }

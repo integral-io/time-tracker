@@ -1,11 +1,11 @@
 @model System.Collections.Immutable.IImmutableList<TimeTracker.Library.Models.WebReport.UserEntry>
 
 @{
-    ViewBag.Title = "User Time Entry History Report";
+    ViewBag.Title = "Time Entry Report";
     Layout = "_Layout";
 }
 
-<h2>User Time Entry History Report</h2>
+<h2>@Model.First().Name: @ViewBag.Title</h2>
 
 <table class="table table-striped table-bordered">
     <thead class="thead-dark">
@@ -21,11 +21,11 @@
     @foreach (var user in Model)
     {
         <tr>
-            <td>@user.Date</td>
-            <td>@user.BillableHours</td>
-            <td>@user.SickHours</td>
-            <td>@user.VacationHours</td>
-            <td>@user.OtherNonBillable</td>
+            <td>@user.Date  @user.DayOfWeek</td>
+            <td>@user.BillableHours @user.BillableProject</td>
+            <td>@user.SickHours @user.SickReason</td>
+            <td>@user.VacationHours @user.VacationReason</td>
+            <td>@user.OtherNonBillable @user.NonBillableReason</td>
         </tr>
     }
     </tbody>
