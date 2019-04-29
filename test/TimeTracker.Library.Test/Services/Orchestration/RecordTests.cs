@@ -115,8 +115,6 @@ namespace TimeTracker.Library.Test.Services.Orchestration
             timeEntry.Should().NotBeNull();
             timeEntry.Hours.Should().Be(5);
         }
-
-
-
+        
     }
 }
