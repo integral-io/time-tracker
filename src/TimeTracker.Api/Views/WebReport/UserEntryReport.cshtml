@@ -21,7 +21,7 @@
     @foreach (var user in Model)
     {
         <tr>
-            <td>@user.Date</td>
+            <td>@user.Date  @user.DayOfWeek</td>
             <td>@user.BillableHours</td>
             <td>@user.SickHours</td>
             <td>@user.VacationHours</td>
