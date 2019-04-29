@@ -13,7 +13,7 @@ namespace TimeTracker.Library.Test.Services
     {
         private readonly WebReportService webReportService;
         private readonly TimeTrackerDbContext database;
-        private readonly Guid userId = Guid.NewGuid();
+        private readonly Guid userId;
         private readonly DateTime date = new DateTime(DateTime.UtcNow.Date.Year, 2, 15);
 
 
@@ -22,6 +22,7 @@ namespace TimeTracker.Library.Test.Services
             InMemoryDatabaseWithProjectsAndUsers inMemoryDatabase = new InMemoryDatabaseWithProjectsAndUsers();
             database = inMemoryDatabase.Database;
             webReportService = new WebReportService(database);
+            userId = database.Users.First(x => x.UserId != null).UserId;
         }
 
         public async Task InitializeAsync()
