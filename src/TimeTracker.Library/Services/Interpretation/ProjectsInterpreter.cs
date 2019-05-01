@@ -12,7 +12,7 @@ namespace TimeTracker.Library.Services.Interpretation
     }
     public class ProjectsInterpreter : SlackMessageInterpreter<ProjectsInterpretedMessage>
     {
-        public override string HelpMessage => "*/hours* projects _display a list of available projects_";
+        public override string HelpMessage => "*/hours* projects _display a list of available projects (project - client)_";
 
         public ProjectsInterpreter() : base(SlackMessageOptions.Projects)
         {

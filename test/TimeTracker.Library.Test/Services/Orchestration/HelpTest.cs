@@ -28,7 +28,7 @@ namespace TimeTracker.Library.Test.Services.Orchestration
                 .Contain("*/hours* record - Allows the user to record hours.").And
                 .Contain("*/hours* summary - Shows the users reported hours.").And
                 .Contain("*/hours* delete - Deletes hours reported.").And
-                .Contain("*/hours* projects - Lists available projects.").And
+                .Contain("*/hours* projects - Lists available projects (project - client).").And
                 .Contain("*/hours* web - Links user to web for hours report.").And
                 .Contain("Add 'help' to each one of the options to get specific help. ex: */hours* record help");
         }
@@ -87,7 +87,7 @@ namespace TimeTracker.Library.Test.Services.Orchestration
             var slackMessage = await orchestrator.HandleCommand(payload);
 
             slackMessage.Text.Should()
-                .Be("*/hours* projects _display a list of available projects_");
+                .Be("*/hours* projects _display a list of available projects (project - client)_");
         }
 
         [Fact]
