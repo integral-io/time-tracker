@@ -22,7 +22,12 @@
 
                 foreach (var project in projects)
                 {
-                    stringBuilder.Append(project.Name + " - " + project.BillingClient.Name);
+                    string client = "no client";
+                    if (project.BillingClient != null && project.BillingClient.Name != null)
+                    {
+                        client = project.BillingClient.Name;
+                    }
+                    stringBuilder.Append(project.Name + " - " + client);
                 }    
                 
                 return new SlackMessageResponse(stringBuilder.ToString(), true);
