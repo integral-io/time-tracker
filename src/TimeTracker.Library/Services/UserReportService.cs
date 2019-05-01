@@ -32,7 +32,7 @@ namespace TimeTracker.Library.Services
                 select new HourPair()
                 {
                     Hours = t.Hours,
-                    ProjectOrName = t.ProjectId.HasValue ? t.Project.Name : string.Empty,
+                    ProjectOrName = t.ProjectId.HasValue ? t.Project.Name : t.NonBillableReason,
                     Date = t.Date,
                     TimeEntryType = t.TimeEntryType
                 }).ToList();
@@ -139,7 +139,8 @@ namespace TimeTracker.Library.Services
             foreach (var entry in sortedHours)
             {
                 stringBuilder.AppendLine(entry.Date.Month + "-" + entry.Date.Day + "-" + entry.Date.Year + " " +
-                                         entry.TimeEntryType.GetDescription() + " " + entry.Hours + " hours");
+                                         entry.TimeEntryType.GetDescription() + " " + entry.Hours + " hours " + 
+                                         entry.ProjectOrName);
             }
 
             return stringBuilder.ToString();
