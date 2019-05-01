@@ -20,6 +20,7 @@
                 var projects = dbContext.Projects.ToList(); 
                 var stringBuilder = new StringBuilder();
 
+                stringBuilder.AppendLine("Current Projects:");
                 foreach (var project in projects)
                 {
                     string client = "no client";
@@ -27,7 +28,7 @@
                     {
                         client = project.BillingClient.Name;
                     }
-                    stringBuilder.Append(project.Name + " - " + client);
+                    stringBuilder.AppendLine(project.Name + " with " + client);
                 }    
                 
                 return new SlackMessageResponse(stringBuilder.ToString(), true);
