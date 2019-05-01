@@ -20,7 +20,8 @@ namespace TimeTracker.Library.Services
             this.db = db;
         }
 
-        public async Task<Guid> CreateBillableTimeEntry(DateTime date, double hours, int billableClientId, int projectId)
+        public async Task<Guid> CreateBillableTimeEntry(DateTime date, double hours, int billableClientId,
+            int projectId)
         {
             VerifyHoursBeforeAdding(date, hours);
 
@@ -38,23 +39,25 @@ namespace TimeTracker.Library.Services
             await db.SaveChangesAsync();
 
             db.DetachEntity(model);
-            
+
             return model.TimeEntryId;
         }
 
-        public async Task<Guid> CreateNonBillableTimeEntry(DateTime date, double hours, string nonBillReason, 
+        public async Task<Guid> CreateNonBillableTimeEntry(DateTime date, double hours, string nonBillReason,
             TimeEntryTypeEnum timeEntryTypeEnum = TimeEntryTypeEnum.NonBillable)
         {
             VerifyHoursBeforeAdding(date, hours);
 
-            var offTime = db.TimeEntries.Where(x => x.UserId == userId && x.Date.Date == date.Date.Date && 
-                                                         (x.TimeEntryType == TimeEntryTypeEnum.Vacation || 
-                                                          x.TimeEntryType == TimeEntryTypeEnum.Sick)).Sum(x => x.Hours);
-            if (hours + offTime > 8 && (timeEntryTypeEnum == TimeEntryTypeEnum.Vacation || timeEntryTypeEnum == TimeEntryTypeEnum.Sick))
+            var offTime = db.TimeEntries.Where(x => x.UserId == userId && x.Date.Date == date.Date.Date &&
+                                                    (x.TimeEntryType == TimeEntryTypeEnum.Vacation ||
+                                                     x.TimeEntryType == TimeEntryTypeEnum.Sick)).Sum(x => x.Hours);
+            if (hours + offTime > 8 && (timeEntryTypeEnum == TimeEntryTypeEnum.Vacation ||
+                                        timeEntryTypeEnum == TimeEntryTypeEnum.Sick))
             {
-                throw new Exception("Cannot have more than 8 hours of combined vacation and sick time in a single day.");
+                throw new Exception(
+                    "Cannot have more than 8 hours of combined vacation and sick time in a single day.");
             }
-            
+
             var model = new TimeEntry
             {
                 TimeEntryId = Guid.NewGuid(),
@@ -67,9 +70,9 @@ namespace TimeTracker.Library.Services
             };
             db.TimeEntries.Add(model);
             await db.SaveChangesAsync();
-            
+
             db.DetachEntity(model);
-            
+
             return model.TimeEntryId;
         }
 
@@ -80,7 +83,8 @@ namespace TimeTracker.Library.Services
                 throw new Exception("An entry should have more than 0 hours.");
             }
 
-            var hoursForDay = db.TimeEntries.Where(x => x.UserId == userId && x.Date.Date == date.Date.Date).Sum(x => x.Hours);
+            var hoursForDay = db.TimeEntries.Where(x => x.UserId == userId && x.Date.Date == date.Date.Date)
+                .Sum(x => x.Hours);
             if (hoursForDay + hours > 24)
             {
                 throw new Exception("You may not enter more than 24 hours per day.");
@@ -90,16 +94,16 @@ namespace TimeTracker.Library.Services
         public async Task<double> DeleteHours(DateTime date)
         {
             var cutOffDate = CheckCutOffDate(date);
-            
-            var timeEntries = await db.TimeEntries.Where(x => x.UserId == userId && 
-                                                              x.Date.Date == date.Date.Date && 
+
+            var timeEntries = await db.TimeEntries.Where(x => x.UserId == userId &&
+                                                              x.Date.Date == date.Date.Date &&
                                                               x.Date >= cutOffDate).ToListAsync();
 
             if (timeEntries.Count == 0)
             {
                 return 0;
             }
-            
+
             return await DeleteHoursFromDb(timeEntries);
         }
 
@@ -116,7 +120,7 @@ namespace TimeTracker.Library.Services
             {
                 return 0;
             }
-            
+
             return await DeleteHoursFromDb(timeEntries);
         }
 
@@ -146,12 +150,13 @@ namespace TimeTracker.Library.Services
         public async Task<AllTimeOff> QueryAllTimeOff()
         {
             var query = from t in db.TimeEntries
-                group t by t.UserId into g
+                group t by t.UserId
+                into g
                 select new TimeOff()
                 {
                     Username = g.FirstOrDefault().User.UserName,
-                    PtoTyd = g.Where(x=>x.TimeEntryType == TimeEntryTypeEnum.Vacation).Sum(x=>x.Hours),
-                    SickYtd = g.Where(x=>x.TimeEntryType == TimeEntryTypeEnum.Sick).Sum(x=>x.Hours)
+                    PtoTyd = g.Where(x => x.TimeEntryType == TimeEntryTypeEnum.Vacation).Sum(x => x.Hours),
+                    SickYtd = g.Where(x => x.TimeEntryType == TimeEntryTypeEnum.Sick).Sum(x => x.Hours)
                 };
             var hours = await query.AsNoTracking().ToListAsync();
 
@@ -159,11 +164,8 @@ namespace TimeTracker.Library.Services
             {
                 TimeOffSummaries = hours
             };
-            
+
             return allTimeOff;
         }
-
     }
-
-   
 }
