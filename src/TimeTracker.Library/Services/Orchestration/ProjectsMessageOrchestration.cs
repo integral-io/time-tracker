@@ -28,7 +28,7 @@
                     {
                         client = project.BillingClient.Name;
                     }
-                    stringBuilder.AppendLine(project.Name + " with " + client);
+                    stringBuilder.AppendLine(project.Name + " - " + client);
                 }    
                 
                 return new SlackMessageResponse(stringBuilder.ToString(), true);
