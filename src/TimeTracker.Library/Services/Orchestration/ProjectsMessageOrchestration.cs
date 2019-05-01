@@ -17,16 +17,12 @@
 
             protected override async Task<SlackMessageResponse> RespondTo(ProjectsInterpretedMessage message)
             {
-                var projectService = new ProjectService(dbContext);
                 var projects = dbContext.Projects.ToList(); 
-
                 var stringBuilder = new StringBuilder();
-
 
                 foreach (var project in projects)
                 {
-
-                    stringBuilder.Append(project.Name + " - " + project.BillingClient.Name + projects.Count());
+                    stringBuilder.Append(project.Name + " - " + project.BillingClient.Name);
                 }    
                 
                 return new SlackMessageResponse(stringBuilder.ToString(), true);
