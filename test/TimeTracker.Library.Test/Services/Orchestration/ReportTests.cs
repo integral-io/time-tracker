@@ -329,6 +329,7 @@ namespace TimeTracker.Library.Test.Services.Orchestration
             };
 
             database.Projects.Add(vsm);
+            database.SaveChanges();
         }
 
         private Task<SlackMessage> RequestReport(User user)
@@ -354,8 +355,5 @@ namespace TimeTracker.Library.Test.Services.Orchestration
             database.TimeEntries.Add(timeEntry);
             await database.SaveChangesAsync();
         }
-        
     }
-    
-    
 }
