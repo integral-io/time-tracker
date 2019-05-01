@@ -35,11 +35,8 @@ namespace TimeTracker.Library.Test.Services.Orchestration
             });
 
             slackMessage.Text.Should()
-                .Contain("VSM").And
-                .Contain("au").And
-                .Contain("proyecto").And
-                .Contain("no client");
-
+                .Contain("VSM with Au").And
+                .Contain("proyecto with no client");
         }
 
         private void createAuClientAndProject()
