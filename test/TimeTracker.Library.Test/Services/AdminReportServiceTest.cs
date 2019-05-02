@@ -52,14 +52,16 @@ namespace TimeTracker.Library.Test.Services
         [Fact]
         public async Task GetAllUsersByDateReport_includesExpectedHours()
         {
-            var report = await adminReportService.GetAllUsersByDate(new DateTime(DateTime.UtcNow.Date.Year, 2, 7));
+            var start1 = new DateTime(DateTime.UtcNow.Date.Year, 2, 7);
+            var report = await adminReportService.GetAllUsersByDate(start1, start1.AddDays(14));
 
             report.First().BillableHoursYtd.Should().Be(12);
             report.First().SickHoursYtd.Should().Be(6);
             report.First().VacationHoursYtd.Should().Be(13);
             report.First().OtherNonBillableYtd.Should().Be(6);
 
-            report = await adminReportService.GetAllUsersByDate(new DateTime(DateTime.UtcNow.Date.Year, 2, 15));
+            var start2 = new DateTime(DateTime.UtcNow.Date.Year, 2, 15);
+            report = await adminReportService.GetAllUsersByDate(start2, start2.AddDays(14));
 
             report.First().BillableHoursYtd.Should().Be(8);
             report.First().SickHoursYtd.Should().Be(0);

@@ -13,6 +13,7 @@ namespace TimeTracker.Api.Controllers
             return View();
         }
         
+        [HttpGet("claims")]
         public IActionResult Claims()
         {
             var ident = User.Identity as ClaimsIdentity;

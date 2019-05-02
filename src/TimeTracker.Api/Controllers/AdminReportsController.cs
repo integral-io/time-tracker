@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -14,6 +15,7 @@ namespace TimeTracker.Api.Controllers
     public class AdminReportsController : Controller
     {
         private readonly TimeTrackerDbContext dbContext;
+        private const int PayPeriodLength = 14;
 
         public AdminReportsController(TimeTrackerDbContext dbContext)
         {
@@ -36,13 +38,20 @@ namespace TimeTracker.Api.Controllers
                 ModelState.AddModelError(start, "cannot be empty");
                 return View();
             }
+
+            DateTime startDate = Convert.ToDateTime(start);
+            DateTime endDate = string.IsNullOrEmpty(end) ? startDate.AddDays(PayPeriodLength) : Convert.ToDateTime(end);
             
             var adminReportService = new AdminReportService(dbContext);
-            var items = await adminReportService.GetAllUsersByDate(
-                Convert.ToDateTime(start),
-                string.IsNullOrEmpty(end) ? (DateTime?)null : Convert.ToDateTime(end));
+            var items = await adminReportService.GetAllUsersByDate(startDate, endDate);
             
-            return View(items);
+            var viewModel = new PayPeriodReportViewModel()
+            {
+                PayPeriodStartDate = startDate,
+                PayPeriodEndDate = endDate,
+                ReportItems = items.ToImmutableList()
+            };
+            return View(viewModel);
         }
     }
 }
