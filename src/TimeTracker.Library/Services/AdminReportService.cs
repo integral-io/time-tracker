@@ -16,7 +16,6 @@ namespace TimeTracker.Library.Services
     public class AdminReportService
     {
         private readonly TimeTrackerDbContext db;
-        private const int _payPeriodLength = 14;
 
         public AdminReportService(in TimeTrackerDbContext db)
         {
@@ -45,13 +44,8 @@ namespace TimeTracker.Library.Services
         /// <param name="start">Start date for query, inclusive.</param>
         /// <param name="end">End date for query, inclusive.</param>
         /// <returns></returns>
-        public async Task<IImmutableList<UserReport>> GetAllUsersByDate(DateTime start, DateTime? end = null)
+        public async Task<IImmutableList<UserReport>> GetAllUsersByDate(DateTime start, DateTime end)
         {
-            if (!end.HasValue)
-            {
-                //If not provided, use default pay period length, 14 days.
-                end = start.AddDays(_payPeriodLength);
-            }
             var query = from u in db.Users
                 select new UserReport
                 {
