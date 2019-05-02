@@ -10,6 +10,11 @@ namespace TimeTracker.Api.Controllers
         // GET
         public IActionResult Index()
         {
+            return View();
+        }
+        
+        public IActionResult Claims()
+        {
             var ident = User.Identity as ClaimsIdentity;
             
             return View(ident.Claims);

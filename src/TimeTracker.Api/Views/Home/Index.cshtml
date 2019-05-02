@@ -1,34 +1,15 @@
-@model IEnumerable<System.Security.Claims.Claim>
-
 @{
-    ViewBag.Title = "My Hours - TimeTracker";
+    ViewBag.Title = "Integral Time Tracker";
     Layout = "_Layout";
 }
 
-<h2>Integral Time Tracker</h2>
+<h2>Welcome to TimeTracker</h2>
 
-<h3>My Hours:</h3>
-<table class="table table-bordered table-striped">
-    <thead>
-    <tr>
-        <th>Date</th>
-        <th>Billable</th>
-        <th>Non billable</th>
-        <th>Vacation</th>
-        <th>Sick</th>
-    </tr>
-    
-    </thead>
-    <tbody>
-    <tr>
-        <td></td>
-    </tr>
-    </tbody>
-    
-    @foreach (var claim in Model)
-    {
-        <p>Value: @claim.Value</p>
-        <p>Type: @claim.Type</p>
-        <p>Issuer: @claim.OriginalIssuer</p>
-    }
-</table>
+<p>
+    <a href="@Url.Action(action: "UserEntryReport", controller: "WebReport")">Go to My Hours List Report</a>
+</p>
+
+<p>
+    <a href="@Url.Action(action: "Claims", controller: "Home")">View My Identity Claims</a>
+</p>
+

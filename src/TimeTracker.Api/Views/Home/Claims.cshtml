@@ -1,0 +1,28 @@
+@model IEnumerable<System.Security.Claims.Claim>
+
+@{
+    ViewBag.Title = "My Identity Claims - TimeTracker";
+    Layout = "_Layout";
+}
+
+<h2>My User's Claims</h2>
+
+<table class="table-bordered">
+    <thead>
+    <tr>
+        <th>Type</th>
+        <th>Value</th>
+        <th>OriginalIssuer</th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (var claim in Model)
+    {
+        <tr>
+            <td>@claim.Type</td>
+            <td>@claim.Value</td>
+            <td>@claim.OriginalIssuer</td>
+        </tr>
+    }
+    </tbody>
+</table>
