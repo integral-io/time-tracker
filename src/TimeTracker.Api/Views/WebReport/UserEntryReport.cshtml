@@ -1,31 +1,38 @@
-@model System.Collections.Immutable.IImmutableList<TimeTracker.Library.Models.WebReport.UserEntry>
+@using TimeTracker.Data.Models
+@model TimeTracker.Api.Models.UserRecordHoursViewModel
 
 @{
     ViewBag.Title = "Time Entry Report";
     Layout = "_Layout";
 }
 
-<h2>@Model.First().Name: @ViewBag.Title</h2>
+<h2>@Model.Name: @ViewBag.Title</h2>
 
 <form class="well" asp-action="RecordHours" method="post">
     <div class="form-row">
         <div class="col">
-            <input type="date" name="Date" class="form-control" />
+            <input type="date" name="Date" class="form-control" value="@Model.Date.ToString("yyyy-MM-dd")" />
         </div>
         <div class="col">
-            <select class="custom-select" name="TimeEntryType" onChange="selectTimeEntry(this);">
-                <option value="0">Billable</option>
-                <option value="1">Non-billable</option>
-                <option value="2">Sick</option>
-                <option value="3">Vacation</option>
-            </select>
+            @Html.DropDownListFor(m=> m.TimeEntryType, 
+                Html.GetEnumSelectList(typeof(TimeEntryTypeEnum)), 
+                htmlAttributes: new { onChange = "selectTimeEntry(this);", @class = "custom-select" })
+            
+            @* <select class="custom-select" name="TimeEntryType" onChange="selectTimeEntry(this);"> *@
+            @*     <option value="0">Billable</option> *@
+            @*     <option value="1">Non-billable</option> *@
+            @*     <option value="2">Sick</option> *@
+            @*     <option value="3">Vacation</option> *@
+            @* </select> *@
         </div>
         <div class="col" id="projectColumn">
-            <select class="custom-select" name="ProjectId">
-                <option>Au</option>
-                <option>May</option>
-                <option>Bosch</option>
-            </select>
+            @Html.DropDownListFor(m=> m.ProjectId, Model.Projects.Select(x=> new SelectListItem(x.Name, x.ProjectId.ToString())), 
+                htmlAttributes: new { @class = "custom-select"} )
+            @* <select class="custom-select" name="ProjectId"> *@
+            @*     <option>Au</option> *@
+            @*     <option>May</option> *@
+            @*     <option>Bosch</option> *@
+            @* </select> *@
         </div>
         <div class="col" id="nonbillColumn">
             <input type="text" name="NonbillReason" class="form-control" placeholder="non billable reason" maxlength="30"/>
@@ -49,7 +56,7 @@
     </tr>
     </thead>
     <tbody>
-    @foreach (var user in Model)
+    @foreach (var user in Model.Hours)
     {
         <tr>
             <td>@user.Date  @user.DayOfWeek</td>

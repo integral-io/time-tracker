@@ -29,7 +29,7 @@ namespace TimeTracker.Library.Test.Services.Orchestration
         {
             var user = database.Users.First();
             var timeEntryService = new TimeEntryService(user.UserId, database);
-            await timeEntryService.CreateBillableTimeEntry(DateTime.UtcNow.Date, 7, 1, 1);
+            await timeEntryService.CreateBillableTimeEntry(DateTime.UtcNow.Date, 7, 1);
 
             var slackMessage = await orchestrator.HandleCommand(new SlashCommandPayload()
             {
@@ -77,10 +77,10 @@ namespace TimeTracker.Library.Test.Services.Orchestration
             await timeEntryService.CreateNonBillableTimeEntry(date, 4, "beach", TimeEntryTypeEnum.NonBillable);
             await timeEntryService.CreateNonBillableTimeEntry(date, 3, "dr visit", TimeEntryTypeEnum.Sick);
             await timeEntryService.CreateNonBillableTimeEntry(date, 2, "Maui", TimeEntryTypeEnum.Vacation);
-            await timeEntryService.CreateBillableTimeEntry(date, 1, 1, 1);
-            await timeEntryService.CreateBillableTimeEntry(date, 2, 1, 1);
+            await timeEntryService.CreateBillableTimeEntry(date, 1, 1);
+            await timeEntryService.CreateBillableTimeEntry(date, 2, 1);
 
-            await timeEntryService.CreateBillableTimeEntry(date.AddDays(-1), 6, 1, 1);
+            await timeEntryService.CreateBillableTimeEntry(date.AddDays(-1), 6, 1);
             await timeEntryService.CreateNonBillableTimeEntry(date.AddDays(-2), 7, "Lansing",
                 TimeEntryTypeEnum.Vacation);
             await timeEntryService.CreateNonBillableTimeEntry(date.AddDays(-3), 8, "time tracker",

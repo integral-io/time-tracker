@@ -29,7 +29,7 @@ namespace TimeTracker.Library.Test.Services
         public async Task CreateBillableTimeEntry_createsDbRecord()
         {
             await timeEntryService.CreateBillableTimeEntry(DateTime.UtcNow.Date,
-                7, 1, 1);
+                7, 1);
 
             var entry = await database.TimeEntries.FirstAsync(x => x.UserId == userId);
             entry.Hours.Should().Be(7);
@@ -55,7 +55,7 @@ namespace TimeTracker.Library.Test.Services
         {
             try
             {
-                await timeEntryService.CreateBillableTimeEntry(DateTime.UtcNow.Date, 0, 1, 1);
+                await timeEntryService.CreateBillableTimeEntry(DateTime.UtcNow.Date, 0, 1);
             }
             catch (Exception e)
             {
@@ -76,7 +76,7 @@ namespace TimeTracker.Library.Test.Services
         [Fact]
         public async Task TheEntriesForADayShouldBeNoGreaterThan24Hours_WhenAddingNonBillableTimeOver()
         {
-            await timeEntryService.CreateBillableTimeEntry(DateTime.UtcNow, 8, 1, 1);
+            await timeEntryService.CreateBillableTimeEntry(DateTime.UtcNow, 8, 1);
             await timeEntryService.CreateNonBillableTimeEntry(DateTime.UtcNow, 8, null, TimeEntryTypeEnum.Vacation);
 
             await Assert.ThrowsAsync<Exception>(() =>
@@ -98,14 +98,14 @@ namespace TimeTracker.Library.Test.Services
         [Fact]
         public async Task TheEntriesForADayShouldBeNoGreaterThan24Hours_WhenAddingBillableTimeOver()
         {
-            await timeEntryService.CreateBillableTimeEntry(DateTime.UtcNow, 8, 1, 1);
+            await timeEntryService.CreateBillableTimeEntry(DateTime.UtcNow, 8, 1);
             await timeEntryService.CreateNonBillableTimeEntry(DateTime.UtcNow, 8, null, TimeEntryTypeEnum.Vacation);
 
             await Assert.ThrowsAsync<Exception>(() =>
-                timeEntryService.CreateBillableTimeEntry(DateTime.UtcNow, 8.5, 1, 1));
+                timeEntryService.CreateBillableTimeEntry(DateTime.UtcNow, 8.5, 1));
             try
             {
-                await timeEntryService.CreateBillableTimeEntry(DateTime.UtcNow, 8.5, 1, 1);;
+                await timeEntryService.CreateBillableTimeEntry(DateTime.UtcNow, 8.5, 1);;
             }
             catch (Exception e)
             {
@@ -129,7 +129,7 @@ namespace TimeTracker.Library.Test.Services
         public async Task DeleteHours_ThatDoExistToday_works()
         {
             var date = DateTime.UtcNow.Date;
-            await timeEntryService.CreateBillableTimeEntry(date, 7, 1, 1);
+            await timeEntryService.CreateBillableTimeEntry(date, 7, 1);
             await timeEntryService.CreateNonBillableTimeEntry(date, 8, null, TimeEntryTypeEnum.Vacation);
 
             var hoursDeleted = await timeEntryService.DeleteHours(date);
@@ -160,10 +160,10 @@ namespace TimeTracker.Library.Test.Services
         public async Task HoursCannotBeDeleted48HoursPastEntry_AndExceptionWillBeThrown()
         {
             var date = DateTime.UtcNow.Date.AddHours(-48);
-            await timeEntryService.CreateBillableTimeEntry(date, 8, 1, 1);
+            await timeEntryService.CreateBillableTimeEntry(date, 8, 1);
 
             var lateDate = DateTime.UtcNow.Date.AddHours(-48.01);
-            await timeEntryService.CreateBillableTimeEntry(lateDate, 2, 1, 1);
+            await timeEntryService.CreateBillableTimeEntry(lateDate, 2, 1);
             await timeEntryService.CreateNonBillableTimeEntry(lateDate, 3, null, TimeEntryTypeEnum.Vacation);
             await timeEntryService.CreateNonBillableTimeEntry(lateDate, 1, "flu", TimeEntryTypeEnum.Sick);
 
@@ -193,10 +193,10 @@ namespace TimeTracker.Library.Test.Services
         public async Task HoursForASpecificTypeCannotBeDeleted48HoursPastEntry_AndExceptionWillBeThrown()
         {
             var date = DateTime.UtcNow.Date.AddHours(-48);
-            await timeEntryService.CreateBillableTimeEntry(date, 8, 1, 1);
+            await timeEntryService.CreateBillableTimeEntry(date, 8, 1);
 
             var lateDate = DateTime.UtcNow.Date.AddHours(-48.01);
-            await timeEntryService.CreateBillableTimeEntry(lateDate, 2, 1, 1);
+            await timeEntryService.CreateBillableTimeEntry(lateDate, 2, 1);
             await timeEntryService.CreateNonBillableTimeEntry(lateDate, 3, null, TimeEntryTypeEnum.Vacation);
             await timeEntryService.CreateNonBillableTimeEntry(lateDate, 1, "flu", TimeEntryTypeEnum.Sick);
 
@@ -230,7 +230,7 @@ namespace TimeTracker.Library.Test.Services
             hoursLeft.Should().Be(0);
 
             var date = DateTime.UtcNow.AddHours(-2);
-            await timeEntryService.CreateBillableTimeEntry(date, 8, 1, 1);
+            await timeEntryService.CreateBillableTimeEntry(date, 8, 1);
             
             var hoursDeleted = await timeEntryService.DeleteHours(date.Date);
             timeEntries = await database.TimeEntries.Where(x => x.UserId == userId).ToListAsync();
@@ -248,8 +248,8 @@ namespace TimeTracker.Library.Test.Services
         public async Task WhenDeletingNonBillableHoursOnADay_AllNonBillableHoursOnThatDayAreDeleted(TimeEntryTypeEnum entryType, double hours)
         {
             var date = DateTime.UtcNow.AddDays(-2);
-            await timeEntryService.CreateBillableTimeEntry(DateTime.UtcNow, 4, 1, 1);
-            await timeEntryService.CreateBillableTimeEntry(date, 1, 1, 1);
+            await timeEntryService.CreateBillableTimeEntry(DateTime.UtcNow, 4, 1);
+            await timeEntryService.CreateBillableTimeEntry(date, 1, 1);
             await timeEntryService.CreateNonBillableTimeEntry(date, 4, "beach", TimeEntryTypeEnum.NonBillable);
             await timeEntryService.CreateNonBillableTimeEntry(date, 3, "flu", TimeEntryTypeEnum.Sick);
             await timeEntryService.CreateNonBillableTimeEntry(date, 2, null, TimeEntryTypeEnum.Vacation);

@@ -1,9 +1,11 @@
 using System;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using TimeTracker.Api.Models;
 using TimeTracker.Data;
 using TimeTracker.Data.Models;
@@ -29,8 +31,19 @@ namespace TimeTracker.Api.Controllers
             var userId = await GetUserId();
 
             var webReportService = new WebReportService(dbContext);
+            var projectService = new ProjectService(dbContext);
             var items = await webReportService.GetUserReport(userId);
-            return View(items);
+
+            var model = new UserRecordHoursViewModel()
+            {
+                Hours = items.ToImmutableList(),
+                TimeEntryType = TimeEntryTypeEnum.BillableProject,
+                Projects = (await projectService.GetAllProjects()).ToImmutableList(),
+                Name = items.Any() ? items.First().Name : string.Empty,
+                Date = DateTime.UtcNow.Date
+            };
+            
+            return View(model);
         }
 
         [HttpPost("record")]
@@ -39,13 +52,16 @@ namespace TimeTracker.Api.Controllers
             var userId = await GetUserId();
             TimeEntryService timeEntryService = new TimeEntryService(userId, this.dbContext);
 
+            DateTime date = DateTime.Parse(model.Date);
+
             if (model.TimeEntryType == TimeEntryTypeEnum.BillableProject)
             {
-               // timeEntryService.CreateBillableTimeEntry()
+                await timeEntryService.CreateBillableTimeEntry(date, model.Hours, model.ProjectId.Value);
             }
             else
             {
-                
+                await timeEntryService.CreateNonBillableTimeEntry(date, model.Hours, model.NonbillReason,
+                    model.TimeEntryType);
             }
 
             return RedirectToAction("UserEntryReport");

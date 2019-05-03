@@ -60,13 +60,13 @@ namespace TimeTracker.Library.Test.Services
         {
             var timeEntryService = new TimeEntryService(userId, database);
 
-            await timeEntryService.CreateBillableTimeEntry(date, 8, 1, 1);
+            await timeEntryService.CreateBillableTimeEntry(date, 8, 1);
            
-            await timeEntryService.CreateBillableTimeEntry(date.AddDays(-5), 4, 1, 1);
+            await timeEntryService.CreateBillableTimeEntry(date.AddDays(-5), 4, 1);
             await timeEntryService.CreateNonBillableTimeEntry(date.AddDays(-5), 4, null, TimeEntryTypeEnum.Vacation);
 
-            await timeEntryService.CreateBillableTimeEntry(date.AddDays(-2), 4, 1, 1);
-            await timeEntryService.CreateBillableTimeEntry(date.AddDays(-2), 2, 1, 1);
+            await timeEntryService.CreateBillableTimeEntry(date.AddDays(-2), 4, 1);
+            await timeEntryService.CreateBillableTimeEntry(date.AddDays(-2), 2, 1);
             await timeEntryService.CreateNonBillableTimeEntry(date.AddDays(-2), 2, "dr visit", TimeEntryTypeEnum.Sick);
 
 
@@ -75,7 +75,7 @@ namespace TimeTracker.Library.Test.Services
 
             var randomGuid = Guid.NewGuid();
             timeEntryService = new TimeEntryService(randomGuid, database);
-            await timeEntryService.CreateBillableTimeEntry(date, 8, 1, 1);
+            await timeEntryService.CreateBillableTimeEntry(date, 8, 1);
         }
 
         [Fact]

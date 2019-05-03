@@ -30,7 +30,7 @@ namespace TimeTracker.Library.Test.Services.Orchestration
         {
             var user = database.Users.First();
             var timeEntryService = new TimeEntryService(user.UserId, database);
-            await timeEntryService.CreateBillableTimeEntry(DateTime.UtcNow.Date, 7, 1, 1);
+            await timeEntryService.CreateBillableTimeEntry(DateTime.UtcNow.Date, 7, 1);
 
             var slackMessage = await orchestrator.HandleCommand(new SlashCommandPayload()
             {

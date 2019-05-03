@@ -27,8 +27,8 @@ namespace TimeTracker.Library.Test.Services
         {
             var dateBefore = new DateTime(2018, 11, 30);
             var dateAfter = new DateTime(2019, 1, 15);
-            await entryService.CreateBillableTimeEntry(dateBefore, 7, 1, 1);
-            await entryService.CreateBillableTimeEntry(dateAfter, 7, 1, 1);
+            await entryService.CreateBillableTimeEntry(dateBefore, 7, 1);
+            await entryService.CreateBillableTimeEntry(dateAfter, 7, 1);
 
             var hours = await userReportService.QueryAllHours();
 
@@ -47,14 +47,14 @@ namespace TimeTracker.Library.Test.Services
             var utcNowYear = DateTime.UtcNow.Year;
             var dateBefore = new DateTime(2018, 11, 30);
             var dateAfter = new DateTime(utcNowYear, testMonth, 2);
-            await entryService.CreateBillableTimeEntry(dateBefore, 7, 1, 1);
+            await entryService.CreateBillableTimeEntry(dateBefore, 7, 1);
             await entryService.CreateNonBillableTimeEntry(dateBefore.AddDays(-1), 5, null,
                 TimeEntryTypeEnum.Vacation);
 
-            await entryService.CreateBillableTimeEntry(dateAfter, 4, 1, 1);
-            await entryService.CreateBillableTimeEntry(dateAfter.AddDays(1), 8, 1, 1);
-            await entryService.CreateBillableTimeEntry(dateAfter.AddDays(2), 8, 1, 1);
-            await entryService.CreateBillableTimeEntry(dateAfter.AddMonths(-1), 8, 1, 1);
+            await entryService.CreateBillableTimeEntry(dateAfter, 4, 1);
+            await entryService.CreateBillableTimeEntry(dateAfter.AddDays(1), 8, 1);
+            await entryService.CreateBillableTimeEntry(dateAfter.AddDays(2), 8, 1);
+            await entryService.CreateBillableTimeEntry(dateAfter.AddMonths(-1), 8, 1);
 
             await entryService.CreateNonBillableTimeEntry(dateAfter.AddDays(15), 5, null,
                 TimeEntryTypeEnum.Vacation);
