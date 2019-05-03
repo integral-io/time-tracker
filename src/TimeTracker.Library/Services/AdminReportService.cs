@@ -50,7 +50,7 @@ namespace TimeTracker.Library.Services
             var users = from u in db.Users select u;
             if (projectId.HasValue)
             {
-                users = users.Where(x => x.TimeEntries.Any(t => t.ProjectId == projectId));
+                users = users.Where(x => x.TimeEntries.Any(t => t.Date >= start && t.Date <= end && t.ProjectId == projectId));
             }
 
             var timeEntries = from t in db.TimeEntries
