@@ -62,18 +62,18 @@ namespace TimeTracker.Library.Test.Services.Orchestration
             DateTime date = new DateTime(DateTime.UtcNow.Year, DateTime.UtcNow.Month - 1, DateTime.UtcNow.Day);
             var user = database.Users.First();
             TimeEntryService timeEntryService = new TimeEntryService(user.UserId, database);
-            await timeEntryService.CreateBillableTimeEntry(date, 2, 1, 1);
+            await timeEntryService.CreateBillableTimeEntry(date, 2, 1);
             await timeEntryService.CreateNonBillableTimeEntry(date.AddDays(1), 3, null, TimeEntryTypeEnum.Vacation);
             await timeEntryService.CreateNonBillableTimeEntry(date.AddDays(2), 1, "flu", TimeEntryTypeEnum.Sick);
 
             date = date.AddMonths(1);
-            await timeEntryService.CreateBillableTimeEntry(date, 2, 1, 1);
+            await timeEntryService.CreateBillableTimeEntry(date, 2, 1);
             await timeEntryService.CreateNonBillableTimeEntry(date.AddDays(1), 3, null, TimeEntryTypeEnum.Vacation);
             await timeEntryService.CreateNonBillableTimeEntry(date.AddDays(2), 1, "flu", TimeEntryTypeEnum.Sick);            
 
             
             DateTime mayDate = new DateTime(DateTime.UtcNow.Year, 5, 18);
-            await timeEntryService.CreateBillableTimeEntry(mayDate, 2, 1, 1);
+            await timeEntryService.CreateBillableTimeEntry(mayDate, 2, 1);
             
             
             var response = await orchestrator.HandleCommand(new SlashCommandPayload
@@ -95,12 +95,12 @@ namespace TimeTracker.Library.Test.Services.Orchestration
             DateTime date = new DateTime(DateTime.UtcNow.Year, 3, 18);
             var user = database.Users.First();
             TimeEntryService timeEntryService = new TimeEntryService(user.UserId, database);
-            await timeEntryService.CreateBillableTimeEntry(date, 2, 1, 1);
+            await timeEntryService.CreateBillableTimeEntry(date, 2, 1);
             await timeEntryService.CreateNonBillableTimeEntry(date.AddDays(1), 3, null, TimeEntryTypeEnum.Vacation);
             await timeEntryService.CreateNonBillableTimeEntry(date.AddDays(2), 1, "flu", TimeEntryTypeEnum.Sick);            
             
             DateTime mayDate = new DateTime(DateTime.UtcNow.Year, 5, 18);
-            await timeEntryService.CreateBillableTimeEntry(mayDate, 2, 1, 1);
+            await timeEntryService.CreateBillableTimeEntry(mayDate, 2, 1);
             
             
             var response = await orchestrator.HandleCommand(new SlashCommandPayload
@@ -122,12 +122,12 @@ namespace TimeTracker.Library.Test.Services.Orchestration
             DateTime date = new DateTime(2018, 1, 1);
             var user = database.Users.First();
             TimeEntryService timeEntryService = new TimeEntryService(user.UserId, database);
-            await timeEntryService.CreateBillableTimeEntry(date, 2, 1, 1);
+            await timeEntryService.CreateBillableTimeEntry(date, 2, 1);
             await timeEntryService.CreateNonBillableTimeEntry(date.AddDays(1), 3, null, TimeEntryTypeEnum.Vacation);
             await timeEntryService.CreateNonBillableTimeEntry(date.AddDays(2), 1, "flu", TimeEntryTypeEnum.Sick);            
             
             DateTime mayDate = new DateTime(2019, 5, 18);
-            await timeEntryService.CreateBillableTimeEntry(mayDate, 2, 1, 1);
+            await timeEntryService.CreateBillableTimeEntry(mayDate, 2, 1);
             
             
             var response = await orchestrator.HandleCommand(new SlashCommandPayload
@@ -149,12 +149,12 @@ namespace TimeTracker.Library.Test.Services.Orchestration
             DateTime date = new DateTime(2018, 2, 1);
             var user = database.Users.First();
             TimeEntryService timeEntryService = new TimeEntryService(user.UserId, database);
-            await timeEntryService.CreateBillableTimeEntry(date, 2, 1, 1);
+            await timeEntryService.CreateBillableTimeEntry(date, 2, 1);
             await timeEntryService.CreateNonBillableTimeEntry(date.AddDays(1), 3, null, TimeEntryTypeEnum.Vacation);
             await timeEntryService.CreateNonBillableTimeEntry(date.AddDays(2), 1, "flu", TimeEntryTypeEnum.Sick);            
             
             DateTime mayDate = new DateTime(2019, 5, 18);
-            await timeEntryService.CreateBillableTimeEntry(mayDate, 2, 1, 1);
+            await timeEntryService.CreateBillableTimeEntry(mayDate, 2, 1);
             
             
             var response = await orchestrator.HandleCommand(new SlashCommandPayload
@@ -189,12 +189,12 @@ namespace TimeTracker.Library.Test.Services.Orchestration
             DateTime date = new DateTime(2018, 2, 1);
             var user = database.Users.First();
             TimeEntryService timeEntryService = new TimeEntryService(user.UserId, database);
-            await timeEntryService.CreateBillableTimeEntry(date, 2, 1, 1);
+            await timeEntryService.CreateBillableTimeEntry(date, 2, 1);
             await timeEntryService.CreateNonBillableTimeEntry(date.AddDays(1), 3, null, TimeEntryTypeEnum.Vacation);
             await timeEntryService.CreateNonBillableTimeEntry(date.AddDays(2), 1, "flu", TimeEntryTypeEnum.Sick);            
             
             DateTime mayDate = new DateTime(2019, 5, 18);
-            await timeEntryService.CreateBillableTimeEntry(mayDate, 2, 1, 1);
+            await timeEntryService.CreateBillableTimeEntry(mayDate, 2, 1);
             
             
             var response = await orchestrator.HandleCommand(new SlashCommandPayload
@@ -216,12 +216,12 @@ namespace TimeTracker.Library.Test.Services.Orchestration
             DateTime date = new DateTime(2018, 2, 9);
             var user = database.Users.First();
             TimeEntryService timeEntryService = new TimeEntryService(user.UserId, database);
-            await timeEntryService.CreateBillableTimeEntry(date, 2, 1, 1);
+            await timeEntryService.CreateBillableTimeEntry(date, 2, 1);
             await timeEntryService.CreateNonBillableTimeEntry(date, 3, null, TimeEntryTypeEnum.Vacation);
             await timeEntryService.CreateNonBillableTimeEntry(date, 1, "flu", TimeEntryTypeEnum.Sick);            
             
             DateTime mayDate = new DateTime(2019, 5, 18);
-            await timeEntryService.CreateBillableTimeEntry(mayDate, 2, 1, 1);
+            await timeEntryService.CreateBillableTimeEntry(mayDate, 2, 1);
             
             
             var response = await orchestrator.HandleCommand(new SlashCommandPayload
@@ -246,22 +246,22 @@ namespace TimeTracker.Library.Test.Services.Orchestration
             DateTime yesterday = DateTime.UtcNow.AddDays(-1);
             var user = database.Users.First();
             TimeEntryService timeEntryService = new TimeEntryService(user.UserId, database);
-            await timeEntryService.CreateBillableTimeEntry(yesterday, 2, 9, 9);
+            await timeEntryService.CreateBillableTimeEntry(yesterday, 2, 9);
             await timeEntryService.CreateNonBillableTimeEntry(yesterday, 3, "au ramp up", TimeEntryTypeEnum.NonBillable);
             await timeEntryService.CreateNonBillableTimeEntry(yesterday, 1, "flu", TimeEntryTypeEnum.Sick);
 
             DateTime twoDaysAgo = yesterday.AddDays(-1);
-            await timeEntryService.CreateBillableTimeEntry(twoDaysAgo, 4, 9, 9);
+            await timeEntryService.CreateBillableTimeEntry(twoDaysAgo, 4, 9);
             await timeEntryService.CreateNonBillableTimeEntry(twoDaysAgo, 2, "maui", TimeEntryTypeEnum.Vacation);
             await timeEntryService.CreateNonBillableTimeEntry(twoDaysAgo, 2, "flu", TimeEntryTypeEnum.Sick);
 
             DateTime threeDaysAgo = twoDaysAgo.AddDays(-1);
-            await timeEntryService.CreateBillableTimeEntry(threeDaysAgo, 5, 9, 9);
+            await timeEntryService.CreateBillableTimeEntry(threeDaysAgo, 5, 9);
             await timeEntryService.CreateNonBillableTimeEntry(threeDaysAgo, 1, "maui", TimeEntryTypeEnum.Vacation);
             await timeEntryService.CreateNonBillableTimeEntry(threeDaysAgo, 2, null, TimeEntryTypeEnum.Sick); 
             
             DateTime fourDaysAgo = threeDaysAgo.AddDays(-1);
-            await timeEntryService.CreateBillableTimeEntry(fourDaysAgo, 1, 9, 9);
+            await timeEntryService.CreateBillableTimeEntry(fourDaysAgo, 1, 9);
             await timeEntryService.CreateNonBillableTimeEntry(fourDaysAgo.AddMinutes(-30), 4, "maui", TimeEntryTypeEnum.Vacation);
             await timeEntryService.CreateNonBillableTimeEntry(fourDaysAgo.AddMinutes(-15), 2, "flu", TimeEntryTypeEnum.Sick); 
             

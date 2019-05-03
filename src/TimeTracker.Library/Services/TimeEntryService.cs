@@ -20,15 +20,13 @@ namespace TimeTracker.Library.Services
             this.db = db;
         }
 
-        public async Task<Guid> CreateBillableTimeEntry(DateTime date, double hours, int billableClientId,
-            int projectId)
+        public async Task<Guid> CreateBillableTimeEntry(DateTime date, double hours, int projectId)
         {
             VerifyHoursBeforeAdding(date, hours);
 
             var model = new TimeEntry
             {
                 TimeEntryId = Guid.NewGuid(),
-                BillingClientId = billableClientId,
                 IsBillable = true,
                 Date = date,
                 UserId = userId,

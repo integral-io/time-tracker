@@ -34,8 +34,7 @@ namespace TimeTracker.Library.Services.Orchestration
                 }
 
                 await timeEntryService.CreateBillableTimeEntry(
-                    message.Date, message.Hours,
-                    project.BillingClientId, project.ProjectId);
+                    message.Date, message.Hours, project.ProjectId);
 
                 return new SlackMessageResponse(
                     $"Registered *{message.Hours:F1} hours* for project *{message.Project}* {message.Date:D}. " +
