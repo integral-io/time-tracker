@@ -97,6 +97,21 @@ namespace TimeTracker.Library.Test.Services
             report.First().VacationHoursYtd.Should().Be(0);
             report.First().OtherNonBillableYtd.Should().Be(0);
         }
+        
+        [Fact]
+        public async Task GetAllUsersByDateReport_filtersUsersWithHoursForDates_whenFilterByProject()
+        {
+            var baseDate = new DateTime(DateTime.UtcNow.Date.Year, 3, 15);
+            await PopulateTimeEntries(2, baseDate);
+            var timeEntryService = new TimeEntryService(Guid.NewGuid(), database);
+            await timeEntryService.CreateBillableTimeEntry(baseDate, 8, 1, 1);
+            var report = await adminReportService.GetAllUsersByDate(
+                new DateTime(DateTime.UtcNow.Date.Year, 2, 1),
+                new DateTime(DateTime.UtcNow.Date.Year, 3, 30), 2);
+
+            report.Should().HaveCount(1);
+            report.First().BillableHoursYtd.Should().Be(12);
+        }
 
         private async Task PopulateTimeEntries(int billableClientId, DateTime baseDate)
         {
