@@ -7,7 +7,9 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using NJsonSchema.Infrastructure;
 using TimeTracker.Data;
 
 namespace TimeTracker.Api
@@ -19,9 +21,12 @@ namespace TimeTracker.Api
     }
     public static class StartupExtensions
     {
+        private const string OrganizationEmailConfigurationKey = "OrganizationDomain";
+        
         public static void ConfigureGoogleAuth(this IServiceCollection services, string clientId, string clientSecret)
         {
             services.AddIdentity<IdentityUser, IdentityRole>();
+            
             services.AddAuthentication(options =>
                 {
                     options.DefaultAuthenticateScheme = GoogleDefaults.AuthenticationScheme;
@@ -36,24 +41,30 @@ namespace TimeTracker.Api
                     {
                         string email = ctx.Principal.FindFirstValue(
                             "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress");
-                        if (email.EndsWith("@integral.io"))
+                        var rolesToAdd = new List<Claim>();
+                        IConfiguration configuration = ctx.HttpContext.RequestServices.GetRequiredService<IConfiguration>();
+
+                        if (configuration != null)
                         {
-                            ctx.Principal.AddIdentity(new ClaimsIdentity(
-                                new List<Claim>
-                                {
-                                    new Claim(ClaimTypes.Role, AppRoles.OrganizationMember)
-                                }));
+                            string organizationDomain = configuration.GetValue<string>(OrganizationEmailConfigurationKey);
+                            if (!string.IsNullOrEmpty(organizationDomain) && email.EndsWith("@" + organizationDomain))
+                            {
+                                rolesToAdd.Add(new Claim(ClaimTypes.Role, AppRoles.OrganizationMember));
+                            }
                         }
-                        
+
                         string googleId = ctx.Principal.FindFirstValue("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier");
                         var db = ctx.HttpContext.RequestServices.GetRequiredService<TimeTrackerDbContext>();
                         var user = db.Users.FirstOrDefault(x => x.GoogleIdentifier == googleId);
-                        if (user != null)
+                        if (user != null && user.Roles.Contains(AppRoles.Admin))
                         {
-                            
+                            rolesToAdd.Add(new Claim(ClaimTypes.Role, AppRoles.Admin));
                         }
-                        
-                        
+
+                        if (rolesToAdd.Count > 0)
+                        {
+                            ctx.Principal.AddIdentity(new ClaimsIdentity(rolesToAdd));
+                        }
                         return Task.CompletedTask;
                     };
                 });

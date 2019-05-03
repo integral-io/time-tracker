@@ -1,3 +1,4 @@
+@using TimeTracker.Api
 @{
     Layout = null;
 }
@@ -29,25 +30,37 @@
         <span class="navbar-toggler-icon"></span>
     </button>
 
-    @if (User.IsInRole(TimeTracker.Api.AppRoles.OrganizationMember))
+    @if (User.IsInRole(AppRoles.OrganizationMember))
     {
         <div class="collapse navbar-collapse" id="navbarsExampleDefault">
             <ul class="navbar-nav mr-auto">
                 <li class="nav-item active">
                     <a class="nav-link" href=@Url.Action(action: "UserEntryReport", controller: "WebReport")>My Hours</a>
                 </li>
-
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        Admin
-                    </a>
-                    <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                        <a class="dropdown-item" href=@Url.Action(action: "FilteredReport", controller: "AdminReports")>Filtered Report</a>
-                        <a class="dropdown-item" href=@Url.Action(action: "AllUsersReport", controller: "AdminReports")>YTD Report</a>
-                        <div class="dropdown-divider"></div>
-                        <a class="dropdown-item" href="#">Something else here</a>
-                    </div>
-                </li>
+                @if (User.IsInRole(AppRoles.Admin))
+                {
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Admin
+                        </a>
+                        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                            <a class="dropdown-item" href=@Url.Action(action: "FilteredReport", controller: "AdminReports")>Filtered Report</a>
+                            <a class="dropdown-item" href=@Url.Action(action: "AllUsersReport", controller: "AdminReports")>YTD Report</a>
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item" href="#">Something else here</a>
+                        </div>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="False">
+                            Settings
+                        </a>
+                        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                            <a class="dropdown-item" href="#">Configure Clients</a>
+                            <a class="dropdown-item" href="#">Configure Projects</a>
+                            <a class="dropdown-item" href="#">Configure Billing Rates</a>
+                        </div>
+                    </li>
+                }
 
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="False">
@@ -55,17 +68,6 @@
                     </a>
                     <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                         <a class="dropdown-item" href=@Url.Action(action: "Claims", controller: "Home")>Identity Claims</a>
-                    </div>
-                </li>
-                
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="False">
-                        Settings
-                    </a>
-                    <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                        <a class="dropdown-item" href="#">Configure Clients</a>
-                        <a class="dropdown-item" href="#">Configure Projects</a>
-                        <a class="dropdown-item" href="#">Configure Billing Rates</a>
                     </div>
                 </li>
             </ul>
