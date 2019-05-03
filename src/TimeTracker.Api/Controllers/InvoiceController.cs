@@ -6,7 +6,7 @@ using TimeTracker.Data;
 
 namespace TimeTracker.Api.Controllers
 {
-    [Route("invoice")]
+    [Route("invoice"), Authorize(Roles = AppRoles.Admin)]
     public class InvoiceController : Controller
     {
         private readonly TimeTrackerDbContext dbContext;

@@ -1,14 +1,22 @@
+@using TimeTracker.Api
 @{
     ViewBag.Title = "Integral Time Tracker";
     Layout = "_Layout";
 }
 
 <h2>Welcome to TimeTracker</h2>
-
-<p>
-    <a href="@Url.Action(action: "UserEntryReport", controller: "WebReport")">Go to My Hours List Report</a>
-</p>
-
+@if (User.IsInRole(AppRoles.OrganizationMember))
+{
+    <p>
+        <a href="@Url.Action(action: "UserEntryReport", controller: "WebReport")">Go to My Hours List Report</a>
+    </p>
+}
+else
+{
+    <p>
+        It looks like you are not from an approved organization to do anything here. Be sure you are logging in with your organizational email. 
+    </p>
+}
 <p>
     <a href="@Url.Action(action: "Claims", controller: "Home")">View My Identity Claims</a>
 </p>

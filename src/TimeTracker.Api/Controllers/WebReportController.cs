@@ -9,7 +9,7 @@ using TimeTracker.Library.Services;
 
 namespace TimeTracker.Api.Controllers
 {
-    [Route("user/web"), Authorize]
+    [Route("user/web"), Authorize(Roles = AppRoles.OrganizationMember)]
     public class WebReportController : Controller
     {
         private readonly TimeTrackerDbContext dbContext;
