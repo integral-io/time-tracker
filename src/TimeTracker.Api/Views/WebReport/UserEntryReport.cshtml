@@ -7,6 +7,37 @@
 
 <h2>@Model.First().Name: @ViewBag.Title</h2>
 
+<form class="well" asp-action="RecordHours" method="post">
+    <div class="form-row">
+        <div class="col">
+            <input type="date" name="Date" class="form-control" />
+        </div>
+        <div class="col">
+            <select class="custom-select" name="TimeEntryType" onselect="selectTimeEntry">
+                <option>Billable</option>
+                <option>Non-billable</option>
+                <option>Sick</option>
+                <option>Vacation</option>
+            </select>
+        </div>
+        <div class="col">
+            <select class="custom-select" name="ProjectId">
+                <option>Au</option>
+                <option>May</option>
+                <option>Bosch</option>
+            </select>
+        </div>
+        <div class="col">
+            <input type="text" name="NonbillReason" class="form-control" placeholder="non billable reason" maxlength="30"/>
+        </div>
+        <div class="col">
+            <input type="text" name="Hours" class="form-control" placeholder="Hours" maxlength="2" min="0" max="12">
+        </div>
+        <div class="col">
+            <button type="submit" class="btn btn-primary my-1">Record</button>
+        </div>
+    </div>
+</form>
 <table class="table table-striped table-bordered">
     <thead class="thead-dark">
     <tr>
@@ -30,3 +61,8 @@
     }
     </tbody>
 </table>
+<script type="text/javascript">
+    function selectTimeEntry(event) {
+        console.log(event);
+    }
+</script>
