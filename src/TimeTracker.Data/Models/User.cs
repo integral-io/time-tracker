@@ -23,6 +23,11 @@ namespace TimeTracker.Data.Models
         /// Should not be edited by user. Claim: http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress
         /// </summary>
         public string OrganizationEmail { get; set; }
+        
+        /// <summary>
+        /// Comma delimited list of roles
+        /// </summary>
+        public string Roles { get; set; }
 
         public ICollection<TimeEntry> TimeEntries { get; set; }
     }

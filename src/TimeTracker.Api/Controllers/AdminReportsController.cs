@@ -11,7 +11,7 @@ using TimeTracker.Library.Services;
 
 namespace TimeTracker.Api.Controllers
 {
-    [Route("admin/reports"), Authorize(Roles = AppRoles.Admin)]
+    [Route("admin/reports"), Authorize()]
     public class AdminReportsController : Controller
     {
         private readonly TimeTrackerDbContext dbContext;

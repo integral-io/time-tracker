@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
@@ -7,6 +8,7 @@ using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
+using TimeTracker.Data;
 
 namespace TimeTracker.Api
 {
@@ -44,6 +46,12 @@ namespace TimeTracker.Api
                         }
                         
                         string googleId = ctx.Principal.FindFirstValue("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier");
+                        var db = ctx.HttpContext.RequestServices.GetRequiredService<TimeTrackerDbContext>();
+                        var user = db.Users.FirstOrDefault(x => x.GoogleIdentifier == googleId);
+                        if (user != null)
+                        {
+                            
+                        }
                         
                         
                         return Task.CompletedTask;

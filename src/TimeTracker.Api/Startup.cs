@@ -27,13 +27,6 @@ namespace TimeTracker.Api
         {
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
             services.AddSingleton(configuration);
-            
-            if (!environment.IsTest())
-            {
-                services.ConfigureGoogleAuth(
-                    configuration["Authentication:Google:ClientId"], 
-                    configuration["Authentication:Google:ClientSecret"]);
-            }
 
             services.AddSwaggerDocument(configure =>
             {
@@ -46,6 +39,13 @@ namespace TimeTracker.Api
 
             var connection = configuration.GetConnectionString("DefaultConnection");
             services.AddDbContext<TimeTrackerDbContext>(options => { options.UseSqlServer(connection); });
+            
+            if (!environment.IsTest())
+            {
+                services.ConfigureGoogleAuth(
+                    configuration["Authentication:Google:ClientId"], 
+                    configuration["Authentication:Google:ClientSecret"]);
+            }
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
