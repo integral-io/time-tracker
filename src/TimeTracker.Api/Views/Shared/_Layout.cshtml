@@ -34,11 +34,26 @@
             <li class="nav-item active">
                 <a class="nav-link" href=@Url.Action(action: "UserEntryReport", controller: "WebReport")>My Hours</a>
             </li>
-            <li class="nav-item active">
-                <a class="nav-link" href=@Url.Action(action: "AllUsersReport", controller: "AdminReports")>Admin Report - YTD</a>
+            
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Admin
+                </a>
+                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                    <a class="dropdown-item" href=@Url.Action(action: "FilteredReport", controller: "AdminReports")>Filtered Report</a>
+                    <a class="dropdown-item" href=@Url.Action(action: "AllUsersReport", controller: "AdminReports")>YTD Report</a>
+                    <div class="dropdown-divider"></div>
+                    <a class="dropdown-item" href="#">Something else here</a>
+                </div>
             </li>
-            <li class="nav-item active">
-                <a class="nav-link" href=@Url.Action(action: "PeriodReport", controller: "AdminReports", values: new { start = "2019-03-15" })>Admin Report - Pay Period</a>
+            
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="False">
+                    Account
+                </a>
+                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                    <a class="dropdown-item" href=@Url.Action(action: "Claims", controller: "Home")>Identity Claims</a>
+                </div>
             </li>
         </ul>
         <form class="form-inline my-2 my-lg-0">

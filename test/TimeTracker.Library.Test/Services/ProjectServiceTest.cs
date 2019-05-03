@@ -3,6 +3,7 @@ using FluentAssertions;
 using TimeTracker.Library.Services;
 using TimeTracker.Data;
 using TimeTracker.Data.Models;
+using TimeTracker.TestInfra;
 using Xunit;
 
 namespace TimeTracker.Library.Test.Services

@@ -1,0 +1,13 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>netstandard2.0</TargetFramework>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="2.2.1" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="2.2.1" />
+      <ProjectReference Include="..\..\src\TimeTracker.Data\TimeTracker.Data.csproj" />
+    </ItemGroup>
+
+</Project>

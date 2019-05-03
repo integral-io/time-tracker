@@ -30,16 +30,18 @@ namespace TimeTracker.Api.Controllers
             return View(items);
         }
         
-        [HttpGet("payperiod")]
-        public async Task<ViewResult> PeriodReport(string start, string end = null, int? projectId = null)
+        [HttpGet("filtered")]
+        public async Task<ViewResult> FilteredReport(string start = null, string end = null, int? projectId = null)
         {
             if (projectId == 0)
             {
                 projectId = null;
             }
 
-            DateTime startDate = Convert.ToDateTime(start);
-            DateTime endDate = string.IsNullOrEmpty(end) ? startDate.AddDays(PayPeriodLength) : Convert.ToDateTime(end);
+            DateTime startDate = string.IsNullOrEmpty(start) ? 
+                new DateTime(DateTime.UtcNow.Year, DateTime.UtcNow.Month, 1) 
+                : Convert.ToDateTime(start);
+            DateTime endDate = string.IsNullOrEmpty(end) ? startDate.AddMonths(1).AddDays(-1) : Convert.ToDateTime(end);
             
             var projectService = new ProjectService(dbContext);
             var adminReportService = new AdminReportService(dbContext);
@@ -51,7 +53,8 @@ namespace TimeTracker.Api.Controllers
                 PayPeriodStartDate = startDate,
                 PayPeriodEndDate = endDate,
                 ReportItems = items.ToImmutableList(),
-                Projects = projects.ToImmutableList()
+                Projects = projects.ToImmutableList(),
+                SelectedProjectId = projectId
             };
             return View(viewModel);
         }

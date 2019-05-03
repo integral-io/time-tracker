@@ -2,6 +2,7 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using TimeTracker.Library.Models;
 using TimeTracker.Library.Services.Orchestration;
+using TimeTracker.TestInfra;
 using Xunit;
 
 namespace TimeTracker.Library.Test.Services.Orchestration
