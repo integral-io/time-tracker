@@ -8,5 +8,9 @@ namespace TimeTracker.Library.Models.Admin
         public DateTime PayPeriodStartDate { get; set; }
         public DateTime PayPeriodEndDate { get; set; }
         public ImmutableList<UserReport> ReportItems { get; set; }
+        
+        public ImmutableList<ProjectRp> Projects { get; set; }
+        
+        public int SelectedProjectId { get; set; }
     }
 }

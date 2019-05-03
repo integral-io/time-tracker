@@ -31,7 +31,7 @@ namespace TimeTracker.Api.Controllers
         }
         
         [HttpGet("payperiod")]
-        public async Task<ViewResult> PeriodReport(string start, string end = null)
+        public async Task<ViewResult> PeriodReport(string start, string end = null, int? projectId = null)
         {
             if (string.IsNullOrEmpty(start))
             {
@@ -42,14 +42,17 @@ namespace TimeTracker.Api.Controllers
             DateTime startDate = Convert.ToDateTime(start);
             DateTime endDate = string.IsNullOrEmpty(end) ? startDate.AddDays(PayPeriodLength) : Convert.ToDateTime(end);
             
+            var projectService = new ProjectService(dbContext);
             var adminReportService = new AdminReportService(dbContext);
-            var items = await adminReportService.GetAllUsersByDate(startDate, endDate);
+            var items = await adminReportService.GetAllUsersByDate(startDate, endDate, projectId);
+            var projects = await projectService.GetAllProjects();
             
             var viewModel = new PayPeriodReportViewModel()
             {
                 PayPeriodStartDate = startDate,
                 PayPeriodEndDate = endDate,
-                ReportItems = items.ToImmutableList()
+                ReportItems = items.ToImmutableList(),
+                Projects = projects.ToImmutableList()
             };
             return View(viewModel);
         }

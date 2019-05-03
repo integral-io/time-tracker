@@ -44,7 +44,7 @@ namespace TimeTracker.Library.Services
         /// <param name="start">Start date for query, inclusive.</param>
         /// <param name="end">End date for query, inclusive.</param>
         /// <returns></returns>
-        public async Task<IImmutableList<UserReport>> GetAllUsersByDate(DateTime start, DateTime end)
+        public async Task<IImmutableList<UserReport>> GetAllUsersByDate(DateTime start, DateTime end, int? projectId = null)
         {
             var query = from u in db.Users
                 select new UserReport
@@ -53,7 +53,8 @@ namespace TimeTracker.Library.Services
                     Last = u.LastName,
                     First = u.FirstName,
                     BillableHoursYtd = u.TimeEntries
-                        .Where(x=>x.TimeEntryType == TimeEntryTypeEnum.BillableProject && x.Date >= start && x.Date <= end)
+                        .Where(x=>x.TimeEntryType == TimeEntryTypeEnum.BillableProject && x.Date >= start && x.Date <= end
+                                  && (projectId == null || projectId.HasValue && x.ProjectId == projectId))
                         .Sum(x=>x.Hours),
                     OtherNonBillableYtd = u.TimeEntries
                         .Where(x=>x.TimeEntryType == TimeEntryTypeEnum.NonBillable && x.Date >= start && x.Date <= end)
