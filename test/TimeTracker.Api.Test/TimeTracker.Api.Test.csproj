@@ -38,6 +38,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\TimeTracker.Api\TimeTracker.Api.csproj" />
+    <ProjectReference Include="..\TimeTracker.TestInfra\TimeTracker.TestInfra.csproj" />
   </ItemGroup>
 
 </Project>

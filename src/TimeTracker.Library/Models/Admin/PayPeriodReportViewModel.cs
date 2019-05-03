@@ -11,6 +11,6 @@ namespace TimeTracker.Library.Models.Admin
         
         public ImmutableList<ProjectRp> Projects { get; set; }
         
-        public int SelectedProjectId { get; set; }
+        public int? SelectedProjectId { get; set; }
     }
 }

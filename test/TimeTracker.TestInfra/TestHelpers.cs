@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using TimeTracker.Data;
 using TimeTracker.Data.Models;
 
-namespace TimeTracker.Library.Test
+namespace TimeTracker.TestInfra
 {
     public static class TestHelpers
     {

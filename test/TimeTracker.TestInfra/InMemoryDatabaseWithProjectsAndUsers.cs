@@ -1,7 +1,7 @@
 using System;
 using TimeTracker.Data;
 
-namespace TimeTracker.Library.Test.Services
+namespace TimeTracker.TestInfra
 {
     public class InMemoryDatabaseWithProjectsAndUsers : IDisposable
     {

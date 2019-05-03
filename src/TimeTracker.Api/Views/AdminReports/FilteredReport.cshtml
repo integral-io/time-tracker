@@ -1,12 +1,12 @@
 @model TimeTracker.Library.Models.Admin.PayPeriodReportViewModel
 
 @{
-    ViewBag.Title = "Admin Report by Range";
+    ViewBag.Title = "Admin Report Filtered";
     Layout = "_Layout";
 }
 
 <h2>Report by Date Range</h2>
-<form asp-action="PeriodReport" asp-controller="AdminReports" method="get"> 
+<form asp-action="FilteredReport" asp-controller="AdminReports" method="get"> 
     <label>Start Date:</label>
     <input name="start" type="text" maxlength="10" placeholder="YYYY-MM-DD" value="@Model.PayPeriodStartDate.ToString("yyyy-MM-dd")"/>
     <label>End Date:</label>
@@ -16,7 +16,7 @@
         <option value="0">No Project Filter...</option>
         @foreach (var project in Model.Projects)
         {
-            <option value="@project.ProjectId">@project.Name</option>
+            <option value="@project.ProjectId" selected="@(project.ProjectId == Model.SelectedProjectId)">@project.Name</option>
         }
     </select>
     <input type="submit"/>
@@ -41,10 +41,10 @@
             <td>@user.SlackUserName</td>
             <td>@user.First</td>
             <td>@user.Last</td>
-            <td>@user.BillableHoursYtd</td>
-            <td>@user.SickHoursYtd</td>
-            <td>@user.VacationHoursYtd</td>
-            <td>@user.OtherNonBillableYtd</td>
+            <td class="@(user.BillableHoursYtd > 0 ? "font-weight-bold" : null)">@user.BillableHoursYtd</td>
+            <td class="@(user.SickHoursYtd > 0 ? "font-weight-bold" : null)">@user.SickHoursYtd</td>
+            <td class="@(user.VacationHoursYtd > 0 ? "font-weight-bold" : null)">@user.VacationHoursYtd</td>
+            <td class="@(user.OtherNonBillableYtd > 0 ? "font-weight-bold" : null)">@user.OtherNonBillableYtd</td>
         </tr>
     }
     </tbody>
