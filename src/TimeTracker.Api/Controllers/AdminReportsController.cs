@@ -33,10 +33,9 @@ namespace TimeTracker.Api.Controllers
         [HttpGet("payperiod")]
         public async Task<ViewResult> PeriodReport(string start, string end = null, int? projectId = null)
         {
-            if (string.IsNullOrEmpty(start))
+            if (projectId == 0)
             {
-                ModelState.AddModelError(start, "cannot be empty");
-                return View();
+                projectId = null;
             }
 
             DateTime startDate = Convert.ToDateTime(start);
