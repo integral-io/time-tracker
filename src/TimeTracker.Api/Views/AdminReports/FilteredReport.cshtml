@@ -29,9 +29,12 @@
         <th>First</th>
         <th>Last</th>
         <th>Total Billable Hours</th>
-        <th>Total Sick Hours</th>
-        <th>Total Vacation Hours</th>
-        <th>Total Non-billable Hours</th>
+        @if (!Model.SelectedProjectId.HasValue)
+        {
+            <th>Total Sick Hours</th>
+            <th>Total Vacation Hours</th>
+            <th>Total Non-billable Hours</th>
+        }
     </tr>
     </thead>
     <tbody>
@@ -42,9 +45,12 @@
             <td>@user.First</td>
             <td>@user.Last</td>
             <td class="@(user.BillableHoursYtd > 0 ? "font-weight-bold" : null)">@user.BillableHoursYtd</td>
-            <td class="@(user.SickHoursYtd > 0 ? "font-weight-bold" : null)">@user.SickHoursYtd</td>
-            <td class="@(user.VacationHoursYtd > 0 ? "font-weight-bold" : null)">@user.VacationHoursYtd</td>
-            <td class="@(user.OtherNonBillableYtd > 0 ? "font-weight-bold" : null)">@user.OtherNonBillableYtd</td>
+            @if (!Model.SelectedProjectId.HasValue)
+            {
+                <td class="@(user.SickHoursYtd > 0 ? "font-weight-bold" : null)">@user.SickHoursYtd</td>
+                <td class="@(user.VacationHoursYtd > 0 ? "font-weight-bold" : null)">@user.VacationHoursYtd</td>
+                <td class="@(user.OtherNonBillableYtd > 0 ? "font-weight-bold" : null)">@user.OtherNonBillableYtd</td>
+            }
         </tr>
     }
     </tbody>
