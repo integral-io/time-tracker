@@ -26,7 +26,7 @@ namespace TimeTracker.Library.Test.Services
 
         public async Task InitializeAsync()
         {
-            await PopulateTimeEntries();
+            await PopulateTimeEntries(1, new DateTime(DateTime.UtcNow.Date.Year, 2, 15));
         }
 
         [Fact]
@@ -83,20 +83,33 @@ namespace TimeTracker.Library.Test.Services
             report.First().VacationHoursYtd.Should().Be(13);
             report.First().OtherNonBillableYtd.Should().Be(6);
         }
+        
+        [Fact]
+        public async Task GetAllUsersByDateReport_filtersProjectHours_andOnlyShowsBillableHours_whenProjectId()
+        {
+            await PopulateTimeEntries(2, new DateTime(DateTime.UtcNow.Date.Year, 3, 15));
+            var report = await adminReportService.GetAllUsersByDate(
+                new DateTime(DateTime.UtcNow.Date.Year, 2, 1),
+                new DateTime(DateTime.UtcNow.Date.Year, 3, 30), 2);
 
-        private async Task PopulateTimeEntries()
+            report.First().BillableHoursYtd.Should().Be(12);
+            report.First().SickHoursYtd.Should().Be(0);
+            report.First().VacationHoursYtd.Should().Be(0);
+            report.First().OtherNonBillableYtd.Should().Be(0);
+        }
+
+        private async Task PopulateTimeEntries(int billableClientId, DateTime baseDate)
         {
             var timeEntryService = new TimeEntryService(database.Users.First().UserId, database);
-            var date = new DateTime(DateTime.UtcNow.Date.Year, 2, 15);
 
-            await timeEntryService.CreateBillableTimeEntry(date, 8, 1, 1);
-            await timeEntryService.CreateBillableTimeEntry(date.AddDays(-1), 4, 1, 1);
-            await timeEntryService.CreateNonBillableTimeEntry(date.AddDays(-2), 2, "dr visit", TimeEntryTypeEnum.Sick);
-            await timeEntryService.CreateNonBillableTimeEntry(date.AddDays(-3), 4, "dr visit", TimeEntryTypeEnum.Sick);
-            await timeEntryService.CreateNonBillableTimeEntry(date.AddDays(-5), 7, null, TimeEntryTypeEnum.Vacation);
-            await timeEntryService.CreateNonBillableTimeEntry(date.AddDays(-6), 6, null, TimeEntryTypeEnum.Vacation);
-            await timeEntryService.CreateNonBillableTimeEntry(date.AddDays(-7), 4, "pda", TimeEntryTypeEnum.NonBillable);
-            await timeEntryService.CreateNonBillableTimeEntry(date.AddDays(-8), 2, "ipa", TimeEntryTypeEnum.NonBillable);
+            await timeEntryService.CreateBillableTimeEntry(baseDate, 8, billableClientId, billableClientId);
+            await timeEntryService.CreateBillableTimeEntry(baseDate.AddDays(-billableClientId), 4, billableClientId, billableClientId);
+            await timeEntryService.CreateNonBillableTimeEntry(baseDate.AddDays(-2), 2, "dr visit", TimeEntryTypeEnum.Sick);
+            await timeEntryService.CreateNonBillableTimeEntry(baseDate.AddDays(-3), 4, "dr visit", TimeEntryTypeEnum.Sick);
+            await timeEntryService.CreateNonBillableTimeEntry(baseDate.AddDays(-5), 7, null, TimeEntryTypeEnum.Vacation);
+            await timeEntryService.CreateNonBillableTimeEntry(baseDate.AddDays(-6), 6, null, TimeEntryTypeEnum.Vacation);
+            await timeEntryService.CreateNonBillableTimeEntry(baseDate.AddDays(-7), 4, "pda", TimeEntryTypeEnum.NonBillable);
+            await timeEntryService.CreateNonBillableTimeEntry(baseDate.AddDays(-8), 2, "ipa", TimeEntryTypeEnum.NonBillable);
         }
 
         public async Task DisposeAsync()
