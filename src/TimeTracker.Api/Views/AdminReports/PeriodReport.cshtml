@@ -13,7 +13,7 @@
     <input name="end" type="text" maxlength="10" placeholder="YYYY-MM-DD" value="@Model.PayPeriodEndDate.ToString("yyyy-MM-dd")"/>
     <label>Project Filter:</label>
     <select name="projectId">
-        <option>No Project Filter...</option>
+        <option value="0">No Project Filter...</option>
         @foreach (var project in Model.Projects)
         {
             <option value="@project.ProjectId">@project.Name</option>
