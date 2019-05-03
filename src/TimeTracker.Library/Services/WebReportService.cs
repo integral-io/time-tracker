@@ -19,7 +19,11 @@ namespace TimeTracker.Library.Services
 
         public async Task<IImmutableList<UserEntry>> GetUserReport(Guid userId)
         {
-            var timeEntries = await db.TimeEntries.Where(x => x.UserId == userId).ToListAsync();
+            var timeEntries = await db.TimeEntries.AsNoTracking().Where(x => x.UserId == userId).ToListAsync();
+            if (!timeEntries.Any())
+            {
+                return new ImmutableArray<UserEntry>();
+            }
             var user = db.Users.First(x => x.UserId == userId);
             var name = user.FirstName + " " + user.LastName;
             
