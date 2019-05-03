@@ -56,7 +56,7 @@ namespace TimeTracker.Api
                         string googleId = ctx.Principal.FindFirstValue("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier");
                         var db = ctx.HttpContext.RequestServices.GetRequiredService<TimeTrackerDbContext>();
                         var user = db.Users.FirstOrDefault(x => x.GoogleIdentifier == googleId);
-                        if (user != null && user.Roles.Contains(AppRoles.Admin))
+                        if (user != null && user.Roles != null && user.Roles.Contains(AppRoles.Admin))
                         {
                             rolesToAdd.Add(new Claim(ClaimTypes.Role, AppRoles.Admin));
                         }
