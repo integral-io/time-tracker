@@ -20,7 +20,7 @@ namespace TimeTracker.Api.Test
             var controller = new AdminReportsController(database);
 
             var expectedStartDate = database.TimeEntries.First().Date;
-            var expectedEndDate = expectedStartDate.AddDays(14);
+            var expectedEndDate = expectedStartDate.AddMonths(1).AddDays(-1);
             var result = await controller.FilteredReport(expectedStartDate.ToString("yyyy-MM-dd"));
 
             var model = result.Model.Should().BeOfType<PayPeriodReportViewModel>().Which;
