@@ -70,7 +70,6 @@ namespace TimeTracker.Api.Controllers
         private async Task<Guid> GetUserId()
         {
             var ident = User.Identity as ClaimsIdentity;
-            // refactor this line, also used in AccountController
             string googleId = ident.Claims
                 .First(x => x.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier").Value;
             Guid userId = await userService.GetUserIdFromGoogleId(googleId);
