@@ -62,7 +62,6 @@ namespace TimeTracker.TestInfra
                 new TimeEntry()
                 {
                     Date = new DateTime(2018,12,1),
-                    BillingClientId =  1,
                     IsBillable = false,
                     Hours = 2,
                     TimeEntryId = Guid.NewGuid(),
@@ -73,7 +72,6 @@ namespace TimeTracker.TestInfra
                 new TimeEntry()
                 {
                     Date = new DateTime(2018,12,2),
-                    BillingClientId =  1,
                     IsBillable = false,
                     Hours = 8,
                     TimeEntryId = Guid.NewGuid(),

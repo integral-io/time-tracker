@@ -15,17 +15,12 @@ namespace TimeTracker.Data.Models
 
         public bool IsBillable { get; set; }
         public string NonBillableReason { get; set; }
-
-        [Obsolete]
-        public int? BillingClientId { get; set; }
         public int? ProjectId { get; set; }
         public Guid UserId { get; set; }
         public TimeEntryTypeEnum TimeEntryType { get; set; }
 
         #region Navigation Properties
 
-        [Obsolete]
-        public BillingClient BillingClient { get; set; }
         public User User { get; set; }
         public Project Project { get; set; }
 
