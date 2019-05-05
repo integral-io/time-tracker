@@ -104,7 +104,7 @@ namespace TimeTracker.Library.Test.Services
             var baseDate = new DateTime(DateTime.UtcNow.Date.Year, 3, 15);
             await PopulateTimeEntries(2, baseDate);
             var timeEntryService = new TimeEntryService(Guid.NewGuid(), database);
-            await timeEntryService.CreateBillableTimeEntry(baseDate, 8, 1, 1);
+            await timeEntryService.CreateBillableTimeEntry(baseDate, 8, 1);
             var report = await adminReportService.GetAllUsersByDate(
                 new DateTime(DateTime.UtcNow.Date.Year, 2, 1),
                 new DateTime(DateTime.UtcNow.Date.Year, 3, 30), 2);
@@ -113,12 +113,12 @@ namespace TimeTracker.Library.Test.Services
             report.First().BillableHoursYtd.Should().Be(12);
         }
 
-        private async Task PopulateTimeEntries(int billableClientId, DateTime baseDate)
+        private async Task PopulateTimeEntries(int billableProjectId, DateTime baseDate)
         {
             var timeEntryService = new TimeEntryService(database.Users.First().UserId, database);
 
-            await timeEntryService.CreateBillableTimeEntry(baseDate, 8, billableClientId, billableClientId);
-            await timeEntryService.CreateBillableTimeEntry(baseDate.AddDays(-billableClientId), 4, billableClientId, billableClientId);
+            await timeEntryService.CreateBillableTimeEntry(baseDate, 8, billableProjectId);
+            await timeEntryService.CreateBillableTimeEntry(baseDate.AddDays(-1), 4, billableProjectId);
             await timeEntryService.CreateNonBillableTimeEntry(baseDate.AddDays(-2), 2, "dr visit", TimeEntryTypeEnum.Sick);
             await timeEntryService.CreateNonBillableTimeEntry(baseDate.AddDays(-3), 4, "dr visit", TimeEntryTypeEnum.Sick);
             await timeEntryService.CreateNonBillableTimeEntry(baseDate.AddDays(-5), 7, null, TimeEntryTypeEnum.Vacation);
