@@ -82,7 +82,7 @@ namespace TimeTracker.Library.Test.Services
         public async Task GetUserReport_listsEntriesInDescOrder()
         {
             var report = await webReportService.GetUserReport(userId);
-            var expectedOrderReport = report.OrderByDescending(x => x.Date);
+            var expectedOrderReport = report.OrderByDescending(x => x.DateForOrdering);
             Assert.True(expectedOrderReport.SequenceEqual(report));
         }
 
