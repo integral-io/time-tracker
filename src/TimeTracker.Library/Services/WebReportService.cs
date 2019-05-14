@@ -35,6 +35,7 @@ namespace TimeTracker.Library.Services
                     UserId = g.FirstOrDefault().UserId,
                     Name = name,
                     Date = g.FirstOrDefault().Date.ToShortDateString(),
+                    DateForOrdering = g.FirstOrDefault().Date,
                     DayOfWeek = g.FirstOrDefault().Date.DayOfWeek.ToString(),
                     BillableHours = g.Where(x=>x.TimeEntryType == TimeEntryTypeEnum.BillableProject).Sum(x=>x.Hours),
                     BillableProject = db.Projects.FirstOrDefault(x => x.ProjectId == (g.FirstOrDefault(y=>y.TimeEntryType == TimeEntryTypeEnum.BillableProject).ProjectId ?? 0))?.Name ?? "",
@@ -45,7 +46,7 @@ namespace TimeTracker.Library.Services
                     OtherNonBillable = g.Where(x=>x.TimeEntryType == TimeEntryTypeEnum.NonBillable).Sum(x=>x.Hours),
                     NonBillableReason = g.FirstOrDefault(x=>x.TimeEntryType == TimeEntryTypeEnum.NonBillable)?.NonBillableReason ?? "" 
                 };
-            return query.OrderByDescending(x => x.Date).ToImmutableList();
+            return query.OrderByDescending(x => x.DateForOrdering).ToImmutableList();
         }
     }
 }

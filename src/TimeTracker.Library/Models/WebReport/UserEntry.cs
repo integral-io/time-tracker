@@ -2,9 +2,13 @@ using System;
 
 namespace TimeTracker.Library.Models.WebReport
 {
+    /// <summary>
+    /// presentation object for the user's web report
+    /// </summary>
     public class UserEntry
     {
         public Guid UserId { get; set; }
+        public DateTime DateForOrdering { get; set; }
         
         public string Name { get; set; }
         public string Date { get; set; }
