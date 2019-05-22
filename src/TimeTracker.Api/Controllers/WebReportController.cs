@@ -13,7 +13,7 @@ using TimeTracker.Library.Services;
 
 namespace TimeTracker.Api.Controllers
 {
-    [Route("user/web"), Authorize]
+    [Route(""), Authorize]
     public class WebReportController : Controller
     {
         private readonly TimeTrackerDbContext dbContext;
@@ -25,8 +25,8 @@ namespace TimeTracker.Api.Controllers
             userService = new UserService(dbContext);
         }
         
-        [HttpGet("userEntryReport")]
-        public async Task<ViewResult> UserEntryReport()
+        [HttpGet("")]
+        public async Task<ViewResult> Index()
         {
             var userId = await GetUserId();
 
@@ -64,7 +64,7 @@ namespace TimeTracker.Api.Controllers
                     model.TimeEntryType);
             }
 
-            return RedirectToAction("UserEntryReport");
+            return RedirectToAction("Index");
         }
 
         private async Task<Guid> GetUserId()

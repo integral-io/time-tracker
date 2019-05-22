@@ -20,7 +20,14 @@ namespace TimeTracker.Api.Controllers
             this.dbContext = dbContext;
             userService = new UserService(dbContext);
         }
-
+        
+        [HttpGet("claims")]
+        public IActionResult Claims()
+        {
+            var ident = User.Identity as ClaimsIdentity;
+            
+            return View(ident.Claims);
+        }
 
         [HttpGet("linkslack")]
         public async Task<IActionResult> LinkSlack(string slackUser)
@@ -35,7 +42,7 @@ namespace TimeTracker.Api.Controllers
 
             await userService.SaveGoogleInfo(slackUser, googleId, first, last, email);
 
-            return RedirectToAction("UserEntryReport", "WebReport");
+            return RedirectToAction("Index", "WebReport");
         }
     }
 }
