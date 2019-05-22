@@ -26,7 +26,7 @@
             <input type="text" name="NonbillReason" class="form-control" placeholder="non billable reason" maxlength="30"/>
         </div>
         <div class="col">
-            <input type="text" name="Hours" class="form-control" placeholder="Hours" maxlength="2" min="0" max="12">
+            <input type="text" name="Hours" class="form-control" placeholder="Hours" maxlength="3" min="0" max="12" required>
         </div>
         <div class="col">
             <button type="submit" class="btn btn-primary my-1">Record Hours</button>
@@ -37,10 +37,11 @@
     <thead class="thead-dark">
     <tr>
         <th scope="col">Date</th>
-        <th scope="col">Billable Hours</th>
-        <th scope="col">Sick Hours</th>
-        <th scope="col">Vacation Hours</th>
-        <th scope="col">Other Non Billable Hours</th>
+        <th scope="col">Billable</th>
+        <th scope="col">Sick</th>
+        <th scope="col">Vacation</th>
+        <th scope="col">Non Billable</th>
+        <th scope="col">Total</th>
     </tr>
     </thead>
     <tbody>
@@ -52,6 +53,7 @@
             <td>@user.SickHours @user.SickReason</td>
             <td>@user.VacationHours @user.VacationReason</td>
             <td>@user.OtherNonBillable @user.NonBillableReason</td>
+            <td class="@(user.TotalHours >= 8 ? "bg-success" : "bg-warning")">@user.TotalHours.ToString("F1")</td>
         </tr>
     }
     </tbody>
