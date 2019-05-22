@@ -54,6 +54,9 @@ namespace TimeTracker.Library.Test.Services
             report.Where(x => x.Date == date.AddDays(-5).ToShortDateString()).Sum(item => item.VacationHours).Should().Be(4);
             
             report.Where(x => x.Date == date.AddDays(-7).ToShortDateString()).Sum(item => item.OtherNonBillable).Should().Be(7);
+
+            report.Where(x => x.Date == date.ToShortDateString()).Select(item => item.TotalHours).FirstOrDefault()
+                .Should().Be(8);
         }
 
         private async Task PopulateTimeEntries()

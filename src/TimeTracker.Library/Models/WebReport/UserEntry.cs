@@ -28,5 +28,6 @@ namespace TimeTracker.Library.Models.WebReport
         public double OtherNonBillable { get; set; }
         
         public string NonBillableReason { get; set; }
+        public double TotalHours { get; set; }
     }
 }
