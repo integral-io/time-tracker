@@ -34,13 +34,15 @@ namespace TimeTracker.Library.Services.Interpretation
 
         public override HoursInterpretedMessage InterpretMessage(SlashCommandPayload payload)
         {
-            if (payload.command == "/sick")
+            var prefixes = new Dictionary<string, string>
             {
-                payload.text = "record sick " + payload.text;
-            }
-            else if (payload.command == "/vacation")
+                {"/sick", "sick"},
+                {"/vacation", "vacation"}
+            };
+            
+            if (!string.IsNullOrEmpty(payload.command) && prefixes.ContainsKey(payload.command))
             {
-                payload.text = "record vacation " + payload.text;
+                payload.text = $"{prefixes[payload.command]} {payload.text}";
             }
 
             return base.InterpretMessage(payload);

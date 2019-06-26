@@ -1,5 +1,6 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using Microsoft.AspNetCore.WebUtilities;
 using TimeTracker.Library.Services.Orchestration;
 using TimeTracker.Library.Utils;
@@ -66,7 +67,14 @@ namespace TimeTracker.Library.Models
 
         private bool IsAliasForRecord()
         {
-            return command == "/sick" || command == "/vacation";
+            var recordCommands = new []
+            {
+                "/sick",
+                "/vacation",
+                "/project"
+            };
+                
+            return recordCommands.Contains(command);
         }
     }
 }
