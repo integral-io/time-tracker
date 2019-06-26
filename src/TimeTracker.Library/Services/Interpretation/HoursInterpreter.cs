@@ -38,6 +38,10 @@ namespace TimeTracker.Library.Services.Interpretation
             {
                 payload.text = "record sick " + payload.text;
             }
+            else if (payload.command == "/vacation")
+            {
+                payload.text = "record vacation " + payload.text;
+            }
 
             return base.InterpretMessage(payload);
         }

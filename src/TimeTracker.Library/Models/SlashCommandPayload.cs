@@ -66,7 +66,7 @@ namespace TimeTracker.Library.Models
 
         private bool IsAliasForRecord()
         {
-            return command == "/sick";
+            return command == "/sick" || command == "/vacation";
         }
     }
 }
