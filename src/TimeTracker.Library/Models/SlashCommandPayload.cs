@@ -1,5 +1,7 @@
+using System;
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.AspNetCore.WebUtilities;
+using TimeTracker.Library.Services.Orchestration;
 using TimeTracker.Library.Utils;
 
 namespace TimeTracker.Library.Models
@@ -49,6 +51,22 @@ namespace TimeTracker.Library.Models
             } while (keepReading);
 
             return commandPayload;
+        }
+        
+        public SlackMessageOptions ReadOption()
+        {
+            if (IsAliasForRecord())
+                return SlackMessageOptions.Record;
+                
+            var option = text.GetFirstWord();
+            Enum.TryParse(option, true, out SlackMessageOptions optionEnum);
+
+            return optionEnum;
+        }
+
+        private bool IsAliasForRecord()
+        {
+            return command == "/sick";
         }
     }
 }

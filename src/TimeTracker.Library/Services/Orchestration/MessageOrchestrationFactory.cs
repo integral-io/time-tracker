@@ -16,12 +16,9 @@ namespace TimeTracker.Library.Services.Orchestration
             this.webAppUri = webAppUri;
         }
 
-        public IMessageOrchestration Create(SlashCommandPayload payload) 
+        public IMessageOrchestration Create(SlashCommandPayload payload)
         {
-            var option = payload.text.GetFirstWord();
-            Enum.TryParse(option, true, out SlackMessageOptions optionEnum);
-            
-            switch (optionEnum)
+            switch (payload.ReadOption())
             {
                 case SlackMessageOptions.Web:
                     return new WebMessageOrchestration(dbContext, webAppUri);
@@ -32,7 +29,7 @@ namespace TimeTracker.Library.Services.Orchestration
                 case SlackMessageOptions.Summary:
                     return new ReportMessageOrchestration(dbContext);
                 case SlackMessageOptions.Projects:
-                        return new ProjectsMessageOrchestration(dbContext);
+                    return new ProjectsMessageOrchestration(dbContext);
                 case SlackMessageOptions.Help:
                     return new HelpMessageOrchestration();
                 default:

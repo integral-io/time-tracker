@@ -16,7 +16,8 @@ namespace TimeTracker.Library.Services.Interpretation
 
         public override string HelpMessage => "*/hours* web - _generate a link to a report of hours_";
 
-        protected override void ExtractInto(WebLinkInterpretedMessage message, List<TextMessagePart> splitText)
+        protected override void ExtractInto(WebLinkInterpretedMessage message,
+            List<TextMessagePart> splitText)
         {
         }
     }
