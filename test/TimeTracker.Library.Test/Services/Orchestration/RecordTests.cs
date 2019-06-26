@@ -83,6 +83,29 @@ namespace TimeTracker.Library.Test.Services.Orchestration
 
             var slackMessage = await orchestrator.HandleCommand(new SlashCommandPayload()
             {
+                command = "/hours",
+                text = textCommand,
+                user_id = "UT33423",
+                user_name = "James"
+            });
+
+            slackMessage.Text.Should()
+                .Be($"Registered *3.0 hours* for Sick reason: flu for date: {todayString}");
+
+            var timeEntry = await database.TimeEntries.FirstOrDefaultAsync();
+            timeEntry.Should().NotBeNull();
+            timeEntry.Hours.Should().Be(3);
+        }
+        
+        [Fact]
+        public async Task WhenRecordSickHours_WithSickCommand_SlackMessageIncludesSickHoursWereRecorded()
+        {
+            var todayString = DateTime.UtcNow.ToString("D");
+            var textCommand = "3 flu";
+
+            var slackMessage = await orchestrator.HandleCommand(new SlashCommandPayload()
+            {
+                command = "/sick",
                 text = textCommand,
                 user_id = "UT33423",
                 user_name = "James"
@@ -116,6 +139,6 @@ namespace TimeTracker.Library.Test.Services.Orchestration
             timeEntry.Should().NotBeNull();
             timeEntry.Hours.Should().Be(5);
         }
-        
+
     }
 }

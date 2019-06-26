@@ -27,7 +27,8 @@ namespace TimeTracker.Library.Services.Interpretation
             .AppendLine("*/hours* delete billable <optional: date> _delete all billable hours for the date_")
             .ToString();
 
-        protected override void ExtractInto(DeleteInterpretedMessage message, List<TextMessagePart> splitText)
+        protected override void ExtractInto(DeleteInterpretedMessage message,
+            List<TextMessagePart> splitText)
         {
             if (splitText.All(x => x.IsUsed))
             {

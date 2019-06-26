@@ -32,6 +32,16 @@ namespace TimeTracker.Library.Services.Interpretation
             .AppendLine("*/hours* record vacation <hours> <optional: date> _marks vacation hours_")
             .ToString();
 
+        public override HoursInterpretedMessage InterpretMessage(SlashCommandPayload payload)
+        {
+            if (payload.command == "/sick")
+            {
+                payload.text = "record sick " + payload.text;
+            }
+
+            return base.InterpretMessage(payload);
+        }
+
         protected override void ExtractInto(HoursInterpretedMessage message,
             List<TextMessagePart> splitText)
         {
@@ -46,7 +56,7 @@ namespace TimeTracker.Library.Services.Interpretation
 
             var projectOrTypePart = splitText.First(x => !x.IsUsed);
             projectOrTypePart.IsUsed = true;
-         
+     
             var interpretTimeEntryType = InterpretTimeEntryType(projectOrTypePart.Text);
             if (interpretTimeEntryType.HasValue)
             {
@@ -58,7 +68,7 @@ namespace TimeTracker.Library.Services.Interpretation
                 message.IsBillable = true;
                 message.Project = projectOrTypePart.Text;
             }
-            
+        
             message.IsWorkFromHome = InterpretIsWorkingFromHome(splitText.Where(x => !x.IsUsed));
             
             if (!message.IsBillable)

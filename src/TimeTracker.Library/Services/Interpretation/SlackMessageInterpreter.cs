@@ -11,23 +11,24 @@ namespace TimeTracker.Library.Services.Interpretation
     public abstract class SlackMessageInterpreter<T> : SlackMessageInterpreter 
         where T : InterpretedMessage, new()
     {
-        private readonly SlackMessageOptions command;
+        private readonly SlackMessageOptions option;
         public abstract string HelpMessage { get; }
 
-        protected SlackMessageInterpreter(SlackMessageOptions command)
+        protected SlackMessageInterpreter(SlackMessageOptions option)
         {
-            this.command = command;
+            this.option = option;
         }
 
-        public T InterpretMessage(SlashCommandPayload payload)
+        public virtual T InterpretMessage(SlashCommandPayload payload)
         {
             Guard.ThrowIfNull(payload.text);
-            
+
             var splitText = SplitTextToParts(payload.text);
-            
-            Guard.ThrowIfCheckFails(payload.text.StartsWith(command.ToString().ToLower()),
+
+            Guard.ThrowIfCheckFails(payload.text.StartsWith(option.ToString().ToLower()),
                 $"Invalid start option: {splitText.FirstOrDefault()}", nameof(payload.text));
-            splitText.First().IsUsed = true;
+            
+            splitText.First().IsUsed = true;            
 
             if (IsHelpRequest(splitText.Where(x => !x.IsUsed)))
             {
@@ -70,7 +71,7 @@ namespace TimeTracker.Library.Services.Interpretation
             datePortion.IsUsed = true;
             return EasyDateParser.ParseEasyDate(datePortion.Text);
         }
-
+        
         protected abstract void ExtractInto(T message, List<TextMessagePart> splitText);
 
         private static List<TextMessagePart> SplitTextToParts(string text)

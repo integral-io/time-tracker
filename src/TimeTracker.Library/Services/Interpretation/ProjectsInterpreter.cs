@@ -17,7 +17,8 @@ namespace TimeTracker.Library.Services.Interpretation
         public ProjectsInterpreter() : base(SlackMessageOptions.Projects)
         {
         }
-        protected override void ExtractInto(ProjectsInterpretedMessage message, List<TextMessagePart> splitText)
+        protected override void ExtractInto(ProjectsInterpretedMessage message,
+            List<TextMessagePart> splitText)
         {
             if (splitText.Count > 1)
             {
