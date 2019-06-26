@@ -42,6 +42,28 @@ namespace TimeTracker.Library.Test.Services.Orchestration
             timeEntry.Should().NotBeNull();
             timeEntry.Hours.Should().Be(8);
         }
+        
+        [Fact]
+        public async Task HandleHoursCommand_WithProjectCommand_processesRecordOption()
+        {
+            var todayString = DateTime.UtcNow.ToString("D");
+            var textCommand = "Au 8 wfh";
+
+            var slackMessage = await orchestrator.HandleCommand(new SlashCommandPayload()
+            {
+                command = "/project",
+                text = textCommand,
+                user_id = "UT33423",
+                user_name = "James"
+            });
+
+            slackMessage.Text.Should()
+                .Be($"Registered *8.0 hours* for project *au* {todayString}. _Worked From Home_");
+
+            var timeEntry = await database.TimeEntries.FirstOrDefaultAsync();
+            timeEntry.Should().NotBeNull();
+            timeEntry.Hours.Should().Be(8);
+        }
 
         [Fact]
         public async Task HandleCommand_hours_processRecordOption_shouldFailIfInvalidProjectName()

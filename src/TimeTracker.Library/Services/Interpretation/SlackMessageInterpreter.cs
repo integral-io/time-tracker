@@ -25,10 +25,8 @@ namespace TimeTracker.Library.Services.Interpretation
 
             var splitText = SplitTextToParts(payload.text);
 
-            Guard.ThrowIfCheckFails(payload.text.StartsWith(option.ToString().ToLower()),
-                $"Invalid start option: {splitText.FirstOrDefault()}", nameof(payload.text));
-            
-            splitText.First().IsUsed = true;            
+            if (payload.text.StartsWith(option.ToString().ToLower()))
+                splitText.First().IsUsed = true;            
 
             if (IsHelpRequest(splitText.Where(x => !x.IsUsed)))
             {
