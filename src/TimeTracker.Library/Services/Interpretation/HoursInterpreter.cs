@@ -37,7 +37,8 @@ namespace TimeTracker.Library.Services.Interpretation
             var prefixes = new Dictionary<string, string>
             {
                 {"/sick", "sick"},
-                {"/vacation", "vacation"}
+                {"/vacation", "vacation"},
+                {"/nonbill", "nonbill"}
             };
             
             if (!string.IsNullOrEmpty(payload.command) && prefixes.ContainsKey(payload.command))

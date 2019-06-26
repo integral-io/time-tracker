@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Microsoft.AspNetCore.WebUtilities;
@@ -56,7 +57,7 @@ namespace TimeTracker.Library.Models
         
         public SlackMessageOptions ReadOption()
         {
-            if (IsAliasForRecord())
+            if (IsAliasForOption(SlackMessageOptions.Record))
                 return SlackMessageOptions.Record;
                 
             var option = text.GetFirstWord();
@@ -65,16 +66,9 @@ namespace TimeTracker.Library.Models
             return optionEnum;
         }
 
-        private bool IsAliasForRecord()
+        private bool IsAliasForOption(SlackMessageOptions option)
         {
-            var recordCommands = new []
-            {
-                "/sick",
-                "/vacation",
-                "/project"
-            };
-                
-            return recordCommands.Contains(command);
+            return option.GetAliases().Contains(command);
         }
     }
 }

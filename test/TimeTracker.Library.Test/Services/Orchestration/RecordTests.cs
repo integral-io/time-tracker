@@ -184,5 +184,50 @@ namespace TimeTracker.Library.Test.Services.Orchestration
             timeEntry.Should().NotBeNull();
             timeEntry.Hours.Should().Be(5);
         }
+        
+        
+        [Fact]
+        public async Task WhenRecordNonBillableHours_SlackMessageIncludesNonBillableHoursWereRecorded()
+        {
+            var todayString = DateTime.UtcNow.ToString("D");
+            var textCommand = "record nonbill 5 not on a project";
+
+            var slackMessage = await orchestrator.HandleCommand(new SlashCommandPayload()
+            {
+                text = textCommand,
+                user_id = "UT33423",
+                user_name = "James"
+            });
+
+            slackMessage.Text.Should()
+                .Be($"Registered *5.0 hours* for Nonbillable reason: not on a project for date: {todayString}");
+
+            var timeEntry = await database.TimeEntries.FirstOrDefaultAsync();
+            timeEntry.Should().NotBeNull();
+            timeEntry.Hours.Should().Be(5);
+        }
+
+        
+        [Fact]
+        public async Task WhenRecordNonBillableHours_WithNonBillableCommand_SlackMessageIncludesNonBillableHoursWereRecorded()
+        {
+            var todayString = DateTime.UtcNow.ToString("D");
+            var textCommand = "5 not on a project";
+
+            var slackMessage = await orchestrator.HandleCommand(new SlashCommandPayload()
+            {
+                command = "/nonbill",
+                text = textCommand,
+                user_id = "UT33423",
+                user_name = "James"
+            });
+
+            slackMessage.Text.Should()
+                .Be($"Registered *5.0 hours* for Nonbillable reason: not on a project for date: {todayString}");
+
+            var timeEntry = await database.TimeEntries.FirstOrDefaultAsync();
+            timeEntry.Should().NotBeNull();
+            timeEntry.Hours.Should().Be(5);
+        }
     }
 }
