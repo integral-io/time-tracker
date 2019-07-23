@@ -15,7 +15,7 @@ namespace TimeTracker.Library.Test.Services
         private readonly WebReportService webReportService;
         private readonly TimeTrackerDbContext database;
         private readonly Guid userId;
-        private readonly DateTime date = new DateTime(DateTime.UtcNow.Date.Year, 2, 15);
+        private readonly DateTime defaultDate = new DateTime(DateTime.UtcNow.Date.Year, DateTime.UtcNow.Date.Month, 15);
 
 
         public WebReportServiceTest()
@@ -26,9 +26,13 @@ namespace TimeTracker.Library.Test.Services
             userId = database.Users.First(x => x.UserId != null).UserId;
         }
 
+        /// <summary>
+        /// called at the beginning of class instantiation. Kind of like @Before but support for async
+        /// </summary>
+        /// <returns></returns>
         public async Task InitializeAsync()
         {
-            await PopulateTimeEntries();
+            await PopulateTimeEntries(defaultDate);
         }
 
         [Fact]
@@ -45,21 +49,41 @@ namespace TimeTracker.Library.Test.Services
             var report = await webReportService.GetUserReport(userId);
             report.Count.Should().Be(4);
             
-            report.Where(x => x.Date == date.ToShortDateString()).Sum(item => item.BillableHours).Should().Be(8);
+            report.Where(x => x.Date == defaultDate.ToShortDateString()).Sum(item => item.BillableHours).Should().Be(8);
             
-            report.Where(x => x.Date == date.AddDays(-2).ToShortDateString()).Sum(item => item.BillableHours).Should().Be(6);
-            report.Where(x => x.Date == date.AddDays(-2).ToShortDateString()).Sum(item => item.SickHours).Should().Be(2); 
+            report.Where(x => x.Date == defaultDate.AddDays(-2).ToShortDateString()).Sum(item => item.BillableHours).Should().Be(6);
+            report.Where(x => x.Date == defaultDate.AddDays(-2).ToShortDateString()).Sum(item => item.SickHours).Should().Be(2); 
             
-            report.Where(x => x.Date == date.AddDays(-5).ToShortDateString()).Sum(item => item.BillableHours).Should().Be(4);
-            report.Where(x => x.Date == date.AddDays(-5).ToShortDateString()).Sum(item => item.VacationHours).Should().Be(4);
+            report.Where(x => x.Date == defaultDate.AddDays(-5).ToShortDateString()).Sum(item => item.BillableHours).Should().Be(4);
+            report.Where(x => x.Date == defaultDate.AddDays(-5).ToShortDateString()).Sum(item => item.VacationHours).Should().Be(4);
             
-            report.Where(x => x.Date == date.AddDays(-7).ToShortDateString()).Sum(item => item.OtherNonBillable).Should().Be(7);
+            report.Where(x => x.Date == defaultDate.AddDays(-7).ToShortDateString()).Sum(item => item.OtherNonBillable).Should().Be(7);
 
-            report.Where(x => x.Date == date.ToShortDateString()).Select(item => item.TotalHours).FirstOrDefault()
+            report.Where(x => x.Date == defaultDate.ToShortDateString()).Select(item => item.TotalHours).FirstOrDefault()
                 .Should().Be(8);
         }
 
-        private async Task PopulateTimeEntries()
+        [Fact]
+        public async Task GetUserReport_returnsDataForSpecificMonth()
+        {
+            int expectedMonth = 4;
+            DateTime aprilDate = new DateTime(DateTime.UtcNow.Date.Year, 4, 15);
+            await PopulateTimeEntries(aprilDate);
+            var report = await webReportService.GetUserReport(userId, expectedMonth);
+
+            report.Where(x => x.DateForOrdering.Month.Equals(expectedMonth)).Should().NotBeEmpty();
+            report.Where(x => x.DateForOrdering.Month.Equals(expectedMonth)).Should().HaveCount(4);
+        }
+
+        [Fact]
+        public async Task GetUserReport_listsEntriesInDescOrder()
+        {
+            var report = await webReportService.GetUserReport(userId);
+            var expectedOrderReport = report.OrderByDescending(x => x.DateForOrdering);
+            Assert.True(expectedOrderReport.SequenceEqual(report));
+        }
+
+        private async Task PopulateTimeEntries(DateTime date)
         {
             var timeEntryService = new TimeEntryService(userId, database);
 
@@ -79,14 +103,6 @@ namespace TimeTracker.Library.Test.Services
             var randomGuid = Guid.NewGuid();
             timeEntryService = new TimeEntryService(randomGuid, database);
             await timeEntryService.CreateBillableTimeEntry(date, 8, 1);
-        }
-
-        [Fact]
-        public async Task GetUserReport_listsEntriesInDescOrder()
-        {
-            var report = await webReportService.GetUserReport(userId);
-            var expectedOrderReport = report.OrderByDescending(x => x.DateForOrdering);
-            Assert.True(expectedOrderReport.SequenceEqual(report));
         }
 
         public async Task DisposeAsync()
