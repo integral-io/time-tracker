@@ -2,6 +2,7 @@ using System;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using TimeTracker.Data;
 using TimeTracker.Data.Models;
@@ -17,6 +18,22 @@ namespace TimeTracker.Library.Services
             this.db = db;
         }
 
+
+        public async Task<ImmutableList<SelectListItem>> GetUserAvailableMonths(Guid userId)
+        {
+            var allMonthAndYears = await (from t in db.TimeEntries.AsNoTracking().Where(x => x.UserId == userId)
+                group t by t.Date
+                into g
+                select new
+                {
+                    MonthAndYear = $"{g.Key.Date.Year}-{g.Key.Date.Month}"  
+                }).ToListAsync();
+
+            var final = allMonthAndYears.GroupBy(x => x.MonthAndYear);
+
+            return (ImmutableList<SelectListItem>) final.Select(x => new SelectListItem(x.Key, $"{x.Key}-01"));
+        }
+        
         /// <summary>
         /// gets user's report with all entries for the selected month, or current month if none is selected
         /// </summary>

@@ -40,7 +40,8 @@ namespace TimeTracker.Api.Controllers
                 TimeEntryType = TimeEntryTypeEnum.BillableProject,
                 Projects = (await projectService.GetAllProjects()).ToImmutableList(),
                 Name = items.Any() ? items.First().Name : string.Empty,
-                Date = DateTime.UtcNow.Date
+                Date = DateTime.UtcNow.Date,
+                Months = await webReportService.GetUserAvailableMonths(userId)
             };
             
             return View(model);

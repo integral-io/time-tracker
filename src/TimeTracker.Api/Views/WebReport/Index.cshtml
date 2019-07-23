@@ -58,6 +58,12 @@
     }
     </tbody>
 </table>
+
+<div>
+     @Html.DropDownListFor(m=> m.SelectedMonth, Model.Months)), 
+                    htmlAttributes: new { @class = "custom-select" } )
+</div>
+
 @section scripts
 {
     <script>
