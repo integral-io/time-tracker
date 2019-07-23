@@ -30,7 +30,7 @@ namespace TimeTracker.Library.Services
                     MonthAndYear = $"{g.Key.Date.Year}-{g.Key.Date.Month}"
                 };
 
-            var final = allMonthAndYears.GroupBy(x => x.MonthAndYear);
+            var final = allMonthAndYears.GroupBy(x => x.MonthAndYear).OrderByDescending(x=>x.Key);
 
             return final.Select(x => new SelectListItem(x.Key, $"{x.Key}-01")).ToImmutableList();
         }
