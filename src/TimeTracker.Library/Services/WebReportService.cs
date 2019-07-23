@@ -32,7 +32,7 @@ namespace TimeTracker.Library.Services
 
             var final = allMonthAndYears.GroupBy(x => x.MonthAndYear);
 
-            return (ImmutableList<SelectListItem>) final.Select(x => new SelectListItem(x.Key, $"{x.Key}-01"));
+            return final.Select(x => new SelectListItem(x.Key, $"{x.Key}-01")).ToImmutableList();
         }
         
         /// <summary>

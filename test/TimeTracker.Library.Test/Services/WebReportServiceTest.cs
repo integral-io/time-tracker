@@ -36,6 +36,14 @@ namespace TimeTracker.Library.Test.Services
         }
 
         [Fact]
+        public async Task GetAvailableMonths_getsMonths()
+        {
+            var months = await webReportService.GetUserAvailableMonths(userId);
+            months.Should().NotBeEmpty();
+            months.FirstOrDefault().Value.Should().Be($"{defaultDate.Year}-{defaultDate.Month}-01");
+        }
+
+        [Fact]
         public async Task GetUserReport_onlyAccessesOneUserForAllEntriesAndCompressesByDay()
         {
             var report = await webReportService.GetUserReport(userId);
