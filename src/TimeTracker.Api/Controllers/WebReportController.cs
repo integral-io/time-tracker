@@ -26,13 +26,13 @@ namespace TimeTracker.Api.Controllers
         }
         
         [HttpGet("")]
-        public async Task<ViewResult> Index()
+        public async Task<ViewResult> Index(int? month = null)
         {
             var userId = await GetUserId();
 
             var webReportService = new WebReportService(dbContext);
             var projectService = new ProjectService(dbContext);
-            var items = await webReportService.GetUserReport(userId);
+            var items = await webReportService.GetUserReport(userId, month);
 
             var model = new UserRecordHoursViewModel()
             {

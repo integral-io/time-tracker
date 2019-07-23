@@ -17,7 +17,13 @@ namespace TimeTracker.Library.Services
             this.db = db;
         }
 
-        public async Task<IImmutableList<UserEntry>> GetUserReport(Guid userId)
+        /// <summary>
+        /// gets user's report with all entries for the selected month, or current month if none is selected
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="month"></param>
+        /// <returns></returns>
+        public async Task<IImmutableList<UserEntry>> GetUserReport(Guid userId, int? month = null)
         {
             var timeEntries = await db.TimeEntries.AsNoTracking().Where(x => x.UserId == userId).ToListAsync();
             if (!timeEntries.Any())
@@ -26,8 +32,11 @@ namespace TimeTracker.Library.Services
             }
             var user = db.Users.First(x => x.UserId == userId);
             var name = user.FirstName + " " + user.LastName;
-            
-            var query = from u in timeEntries
+            int currentMonth = DateTime.UtcNow.Month;
+
+            var testData = timeEntries.ToList();
+
+            var query = from u in timeEntries.Where(x=> x.Date.Month == (month ?? currentMonth))
                 group u by u.Date
                 into g
                 select new UserEntry
