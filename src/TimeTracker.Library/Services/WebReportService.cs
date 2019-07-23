@@ -21,13 +21,14 @@ namespace TimeTracker.Library.Services
 
         public async Task<ImmutableList<SelectListItem>> GetUserAvailableMonths(Guid userId)
         {
-            var allMonthAndYears = await (from t in db.TimeEntries.AsNoTracking().Where(x => x.UserId == userId)
+            var allMonthAndYears =
+                from t in await db.TimeEntries.AsNoTracking().Where(x => x.UserId == userId).ToListAsync()
                 group t by t.Date
                 into g
                 select new
                 {
-                    MonthAndYear = $"{g.Key.Date.Year}-{g.Key.Date.Month}"  
-                }).ToListAsync();
+                    MonthAndYear = $"{g.Key.Date.Year}-{g.Key.Date.Month}"
+                };
 
             var final = allMonthAndYears.GroupBy(x => x.MonthAndYear);
 
