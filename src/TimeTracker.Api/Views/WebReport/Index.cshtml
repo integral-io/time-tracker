@@ -60,13 +60,21 @@
 </table>
 
 <div>
-     @Html.DropDownListFor(m=> m.SelectedMonth, Model.Months)), 
-                    htmlAttributes: new { @class = "custom-select" } )
+     @Html.DropDownListFor(m=> m.SelectedMonth, Model.Months, 
+                    htmlAttributes: new
+                    {
+                        onChange = "selectMonths(this);", @class = "custom-select"
+                    } )
 </div>
 
 @section scripts
 {
     <script>
+    
+        function selectMonths(event) {
+            let valueOfSelect = getValueFromSelect("SelectedMonth", event.selectedIndex);
+            location.href = `?month=${valueOfSelect.substring(5,7)}`;
+        }
 
         function selectTimeEntry(event) {
 
