@@ -22,6 +22,6 @@ namespace TimeTracker.Api.Models
         public DateTime Date { get; set; }
 
         public ImmutableList<SelectListItem> Months { get; set; }
-        public int? SelectedMonth { get; set; }
+        public string SelectedMonth { get; set; }
     }
 }
