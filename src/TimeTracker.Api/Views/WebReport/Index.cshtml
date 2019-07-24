@@ -58,14 +58,17 @@
     }
     </tbody>
 </table>
+@using (Html.BeginForm(FormMethod.Get, htmlAttributes: new { id = "monthForm"}))
+{
+    <div>
+        @Html.DropDownListFor(m => m.SelectedMonth, Model.Months,
+            htmlAttributes: new
+            {
+                onChange = "selectMonths(this);", @class = "custom-select"
+            });
+    </div>
+}
 
-<div>
-     @Html.DropDownListFor(m=> m.SelectedMonth, Model.Months, 
-                    htmlAttributes: new
-                    {
-                        onChange = "selectMonths(this);", @class = "custom-select"
-                    } )
-</div>
 
 @section scripts
 {
@@ -73,7 +76,9 @@
     
         function selectMonths(event) {
             let valueOfSelect = getValueFromSelect("SelectedMonth", event.selectedIndex);
-            location.href = `?month=${valueOfSelect.substring(5,7)}`;
+            document.getElementById("monthForm").submit();
+            
+           // location.href = `?month=${valueOfSelect.substring(5,7).replace("-","")}`;
         }
 
         function selectTimeEntry(event) {
