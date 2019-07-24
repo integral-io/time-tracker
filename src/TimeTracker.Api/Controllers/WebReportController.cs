@@ -26,13 +26,20 @@ namespace TimeTracker.Api.Controllers
         }
         
         [HttpGet("")]
-        public async Task<ViewResult> Index(int? selectedMonth = null)
+        public async Task<ViewResult> Index(string selectedMonth = null)
         {
             var userId = await GetUserId();
+            
+            DateTime? selectedDate = null;
+
+            if (!String.IsNullOrEmpty(selectedMonth))
+            {
+                selectedDate = DateTime.Parse(selectedMonth);
+            }
 
             var webReportService = new WebReportService(dbContext);
             var projectService = new ProjectService(dbContext);
-            var items = await webReportService.GetUserReport(userId, selectedMonth);
+            var items = await webReportService.GetUserReport(userId, selectedDate?.Month);
 
             var model = new UserRecordHoursViewModel()
             {
@@ -41,7 +48,8 @@ namespace TimeTracker.Api.Controllers
                 Projects = (await projectService.GetAllProjects()).ToImmutableList(),
                 Name = items.Any() ? items.First().Name : string.Empty,
                 Date = DateTime.UtcNow.Date,
-                Months = await webReportService.GetUserAvailableMonths(userId)
+                Months = await webReportService.GetUserAvailableMonths(userId),
+                SelectedMonth = selectedMonth
             };
             
             return View(model);
