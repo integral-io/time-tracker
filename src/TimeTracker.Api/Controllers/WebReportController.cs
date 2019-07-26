@@ -32,9 +32,9 @@ namespace TimeTracker.Api.Controllers
             
             DateTime? selectedDate = null;
 
-            if (!String.IsNullOrEmpty(selectedMonth))
+            if (!String.IsNullOrEmpty(selectedMonth) && DateTime.TryParse(selectedMonth, out DateTime selectedDate2))
             {
-                selectedDate = DateTime.Parse(selectedMonth);
+                selectedDate = selectedDate2;
             }
 
             var webReportService = new WebReportService(dbContext);

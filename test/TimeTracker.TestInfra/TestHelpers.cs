@@ -42,14 +42,16 @@ namespace TimeTracker.TestInfra
                     LastName = "last1",
                     FirstName = "first1",
                     SlackUserId = "slackId1",
-                    UserName = "username1"
+                    UserName = "username1",
+                    GoogleIdentifier = Guid.NewGuid().ToString()
                 }, new User()
                 {
                     UserId = Guid.NewGuid(),
                     LastName = "last2",
                     FirstName = "first2",
                     SlackUserId = "slackId2",
-                    UserName = "username2"
+                    UserName = "username2",
+                    GoogleIdentifier = Guid.NewGuid().ToString()
                 }
             );
             
