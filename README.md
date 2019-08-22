@@ -16,16 +16,32 @@ Server side portion of the Integral time tracker. For now, It's purpose is to ex
 
 The reason to build solution this way was because slack requires a response either within 3 seconds OR using the async url. Working with the async url provides more reliability and better scaling, specially when trying to run on the cheapest available infrastructure (ie. free shared tier in Azure or others) where you can't guarantee "Always On" or dedicated availability.
 
-## Setup
+## Local dev Setup
 ### Database setup on mac / linux
 
 You'll need to run a local docker instance of ms sql server on your mac or linux box to be able to run 
-the app locally. Here are instructions on how to do that: https://medium.com/@jamesrf/local-sql-server-running-in-container-mac-linux-for-use-with-ef-e37c17308754
+the app locally. Here are detailed instructions on how to do that: https://medium.com/@jamesrf/local-sql-server-running-in-container-mac-linux-for-use-with-ef-e37c17308754
+or just run:
+```bash
+sudo docker pull mcr.microsoft.com/mssql/server:2017-latest
+docker run -e 'ACCEPT_EULA=Y' -e 'SA_PASSWORD=YourStrong!Passw0rd' -p 1433:1433 --name sql2 -d mcr.microsoft.com/mssql/server:2017-latest
+```
+The database name, userid and password are configured in the app under the appsettings.json (Development one for local), shoudl already be set to above password.
 
-The database name, userid and password are configured in the app under the appsettings.json (Development one for local).
+Then, to update the database schema to latest version run (assuming path in the repo root):
 
-## Run Locally
+```bash
+dotnet ef database update --startup-project ./src/TimeTracker.Api --project ./src/TimeTracker.Data 
+```
+ Next, you will need to seed some data:
+ - create a billing client
+ - create a project
+ - create a user with a real googleId so that the login works - copy from prod db
+ TODO: automate this
+ 
+### Setting google app setting secrets.
 
+These are not checked in to source control in our appsettings but are instead managed via `dotnet` secrets
 Run the following commands in a terminal in the `TimeTracker.Api` folder.
 
 ```bash
