@@ -57,15 +57,15 @@ namespace TimeTracker.Library.Test.Services
             var report = await webReportService.GetUserReport(userId);
             report.Count.Should().Be(4);
             
-            report.Where(x => x.Date == defaultDate.ToShortDateString()).Sum(item => item.BillableHours).Should().Be(8);
+            report.Where(x => x.Date == defaultDate.ToShortDateString()).Sum(item => item.BillableHours.Sum(h=> h.Hours)).Should().Be(8);
             
-            report.Where(x => x.Date == defaultDate.AddDays(-2).ToShortDateString()).Sum(item => item.BillableHours).Should().Be(6);
+            report.Where(x => x.Date == defaultDate.AddDays(-2).ToShortDateString()).Sum(item => item.BillableHours.Sum(h=> h.Hours)).Should().Be(6);
             report.Where(x => x.Date == defaultDate.AddDays(-2).ToShortDateString()).Sum(item => item.SickHours).Should().Be(2); 
             
-            report.Where(x => x.Date == defaultDate.AddDays(-5).ToShortDateString()).Sum(item => item.BillableHours).Should().Be(4);
+            report.Where(x => x.Date == defaultDate.AddDays(-5).ToShortDateString()).Sum(item => item.BillableHours.Sum(h=> h.Hours)).Should().Be(4);
             report.Where(x => x.Date == defaultDate.AddDays(-5).ToShortDateString()).Sum(item => item.VacationHours).Should().Be(4);
             
-            report.Where(x => x.Date == defaultDate.AddDays(-7).ToShortDateString()).Sum(item => item.OtherNonBillable).Should().Be(7);
+            report.Where(x => x.Date == defaultDate.AddDays(-7).ToShortDateString()).Sum(item => item.NonBillableHours.Sum(h=>h.Hours)).Should().Be(7);
 
             report.Where(x => x.Date == defaultDate.ToShortDateString()).Select(item => item.TotalHours).FirstOrDefault()
                 .Should().Be(8);
@@ -94,6 +94,16 @@ namespace TimeTracker.Library.Test.Services
         private async Task PopulateTimeEntries(DateTime date)
         {
             var timeEntryService = new TimeEntryService(userId, database);
+
+            if (!database.Projects.Any(x => x.ProjectId == 1))
+            {
+                database.Projects.Add(new Project()
+                {
+                    ProjectId = 1,
+                    Name = "Ford"
+                });
+                database.SaveChanges();
+            }
 
             await timeEntryService.CreateBillableTimeEntry(date, 8, 1);
            

@@ -46,7 +46,7 @@ namespace TimeTracker.Library.Services
             var timeEntries = await db.TimeEntries.AsNoTracking().Where(x => x.UserId == userId).ToListAsync();
             if (!timeEntries.Any())
             {
-                return new ImmutableArray<UserEntry>();
+                return ImmutableArray.Create<UserEntry>();
             }
             var user = db.Users.First(x => x.UserId == userId);
             var name = user.FirstName + " " + user.LastName;
@@ -64,14 +64,22 @@ namespace TimeTracker.Library.Services
                     Date = g.FirstOrDefault().Date.ToShortDateString(),
                     DateForOrdering = g.FirstOrDefault().Date,
                     DayOfWeek = g.FirstOrDefault().Date.DayOfWeek.ToString(),
-                    BillableHours = g.Where(x=>x.TimeEntryType == TimeEntryTypeEnum.BillableProject).Sum(x=>x.Hours),
-                    BillableProject = db.Projects.FirstOrDefault(x => x.ProjectId == (g.FirstOrDefault(y=>y.TimeEntryType == TimeEntryTypeEnum.BillableProject).ProjectId ?? 0))?.Name ?? "",
+                    BillableHours = (from bh in g.Where(x=>x.TimeEntryType == TimeEntryTypeEnum.BillableProject)
+                                    select new ProjectHours()
+                                    {
+                                        Hours = bh.Hours,
+                                        Project = db.Projects.FirstOrDefault(x=>x.ProjectId == bh.ProjectId.Value)?.Name
+                                    }).ToList(),
                     SickHours = g.Where(x=>x.TimeEntryType == TimeEntryTypeEnum.Sick).Sum(x=>x.Hours),
                     SickReason = g.FirstOrDefault(x=>x.TimeEntryType == TimeEntryTypeEnum.Sick)?.NonBillableReason ?? "",
                     VacationHours = g.Where(x=>x.TimeEntryType == TimeEntryTypeEnum.Vacation).Sum(x=>x.Hours),
                     VacationReason = g.FirstOrDefault(x=>x.TimeEntryType == TimeEntryTypeEnum.Vacation)?.NonBillableReason ?? "",
-                    OtherNonBillable = g.Where(x=>x.TimeEntryType == TimeEntryTypeEnum.NonBillable).Sum(x=>x.Hours),
-                    NonBillableReason = g.FirstOrDefault(x=>x.TimeEntryType == TimeEntryTypeEnum.NonBillable)?.NonBillableReason ?? "",
+                    NonBillableHours = (from bh in g.Where(x=>x.TimeEntryType == TimeEntryTypeEnum.NonBillable)
+                                        select new ProjectHours()
+                                        {
+                                            Hours = bh.Hours,
+                                            Project = bh.NonBillableReason
+                                        }).ToList(),
                     TotalHours = g.Sum(x=>x.Hours)
                 };
             return query.OrderByDescending(x => x.DateForOrdering).ToImmutableList();

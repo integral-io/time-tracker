@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace TimeTracker.Library.Models.WebReport
 {
@@ -14,9 +15,7 @@ namespace TimeTracker.Library.Models.WebReport
         public string Date { get; set; }
         public string DayOfWeek { get; set; }
 
-        public double BillableHours { get; set; }
-
-        public string BillableProject { get; set; }
+        public List<ProjectHours> BillableHours { get; set; }
 
         public double SickHours { get; set; }
 
@@ -25,9 +24,19 @@ namespace TimeTracker.Library.Models.WebReport
         public double VacationHours { get; set; }
         
         public string VacationReason { get; set; }
-        public double OtherNonBillable { get; set; }
+
+        public List<ProjectHours> NonBillableHours { get; set; }
         
-        public string NonBillableReason { get; set; }
         public double TotalHours { get; set; }
+    }
+
+    /// <summary>
+    /// defines underlying billable hour to use as a list
+    /// </summary>
+    public class ProjectHours
+    {
+        public double Hours { get; set; }
+
+        public string Project { get; set; }
     }
 }
