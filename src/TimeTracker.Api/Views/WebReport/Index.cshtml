@@ -1,4 +1,6 @@
 @using TimeTracker.Data.Models
+@using System.Linq
+@using System.Collections.Generic;
 @model TimeTracker.Api.Models.UserRecordHoursViewModel
 
 @{
@@ -49,10 +51,10 @@
     {
         <tr>
             <td>@user.Date  @user.DayOfWeek</td>
-            <td>@user.BillableHours @user.BillableProject</td>
+            <td>@String.Join(" | ", user.BillableHours.Select(x=> $"{x.Hours} {x.Project}")) </td>
             <td>@user.SickHours @user.SickReason</td>
             <td>@user.VacationHours @user.VacationReason</td>
-            <td>@user.OtherNonBillable @user.NonBillableReason</td>
+            <td>@String.Join(" | ", user.NonBillableHours.Select(x=> $"{x.Hours} {x.Project}")) </td>
             <td class="@(user.TotalHours >= 8 ? "bg-success" : "bg-warning")">@user.TotalHours.ToString("F1")</td>
         </tr>
     }

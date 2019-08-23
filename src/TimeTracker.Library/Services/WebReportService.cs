@@ -43,7 +43,9 @@ namespace TimeTracker.Library.Services
         /// <returns></returns>
         public async Task<IImmutableList<UserEntry>> GetUserReport(Guid userId, int? month = null)
         {
-            var timeEntries = await db.TimeEntries.AsNoTracking().Where(x => x.UserId == userId).ToListAsync();
+            var timeEntries = await db.TimeEntries.AsNoTracking()
+                                        .Include(x=>x.Project)
+                                        .Where(x => x.UserId == userId).ToListAsync();
             if (!timeEntries.Any())
             {
                 return ImmutableArray.Create<UserEntry>();
@@ -68,7 +70,7 @@ namespace TimeTracker.Library.Services
                                     select new ProjectHours()
                                     {
                                         Hours = bh.Hours,
-                                        Project = db.Projects.FirstOrDefault(x=>x.ProjectId == bh.ProjectId.Value)?.Name
+                                        Project = bh.Project.Name
                                     }).ToList(),
                     SickHours = g.Where(x=>x.TimeEntryType == TimeEntryTypeEnum.Sick).Sum(x=>x.Hours),
                     SickReason = g.FirstOrDefault(x=>x.TimeEntryType == TimeEntryTypeEnum.Sick)?.NonBillableReason ?? "",
