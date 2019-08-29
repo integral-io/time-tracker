@@ -23,5 +23,9 @@ namespace TimeTracker.Api.Models
 
         public ImmutableList<SelectListItem> Months { get; set; }
         public string SelectedMonth { get; set; }
+
+        public TotalHourSummary TotalYearly { get; set; }
+        
+        public TotalHourSummary TotalMonthly { get; set; }
     }
 }

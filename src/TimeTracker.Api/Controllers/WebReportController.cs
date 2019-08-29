@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using TimeTracker.Api.Models;
 using TimeTracker.Data;
 using TimeTracker.Data.Models;
+using TimeTracker.Library.Models;
 using TimeTracker.Library.Services;
 
 namespace TimeTracker.Api.Controllers
@@ -49,7 +50,9 @@ namespace TimeTracker.Api.Controllers
                 Name = items.Any() ? items.First().Name : string.Empty,
                 Date = DateTime.UtcNow.Date,
                 Months = await webReportService.GetUserAvailableMonths(userId),
-                SelectedMonth = selectedMonth
+                SelectedMonth = selectedMonth,
+                TotalYearly = await webReportService.GetTotalHoursYearly(userId, selectedDate?.Year),
+                TotalMonthly = await webReportService.GetTotalHoursMonthly(userId, selectedDate?.Month)
             };
             
             return View(model);

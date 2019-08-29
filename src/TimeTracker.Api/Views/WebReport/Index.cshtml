@@ -13,16 +13,16 @@
 <form class="well" asp-action="RecordHours" method="post">
     <div class="form-row">
         <div class="col">
-            <input type="date" name="Date" class="form-control" value="@Model.Date.ToString("yyyy-MM-dd")" />
+            <input type="date" name="Date" class="form-control" value="@Model.Date.ToString("yyyy-MM-dd")"/>
         </div>
         <div class="col">
-            @Html.DropDownListFor(m=> m.TimeEntryType, 
-                Html.GetEnumSelectList(typeof(TimeEntryTypeEnum)), 
-                htmlAttributes: new { onChange = "selectTimeEntry(this);", @class = "custom-select" })
+            @Html.DropDownListFor(m => m.TimeEntryType,
+                Html.GetEnumSelectList(typeof(TimeEntryTypeEnum)),
+                htmlAttributes: new {onChange = "selectTimeEntry(this);", @class = "custom-select"})
         </div>
         <div class="col" id="projectColumn">
-            @Html.DropDownListFor(m=> m.ProjectId, Model.Projects.Select(x=> new SelectListItem(x.Name, x.ProjectId.ToString())), 
-                htmlAttributes: new { @class = "custom-select"} )
+            @Html.DropDownListFor(m => m.ProjectId, Model.Projects.Select(x => new SelectListItem(x.Name, x.ProjectId.ToString())),
+                htmlAttributes: new {@class = "custom-select"})
         </div>
         <div class="col" id="nonbillColumn">
             <input type="text" name="NonbillReason" class="form-control" placeholder="non billable reason" maxlength="30"/>
@@ -35,7 +35,7 @@
         </div>
     </div>
 </form>
-<table class="table table-striped table-bordered">
+<table class="table table-striped table-bordered" style="margin-bottom: 20px;">
     <thead class="thead-dark">
     <tr>
         <th scope="col">Date</th>
@@ -50,17 +50,34 @@
     @foreach (var user in Model.Hours)
     {
         <tr>
-            <td>@user.Date  @user.DayOfWeek</td>
-            <td>@String.Join(" | ", user.BillableHours.Select(x=> $"{x.Hours} {x.Project}")) </td>
+            <td>@user.Date @user.DayOfWeek</td>
+            <td>@String.Join(" | ", user.BillableHours.Select(x => $"{x.Hours} {x.Project}")) </td>
             <td>@user.SickHours @user.SickReason</td>
             <td>@user.VacationHours @user.VacationReason</td>
-            <td>@String.Join(" | ", user.NonBillableHours.Select(x=> $"{x.Hours} {x.Project}")) </td>
+            <td>@String.Join(" | ", user.NonBillableHours.Select(x => $"{x.Hours} {x.Project}")) </td>
             <td class="@(user.TotalHours >= 8 ? "bg-success" : "bg-warning")">@user.TotalHours.ToString("F1")</td>
         </tr>
     }
     </tbody>
 </table>
-@using (Html.BeginForm(FormMethod.Get, htmlAttributes: new { id = "monthForm"}))
+<h3>Total Month</h3>
+<table class="table table-striped table-bordered" style="margin-bottom: 20px;">
+    <thead class="thead-dark">
+    <tr>
+        <th scope="col">Billable</th>
+        <th scope="col">Total Sick</th>
+        <th scope="col">Total PTO</th>
+        <th scope="col">Total Non Billable</th>
+    </tr>
+    </thead>
+    <tr>
+        <td>@Model.TotalMonthly.TotalBillable</td>
+        <td>@Model.TotalMonthly.TotalSick</td>
+        <td>@Model.TotalMonthly.TotalVacation</td>
+        <td>@Model.TotalMonthly.TotalNonBillable</td>
+    </tr>
+</table>
+@using (Html.BeginForm(FormMethod.Get, htmlAttributes: new {id = "monthForm"}))
 {
     <div>
         @Html.DropDownListFor(m => m.SelectedMonth, Model.Months,
@@ -70,6 +87,25 @@
             })
     </div>
 }
+
+<h3>Total YTD</h3>
+<table class="table table-striped table-bordered">
+    <thead class="thead-dark">
+    <tr>
+        <th scope="col">Billable</th>
+        <th scope="col">Total Sick</th>
+        <th scope="col">Total Vacation</th>
+        <th scope="col">Total Non Billable</th>
+    </tr>
+    </thead>
+    <tr>
+        <td>@Model.TotalYearly.TotalBillable</td>
+        <td>@Model.TotalYearly.TotalSick</td>
+        <td>@Model.TotalYearly.TotalVacation</td>
+        <td>@Model.TotalYearly.TotalNonBillable</td>
+    </tr>
+</table>
+
 
 
 @section scripts

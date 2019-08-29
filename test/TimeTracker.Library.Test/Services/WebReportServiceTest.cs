@@ -34,6 +34,75 @@ namespace TimeTracker.Library.Test.Services
         {
             await PopulateTimeEntries(defaultDate);
         }
+        
+//         new test for total hours calc per user
+
+        [Fact]
+        public async Task GetTotalHoursMonthly()
+        {
+            await this.PopulateTimeEntries(defaultDate.AddYears(-1));
+            
+            var totalHours = await webReportService.GetTotalHoursMonthly(this.userId, defaultDate.Month);
+
+            totalHours.TotalBillable.Should().BeGreaterOrEqualTo(0);
+            totalHours.TotalSick.Should().BeGreaterOrEqualTo(0);
+            totalHours.TotalNonBillable.Should().BeGreaterOrEqualTo(0);
+            totalHours.TotalVacation.Should().BeGreaterOrEqualTo(0);
+
+            await PopulateTimeEntries(defaultDate.AddMonths(-1));
+
+            if (this.defaultDate.Day > 15)
+            {
+                await this.PopulateTimeEntries(defaultDate);
+            }
+            else
+            {
+                await this.PopulateTimeEntries(defaultDate.AddDays(10));
+            }
+            
+            var totalHours2 = await webReportService.GetTotalHoursMonthly(this.userId, defaultDate.Month);
+            
+            totalHours2.TotalBillable.Should().Be(36);
+            totalHours2.TotalSick.Should().Be(4);
+            totalHours2.TotalVacation.Should().Be(8);
+            totalHours2.TotalNonBillable.Should().Be(14);
+
+        }
+
+        [Fact]
+        public async Task GetTotalHoursYearly()
+        {
+            await this.PopulateTimeEntries(defaultDate.AddYears(-1));
+            
+            var totalHours = await webReportService.GetTotalHoursYearly(this.userId, defaultDate.Year);
+
+            totalHours.TotalBillable.Should().BeGreaterOrEqualTo(0);
+            totalHours.TotalSick.Should().BeGreaterOrEqualTo(0);
+            totalHours.TotalNonBillable.Should().BeGreaterOrEqualTo(0);
+            totalHours.TotalVacation.Should().BeGreaterOrEqualTo(0);
+
+            await PopulateTimeEntries(defaultDate);
+
+            var totalHours2 = await webReportService.GetTotalHoursYearly(this.userId, defaultDate.Year);
+            
+            totalHours2.TotalBillable.Should().Be(36);
+            totalHours2.TotalSick.Should().Be(4);
+            totalHours2.TotalVacation.Should().Be(8);
+            totalHours2.TotalNonBillable.Should().Be(14);
+            
+            var totalHours3 = await webReportService.GetTotalHoursYearly(this.userId, defaultDate.AddYears(-2).Year);
+            totalHours3.TotalBillable.Should().Be(0);
+            totalHours3.TotalSick.Should().Be(0);
+            totalHours3.TotalVacation.Should().Be(0);
+            totalHours3.TotalNonBillable.Should().Be(0);
+            
+            var totalHours4 = await webReportService.GetTotalHoursYearly(this.userId, defaultDate.AddYears(-1).Year);
+            totalHours4.TotalBillable.Should().Be(18);
+            totalHours4.TotalSick.Should().Be(2);
+            totalHours4.TotalVacation.Should().Be(4);
+            totalHours4.TotalNonBillable.Should().Be(7);
+
+        }
 
         [Fact]
         public async Task GetAvailableMonths_getsMonths()
@@ -105,17 +174,19 @@ namespace TimeTracker.Library.Test.Services
                 database.SaveChanges();
             }
 
+            //total hours = 18
             await timeEntryService.CreateBillableTimeEntry(date, 8, 1);
-           
             await timeEntryService.CreateBillableTimeEntry(date.AddDays(-5), 4, 1);
-            await timeEntryService.CreateNonBillableTimeEntry(date.AddDays(-5), 4, null, TimeEntryTypeEnum.Vacation);
-
             await timeEntryService.CreateBillableTimeEntry(date.AddDays(-2), 4, 1);
             await timeEntryService.CreateBillableTimeEntry(date.AddDays(-2), 2, 1);
+            
+            //total hours = 13
+            await timeEntryService.CreateNonBillableTimeEntry(date.AddDays(-5), 4, null, TimeEntryTypeEnum.Vacation);
+            
             await timeEntryService.CreateNonBillableTimeEntry(date.AddDays(-2), 2, "dr visit", TimeEntryTypeEnum.Sick);
-
-
+            
             await timeEntryService.CreateNonBillableTimeEntry(date.AddDays(-7), 4, "pda", TimeEntryTypeEnum.NonBillable);
+            
             await timeEntryService.CreateNonBillableTimeEntry(date.AddDays(-7), 3, "lunch and learn", TimeEntryTypeEnum.NonBillable);
 
             var randomGuid = Guid.NewGuid();

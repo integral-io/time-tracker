@@ -29,6 +29,7 @@ docker run -e 'ACCEPT_EULA=Y' -e 'SA_PASSWORD=YourStrong!Passw0rd' -p 1433:1433 
 The database name, userid and password are configured in the app under the appsettings.json (Development one for local), shoudl already be set to above password.
 
 Then, to update the database schema to latest version run (assuming path in the repo root):
+If the above command fails due to image name already existing (conflict), then just rename `sql2` for something else.
 
 ```bash
 dotnet ef database update --startup-project ./src/TimeTracker.Api --project ./src/TimeTracker.Data 

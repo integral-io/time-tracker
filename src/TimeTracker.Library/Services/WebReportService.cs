@@ -1,11 +1,13 @@
 using System;
 using System.Collections.Immutable;
 using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using TimeTracker.Data;
 using TimeTracker.Data.Models;
+using TimeTracker.Library.Models;
 using TimeTracker.Library.Models.WebReport;
 
 namespace TimeTracker.Library.Services
@@ -18,6 +20,69 @@ namespace TimeTracker.Library.Services
             this.db = db;
         }
 
+        public async Task<TotalHourSummary> GetTotalHoursMonthly(Guid userId, int?  month)
+        {
+            DateTime currentDate = DateTime.UtcNow;
+            
+            var timeEntries = await db.TimeEntries.AsNoTracking()
+                .Where(x => x.UserId == userId && x.Date.Month == month && x.Date.Year== currentDate.Year).ToListAsync();
+
+            var model = new TotalHourSummary();
+            foreach (var entry in timeEntries)
+            {
+                switch(entry.TimeEntryType)
+                {
+                    case TimeEntryTypeEnum.BillableProject:
+                        model.TotalBillable += entry.Hours;
+                        break;
+                    case TimeEntryTypeEnum.NonBillable:
+                        model.TotalNonBillable += entry.Hours;
+                        break;
+                    case TimeEntryTypeEnum.Sick:
+                        model.TotalSick += entry.Hours;
+                        break;
+                    default: 
+                        model.TotalVacation += entry.Hours;
+                        break;
+                }
+            }
+
+            return model;
+        }
+
+        public async Task<TotalHourSummary> GetTotalHoursYearly(Guid userId, int? year)
+        {
+            DateTime currentDate = DateTime.UtcNow;
+
+            if (!year.HasValue)
+            {
+                year = currentDate.Year;
+            }
+            var timeEntries = await db.TimeEntries.AsNoTracking()
+                .Where(x => x.UserId == userId && x.Date.Year == year).ToListAsync();
+
+            var model = new TotalHourSummary();
+            foreach (var entry in timeEntries)
+            {
+                switch(entry.TimeEntryType)
+                {
+                    case TimeEntryTypeEnum.BillableProject:
+                        model.TotalBillable += entry.Hours;
+                        break;
+                    case TimeEntryTypeEnum.NonBillable:
+                        model.TotalNonBillable += entry.Hours;
+                        break;
+                    case TimeEntryTypeEnum.Sick:
+                        model.TotalSick += entry.Hours;
+                        break;
+                    default: 
+                        model.TotalVacation += entry.Hours;
+                        break;
+                }
+            }
+
+            return model;  
+        }
 
         public async Task<ImmutableList<SelectListItem>> GetUserAvailableMonths(Guid userId)
         {

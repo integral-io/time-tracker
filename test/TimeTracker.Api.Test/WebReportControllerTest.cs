@@ -44,5 +44,33 @@ namespace TimeTracker.Api.Test
             model.Date.Should().Be(DateTime.UtcNow.Date);
             // todo: test that the model entries are what is expected per setup data
         }
+
+        [Fact]
+        public async Task Index_returnsDataForSummary()
+        {
+            DateTime currentDate = DateTime.UtcNow;
+            
+            var database = new InMemoryDatabaseWithProjectsAndUsers().Database;
+            database.AddTimeOff();
+
+            var identityClaim = new Claim("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier",
+                database.Users.First().GoogleIdentifier);
+
+            var controller = new WebReportController(database);
+            // setup user mocking
+            var claimsIdentity = new ClaimsIdentity(new List<Claim>() { identityClaim });
+            var user = new ClaimsPrincipal(claimsIdentity);
+            controller.ControllerContext = new ControllerContext()
+            {
+                HttpContext = new DefaultHttpContext() { User = user }
+            };
+
+            var result = await controller.Index("2019-08-15");
+            var model = (UserRecordHoursViewModel) result.Model;
+
+            model.TotalMonthly.Should().NotBeNull();
+            model.TotalYearly.Should().NotBeNull();
+
+        }
     }
 }
