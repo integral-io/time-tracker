@@ -15,22 +15,24 @@ namespace TimeTracker.Library.Services
     public class WebReportService
     {
         private readonly TimeTrackerDbContext db;
+
         public WebReportService(in TimeTrackerDbContext db)
         {
             this.db = db;
         }
 
-        public async Task<TotalHourSummary> GetTotalHoursMonthly(Guid userId, int?  month)
+        public async Task<TotalHourSummary> GetTotalHoursMonthly(Guid userId, int? month)
         {
             DateTime currentDate = DateTime.UtcNow;
-            
+
             var timeEntries = await db.TimeEntries.AsNoTracking()
-                .Where(x => x.UserId == userId && x.Date.Month == month && x.Date.Year== currentDate.Year).ToListAsync();
+                .Where(x => x.UserId == userId && x.Date.Month == month && x.Date.Year == currentDate.Year)
+                .ToListAsync();
 
             var model = new TotalHourSummary();
             foreach (var entry in timeEntries)
             {
-                switch(entry.TimeEntryType)
+                switch (entry.TimeEntryType)
                 {
                     case TimeEntryTypeEnum.BillableProject:
                         model.TotalBillable += entry.Hours;
@@ -41,7 +43,7 @@ namespace TimeTracker.Library.Services
                     case TimeEntryTypeEnum.Sick:
                         model.TotalSick += entry.Hours;
                         break;
-                    default: 
+                    default:
                         model.TotalVacation += entry.Hours;
                         break;
                 }
@@ -58,13 +60,14 @@ namespace TimeTracker.Library.Services
             {
                 year = currentDate.Year;
             }
+
             var timeEntries = await db.TimeEntries.AsNoTracking()
                 .Where(x => x.UserId == userId && x.Date.Year == year).ToListAsync();
 
             var model = new TotalHourSummary();
             foreach (var entry in timeEntries)
             {
-                switch(entry.TimeEntryType)
+                switch (entry.TimeEntryType)
                 {
                     case TimeEntryTypeEnum.BillableProject:
                         model.TotalBillable += entry.Hours;
@@ -75,13 +78,13 @@ namespace TimeTracker.Library.Services
                     case TimeEntryTypeEnum.Sick:
                         model.TotalSick += entry.Hours;
                         break;
-                    default: 
+                    default:
                         model.TotalVacation += entry.Hours;
                         break;
                 }
             }
 
-            return model;  
+            return model;
         }
 
         public async Task<ImmutableList<SelectListItem>> GetUserAvailableMonths(Guid userId)
@@ -95,11 +98,11 @@ namespace TimeTracker.Library.Services
                     MonthAndYear = $"{g.Key.Date.Year}-{g.Key.Date.Month}"
                 };
 
-            var final = allMonthAndYears.GroupBy(x => x.MonthAndYear).OrderByDescending(x=>x.Key);
+            var final = allMonthAndYears.GroupBy(x => x.MonthAndYear).OrderByDescending(x => x.Key);
 
             return final.Select(x => new SelectListItem(x.Key, $"{x.Key}-01")).ToImmutableList();
         }
-        
+
         /// <summary>
         /// gets user's report with all entries for the selected month, or current month if none is selected
         /// </summary>
@@ -109,19 +112,20 @@ namespace TimeTracker.Library.Services
         public async Task<IImmutableList<UserEntry>> GetUserReport(Guid userId, int? month = null)
         {
             var timeEntries = await db.TimeEntries.AsNoTracking()
-                                        .Include(x=>x.Project)
-                                        .Where(x => x.UserId == userId).ToListAsync();
+                .Include(x => x.Project)
+                .Where(x => x.UserId == userId).ToListAsync();
             if (!timeEntries.Any())
             {
                 return ImmutableArray.Create<UserEntry>();
             }
+
             var user = db.Users.First(x => x.UserId == userId);
             var name = user.FirstName + " " + user.LastName;
             int currentMonth = DateTime.UtcNow.Month;
 
             var testData = timeEntries.ToList();
 
-            var query = from u in timeEntries.Where(x=> x.Date.Month == (month ?? currentMonth))
+            var query = from u in timeEntries.Where(x => x.Date.Month == (month ?? currentMonth))
                 group u by u.Date
                 into g
                 select new UserEntry
@@ -131,23 +135,27 @@ namespace TimeTracker.Library.Services
                     Date = g.FirstOrDefault().Date.ToShortDateString(),
                     DateForOrdering = g.FirstOrDefault().Date,
                     DayOfWeek = g.FirstOrDefault().Date.DayOfWeek.ToString(),
-                    BillableHours = (from bh in g.Where(x=>x.TimeEntryType == TimeEntryTypeEnum.BillableProject)
-                                    select new ProjectHours()
-                                    {
-                                        Hours = bh.Hours,
-                                        Project = bh.Project.Name
-                                    }).ToList(),
-                    SickHours = g.Where(x=>x.TimeEntryType == TimeEntryTypeEnum.Sick).Sum(x=>x.Hours),
-                    SickReason = g.FirstOrDefault(x=>x.TimeEntryType == TimeEntryTypeEnum.Sick)?.NonBillableReason ?? "",
-                    VacationHours = g.Where(x=>x.TimeEntryType == TimeEntryTypeEnum.Vacation).Sum(x=>x.Hours),
-                    VacationReason = g.FirstOrDefault(x=>x.TimeEntryType == TimeEntryTypeEnum.Vacation)?.NonBillableReason ?? "",
-                    NonBillableHours = (from bh in g.Where(x=>x.TimeEntryType == TimeEntryTypeEnum.NonBillable)
-                                        select new ProjectHours()
-                                        {
-                                            Hours = bh.Hours,
-                                            Project = bh.NonBillableReason
-                                        }).ToList(),
-                    TotalHours = g.Sum(x=>x.Hours)
+                    BillableHours = (from bh in g.Where(x => x.TimeEntryType == TimeEntryTypeEnum.BillableProject)
+                            group bh by bh.ProjectId
+                            into bhg
+                        select new ProjectHours()
+                        {
+                            Hours = bhg.Sum(x=> x.Hours),
+                            Project = bhg.FirstOrDefault()?.Project.Name
+                        }).ToList(),
+                    SickHours = g.Where(x => x.TimeEntryType == TimeEntryTypeEnum.Sick).Sum(x => x.Hours),
+                    SickReason = g.FirstOrDefault(x => x.TimeEntryType == TimeEntryTypeEnum.Sick)?.NonBillableReason ??
+                                 "",
+                    VacationHours = g.Where(x => x.TimeEntryType == TimeEntryTypeEnum.Vacation).Sum(x => x.Hours),
+                    VacationReason = g.FirstOrDefault(x => x.TimeEntryType == TimeEntryTypeEnum.Vacation)
+                                         ?.NonBillableReason ?? "",
+                    NonBillableHours = (from bh in g.Where(x => x.TimeEntryType == TimeEntryTypeEnum.NonBillable)
+                        select new ProjectHours()
+                        {
+                            Hours = bh.Hours,
+                            Project = bh.NonBillableReason
+                        }).ToList(),
+                    TotalHours = g.Sum(x => x.Hours)
                 };
             return query.OrderByDescending(x => x.DateForOrdering).ToImmutableList();
         }

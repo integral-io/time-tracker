@@ -160,6 +160,25 @@ namespace TimeTracker.Library.Test.Services
             Assert.True(expectedOrderReport.SequenceEqual(report));
         }
 
+        [Fact]
+        public async Task GetUserReport_combineSameProjectBillableHours()
+        {
+            // arrange
+            DateTime todaysDate = DateTime.UtcNow;
+            var timeEntryService = new TimeEntryService(userId, database);
+            
+            await timeEntryService.CreateBillableTimeEntry(todaysDate, 3, 1);
+            await timeEntryService.CreateBillableTimeEntry(todaysDate, 5, 1);
+            
+            // act
+            var report = await webReportService.GetUserReport(userId, todaysDate.Month);
+            
+            // assert
+            var userEntry = report.First(x => x.DateForOrdering.Date.Equals(todaysDate.Date));
+            userEntry.BillableHours.Should().HaveCount(1);
+            userEntry.BillableHours.ElementAt(0).Hours.Should().Be(8);
+        } 
+
         private async Task PopulateTimeEntries(DateTime date)
         {
             var timeEntryService = new TimeEntryService(userId, database);
