@@ -115,7 +115,7 @@ namespace TimeTracker.Library.Test.Services
         [Fact]
         public async Task GetUserReport_onlyAccessesOneUserForAllEntriesAndCompressesByDay()
         {
-            var report = await webReportService.GetUserReport(userId);
+            var report = await webReportService.GetUserReport(userId, defaultDate);
             report.Count.Should().Be(4);
             report.Where(x => x.UserId == userId).ToList().Count.Should().Be(4);
         }
@@ -123,7 +123,7 @@ namespace TimeTracker.Library.Test.Services
         [Fact]
         public async Task GetUserReport_sumsUpHoursCorrectly()
         {
-            var report = await webReportService.GetUserReport(userId);
+            var report = await webReportService.GetUserReport(userId, defaultDate);
             report.Count.Should().Be(4);
             
             report.Where(x => x.Date == defaultDate.ToShortDateString()).Sum(item => item.BillableHours.Sum(h=> h.Hours)).Should().Be(8);
@@ -143,19 +143,18 @@ namespace TimeTracker.Library.Test.Services
         [Fact]
         public async Task GetUserReport_returnsDataForSpecificMonth()
         {
-            int expectedMonth = 4;
             DateTime aprilDate = new DateTime(DateTime.UtcNow.Date.Year, 4, 15);
             await PopulateTimeEntries(aprilDate);
-            var report = await webReportService.GetUserReport(userId, expectedMonth);
+            var report = await webReportService.GetUserReport(userId, aprilDate);
 
-            report.Where(x => x.DateForOrdering.Month.Equals(expectedMonth)).Should().NotBeEmpty();
-            report.Where(x => x.DateForOrdering.Month.Equals(expectedMonth)).Should().HaveCount(4);
+            report.Where(x => x.DateForOrdering.Month.Equals(aprilDate.Month)).Should().NotBeEmpty();
+            report.Where(x => x.DateForOrdering.Month.Equals(aprilDate.Month)).Should().HaveCount(4);
         }
 
         [Fact]
         public async Task GetUserReport_listsEntriesInDescOrder()
         {
-            var report = await webReportService.GetUserReport(userId);
+            var report = await webReportService.GetUserReport(userId, defaultDate);
             var expectedOrderReport = report.OrderByDescending(x => x.DateForOrdering);
             Assert.True(expectedOrderReport.SequenceEqual(report));
         }
@@ -171,7 +170,7 @@ namespace TimeTracker.Library.Test.Services
             await timeEntryService.CreateBillableTimeEntry(todaysDate, 5, 1);
             
             // act
-            var report = await webReportService.GetUserReport(userId, todaysDate.Month);
+            var report = await webReportService.GetUserReport(userId, todaysDate);
             
             // assert
             var userEntry = report.First(x => x.DateForOrdering.Date.Equals(todaysDate.Date));

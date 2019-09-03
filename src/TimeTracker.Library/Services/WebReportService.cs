@@ -107,9 +107,9 @@ namespace TimeTracker.Library.Services
         /// gets user's report with all entries for the selected month, or current month if none is selected
         /// </summary>
         /// <param name="userId"></param>
-        /// <param name="month"></param>
+        /// <param name="dateFilter"></param>
         /// <returns></returns>
-        public async Task<IImmutableList<UserEntry>> GetUserReport(Guid userId, int? month = null)
+        public async Task<IImmutableList<UserEntry>> GetUserReport(Guid userId, DateTime dateFilter)
         {
             var timeEntries = await db.TimeEntries.AsNoTracking()
                 .Include(x => x.Project)
@@ -121,11 +121,8 @@ namespace TimeTracker.Library.Services
 
             var user = db.Users.First(x => x.UserId == userId);
             var name = user.FirstName + " " + user.LastName;
-            int currentMonth = DateTime.UtcNow.Month;
-
-            var testData = timeEntries.ToList();
-
-            var query = from u in timeEntries.Where(x => x.Date.Month == (month ?? currentMonth))
+           
+            var query = from u in timeEntries.Where(x => x.Date.Month == dateFilter.Month && x.Date.Year == dateFilter.Year)
                 group u by u.Date
                 into g
                 select new UserEntry
